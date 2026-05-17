@@ -23,7 +23,20 @@
 #define U_NA &none // present but not available for use
 #define U_NU &none // available but not used
 
+#ifndef U_TAPPING_TERM
 #define U_TAPPING_TERM 200
+#endif
+
+// Home-row-mod tuning, overridable from custom_config.h.
+#ifndef U_HRM_FLAVOR
+#define U_HRM_FLAVOR "balanced"
+#endif
+#ifndef U_HRM_QUICK_TAP_MS
+#define U_HRM_QUICK_TAP_MS 175
+#endif
+#ifndef U_HRM_PRIOR_IDLE_MS
+#define U_HRM_PRIOR_IDLE_MS 150
+#endif
 
 #include "miryoku_clipboard.h"
 
