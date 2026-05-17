@@ -25,6 +25,17 @@
 // Tuning guide: if you still get accidental mods while typing fast, RAISE
 // U_HRM_PRIOR_IDLE_MS (try 175). If deliberate mods feel like they need too
 // long a pause, LOWER it (try 125). Leave flavor at "balanced".
+//
+// TIMELESS / POSITIONAL (bilateral) home-row mods are also enabled. Left-hand
+// HRMs (u_mt_l) only engage if the next key is right-hand or thumb; right-hand
+// HRMs (u_mt_r) only engage if next key is left-hand or thumb. Same-hand rolls
+// can never misfire, so timing barely matters -> "timeless". Patched into the
+// active BASE (Colemak-DH) and EXTRA (QWERTY) blocks via U_MT_L / U_MT_R.
+// Position lists default in miryoku.h (derived from mapping/42/corne.h, valid
+// for both Corne and Corne-ish Zen). Override here only if you change layout.
+//
+// TRADEOFF: same-hand modified keypresses (e.g. a Ctrl HRM + a same-hand key)
+// no longer register the mod. Use the opposite-hand mirrored mod for those.
 // ---------------------------------------------------------------------------
 
 #define U_HRM_FLAVOR "balanced"

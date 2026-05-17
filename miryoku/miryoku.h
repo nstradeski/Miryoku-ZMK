@@ -38,6 +38,19 @@
 #define U_HRM_PRIOR_IDLE_MS 150
 #endif
 
+// Positional ("timeless"/bilateral) home-row mods. A left-hand HRM only
+// engages if the NEXT key is on the right hand or a thumb, and vice versa,
+// so same-hand rolls can never misfire. Position indices are the keymap
+// binding offsets from miryoku/mapping/42/corne.h (identical for Corne and
+// Corne-ish Zen). Left keys -> trigger on RIGHT+THUMB positions; right keys
+// -> trigger on LEFT+THUMB positions.
+#ifndef U_HRM_LEFT_TRIGGER_POSITIONS
+#define U_HRM_LEFT_TRIGGER_POSITIONS 6 7 8 9 10 18 19 20 21 22 30 31 32 33 34 36 37 38 39 40 41
+#endif
+#ifndef U_HRM_RIGHT_TRIGGER_POSITIONS
+#define U_HRM_RIGHT_TRIGGER_POSITIONS 1 2 3 4 5 13 14 15 16 17 25 26 27 28 29 36 37 38 39 40 41
+#endif
+
 #include "miryoku_clipboard.h"
 
 #include "miryoku_double_tap_guard.h"

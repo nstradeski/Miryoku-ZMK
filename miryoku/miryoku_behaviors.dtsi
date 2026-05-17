@@ -21,5 +21,30 @@
       flavor = U_HRM_FLAVOR;
       bindings = <&mo>, <&kp>;
     };
+    // Positional ("timeless") home-row mods. Left-hand keys: hold only
+    // engages when the next key is on the right hand or a thumb.
+    u_mt_l: u_mt_l {
+      compatible = "zmk,behavior-hold-tap";
+      #binding-cells = <2>;
+      tapping-term-ms = <U_TAPPING_TERM>;
+      quick-tap-ms = <U_HRM_QUICK_TAP_MS>;
+      require-prior-idle-ms = <U_HRM_PRIOR_IDLE_MS>;
+      flavor = U_HRM_FLAVOR;
+      hold-trigger-on-release;
+      hold-trigger-key-positions = <U_HRM_LEFT_TRIGGER_POSITIONS>;
+      bindings = <&kp>, <&kp>;
+    };
+    // Right-hand keys: hold only engages when next key is left hand or thumb.
+    u_mt_r: u_mt_r {
+      compatible = "zmk,behavior-hold-tap";
+      #binding-cells = <2>;
+      tapping-term-ms = <U_TAPPING_TERM>;
+      quick-tap-ms = <U_HRM_QUICK_TAP_MS>;
+      require-prior-idle-ms = <U_HRM_PRIOR_IDLE_MS>;
+      flavor = U_HRM_FLAVOR;
+      hold-trigger-on-release;
+      hold-trigger-key-positions = <U_HRM_RIGHT_TRIGGER_POSITIONS>;
+      bindings = <&kp>, <&kp>;
+    };
   };
 };
