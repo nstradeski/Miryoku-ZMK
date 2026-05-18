@@ -199,7 +199,16 @@ every capital.
    base layer in every position except the letters themselves, and the guide
    photo is valid in both modes.
 
-7. **Local build environment** — set up west + Zephyr + a sudo-free ARM
+7. **macOS "British" (Apple) compatibility** — the host MacBook stays on the
+   Apple "British" input source (shared with its built-in keyboard). ZMK emits
+   US-ANSI key codes; six of them render wrong under British. The active
+   SYM/NUM blocks were remapped so the printed guide stays correct without
+   switching input source: `@`→`Shift+'`, `#`→`Option+3`, and `~ ` ` ` \ |`
+   onto the two ISO keys (left of Z / left of Return). Every other symbol is
+   identical between US-ANSI and Apple-British and is unchanged. Details and
+   the one-line fix for any mis-mapped ISO key are in `custom_config.h`.
+
+8. **Local build environment** — set up west + Zephyr + a sudo-free ARM
    toolchain, resolved HWMv2 board naming and ZMK board-root registration, and
    built all four images. Committed on branch `miryoku-hrm-tuning`.
 
