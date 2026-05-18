@@ -43,6 +43,12 @@
 #define U_HRM_QUICK_TAP_MS 175
 #define U_HRM_PRIOR_IDLE_MS 150
 
+// Clipboard cluster (undo/cut/copy/paste/redo on NAV/MOUSE/BUTTON layers).
+// Miryoku's default uses K_UNDO/LS(INS)/LC(INS)/LS(DEL)/K_AGAIN, which macOS
+// ignores. MAC maps them to Cmd combos (Cmd+Z/X/C/V, Shift+Cmd+Z). Host is
+// macOS, so use the Mac variant.
+#define MIRYOKU_CLIPBOARD_MAC
+
 // ---------------------------------------------------------------------------
 // macOS "British" layout compatibility
 //

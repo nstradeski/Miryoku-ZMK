@@ -205,7 +205,19 @@ every capital.
    `NUM`/`SYM` are otherwise upstream-stock. Earlier multi-key remap attempts
    were reverted once the real layout was identified. See `custom_config.h`.
 
-8. **Local build environment** — set up west + Zephyr + a sudo-free ARM
+8. **Mouse layer enabled** — Miryoku's MOUSE layer uses ZMK pointing
+   behaviors (`&mmv`/`&msc`/`&mkp`), gated behind `CONFIG_ZMK_POINTING`
+   (off by default; the local build only read ZMK's stock `prj.conf`). Added
+   `config/pointing.conf` (`CONFIG_ZMK_POINTING=y` + smooth scrolling), wired
+   into `build-all.sh` via `-DEXTRA_CONF_FILE` for all four images. Mouse is
+   processed on the central (left) half.
+
+9. **Clipboard cluster fixed for macOS** — undo/cut/copy/paste/redo on the
+   NAV/MOUSE/BUTTON layers defaulted to `K_UNDO`/`LS(INS)`/`LC(INS)`/
+   `LS(DEL)`/`K_AGAIN`, which macOS ignores. Set `#define MIRYOKU_CLIPBOARD_MAC`
+   in `custom_config.h` → these become `⌘Z`/`⌘X`/`⌘C`/`⌘V`/`⇧⌘Z`.
+
+10. **Local build environment** — set up west + Zephyr + a sudo-free ARM
    toolchain, resolved HWMv2 board naming and ZMK board-root registration, and
    built all four images. Committed on branch `miryoku-hrm-tuning`.
 
