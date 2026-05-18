@@ -189,24 +189,21 @@ every capital.
    retuning is a one-number edit + rebuild, and Miryoku upstream updates won't
    silently clobber the settings.
 
-6. **Extra-layer (QWERTY) alignment** — Miryoku's stock QWERTY puts the
-   apostrophe `'` on the home-right pinky and `P` on the top-right, whereas the
-   Colemak-DH base (what the printed guide shows) has `'` on the top-right
-   pinky. Every other non-letter key (`,` `.` `/`, thumb layer-taps, home-row
-   mod positions) was already identical. The active `BASE_QWERTY` and the
-   `TAP_QWERTY` fallback were patched so `'` sits in the Colemak-DH position
-   and `P` takes the freed home-pinky slot — so the extra layer now matches the
-   base layer in every position except the letters themselves, and the guide
-   photo is valid in both modes.
+6. **Extra-layer (QWERTY) — kept stock.** An earlier change relocated `'`/`P`
+   to make QWERTY's apostrophe match the Colemak-DH guide position, but the
+   non-standard `P` placement hurt QWERTY muscle memory more than it helped, so
+   it was reverted: `BASE_QWERTY`/`TAP_QWERTY` are back to upstream (`P`
+   top-right, `'` on the home-right pinky). Consequence: on the QWERTY extra
+   layer the apostrophe is *not* where the Colemak-DH guide photo shows it;
+   every other key still matches.
 
-7. **macOS "British" (Apple) compatibility** — the host MacBook stays on the
-   Apple "British" input source (shared with its built-in keyboard). ZMK emits
-   US-ANSI key codes; six of them render wrong under British. The active
-   SYM/NUM blocks were remapped so the printed guide stays correct without
-   switching input source: `@`→`Shift+'`, `#`→`Option+3`, and `~ ` ` ` \ |`
-   onto the two ISO keys (left of Z / left of Return). Every other symbol is
-   identical between US-ANSI and Apple-British and is unchanged. Details and
-   the one-line fix for any mis-mapped ISO key are in `custom_config.h`.
+7. **macOS "British" compatibility (single-key remap).** The host's active
+   macOS input source ("British") was verified by Keyboard Viewer: it behaves
+   like US-ANSI for every Miryoku symbol *except* `#` (its Shift+3 is `£`; `#`
+   is on Option+3). So stock Miryoku is already correct for everything except
+   `#`. The only non-stock symbol keycode is `SYM #` → `LA(N3)` (Option+3);
+   `NUM`/`SYM` are otherwise upstream-stock. Earlier multi-key remap attempts
+   were reverted once the real layout was identified. See `custom_config.h`.
 
 8. **Local build environment** — set up west + Zephyr + a sudo-free ARM
    toolchain, resolved HWMv2 board naming and ZMK board-root registration, and

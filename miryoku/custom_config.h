@@ -44,25 +44,21 @@
 #define U_HRM_PRIOR_IDLE_MS 150
 
 // ---------------------------------------------------------------------------
-// macOS "British" (Apple) layout compatibility
+// macOS "British" layout compatibility
 //
-// The host MacBook uses the Apple "British" input source on its built-in
-// keyboard, and we don't want to switch input source when swapping keyboards.
-// ZMK sends US-ANSI key codes; macOS-British reinterprets six of them, so the
-// affected SYM/NUM keys were remapped (in miryoku_babel/
-// miryoku_layer_alternatives.h, active non-flip SYM + NUM blocks) so the
-// printed Miryoku guide stays correct WHILE macOS is set to British:
+// The host's active macOS input source ("British") was verified via Keyboard
+// Viewer screenshots. Despite the name it behaves like US-ANSI for the symbols
+// Miryoku uses (Shift+2=@, Shift+grave=~, grave=`, the \ key=\ /|, the ' key
+// ='/") -- the ONLY difference is Shift+3 = GBP, not #; on this layout # is
+// Option+3.
 //
-//   @  AT    -> LS(SQT)             (British: Shift+' = @)
-//   #  HASH  -> LA(N3)              (British: Option+3 = #)
-//   ~  TILDE -> LS(NON_US_BACKSLASH)   (Shift + ISO key left of Z)
-//   `  GRAVE -> NON_US_BACKSLASH       (ISO key left of Z)
-//   \  BSLH  -> NON_US_HASH         (ISO key left of Return)
-//   |  PIPE  -> LS(NON_US_HASH)     (Shift + ISO key left of Return)
+// Therefore stock Miryoku is correct for every symbol EXCEPT #. The SYM/NUM
+// blocks are stock except one key:
 //
-// @ and # are certain. The four ISO-key ones follow the standard Apple-British
-// mapping; if any of ~ ` \ | is wrong after flashing, it's a one-line edit of
-// that key in the SYM/NUM block (swap NON_US_BACKSLASH <-> NON_US_HASH for the
-// backtick/backslash pair). All other symbols are identical between US-ANSI
-// and Apple-British and were left untouched.
+//   #  HASH -> LA(N3)   (Option+3 = # on this layout; stock Shift+3 = GBP)
+//
+// Everything else (@ ~ ` \ | { } & * ( ) : $ % ^ + ! _ [ ] ; = - and digits)
+// is upstream-stock and correct as-is. If the active input source is ever
+// changed away from this "British", revert this one line to stock &kp HASH.
+// ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
