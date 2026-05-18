@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Miryoku ZMK — Custom Build</title><style>
+:root { color-scheme: light dark; }
+body { font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+       max-width: 860px; margin: 2.5rem auto; padding: 0 1.25rem; color: #1a1a1a; }
+h1, h2, h3 { line-height: 1.25; margin-top: 2rem; }
+h1 { font-size: 1.9rem; border-bottom: 2px solid #ddd; padding-bottom: .3rem; }
+h2 { font-size: 1.45rem; border-bottom: 1px solid #eee; padding-bottom: .25rem; }
+h3 { font-size: 1.15rem; }
+code { font: .88em/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+       background: #f0f0f3; padding: .15em .4em; border-radius: 4px; }
+pre { background: #1e1e22; color: #e6e6e6; padding: 1rem 1.1rem; border-radius: 8px;
+      overflow-x: auto; }
+pre code { background: none; padding: 0; color: inherit; font-size: .85rem; }
+table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: .92rem; }
+th, td { border: 1px solid #ddd; padding: .5rem .7rem; text-align: left; vertical-align: top; }
+th { background: #f5f5f7; }
+tr:nth-child(even) td { background: #fafafa; }
+blockquote { margin: 1rem 0; padding: .6rem 1rem; border-left: 4px solid #f0a500;
+             background: #fff8e6; border-radius: 0 6px 6px 0; }
+hr { border: none; border-top: 1px solid #ddd; margin: 2rem 0; }
+ul, ol { padding-left: 1.4rem; }
+li { margin: .25rem 0; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e6e6e6; background: #16161a; }
+  h1 { border-color: #333; } h2 { border-color: #2a2a2a; }
+  code { background: #2a2a30; } th { background: #222; }
+  tr:nth-child(even) td { background: #1c1c20; }
+  th, td { border-color: #333; }
+  blockquote { background: #2a2410; border-color: #c98a00; }
+  hr { border-color: #333; }
+}
+</style></head>
+<body><h1>Miryoku ZMK — Custom Build (Timeless Home-Row Mods)</h1>
+<p>Personal Miryoku ZMK setup for two keyboards, tuned to fix home-row-mod lag<br>(especially on capitals) and made misfire-resistant with timeless / bilateral<br>positional home-row mods.</p>
+<ul><li><strong>Typeractive Corne Wireless</strong> — <code>nice!nano v2</code> controller + stock <code>corne</code> shield + nice!view displays</li><li><strong>Corne-ish Zen v2</strong> — onboard controller (GB R3)</li></ul>
+<p>Both are 6-column 42-key splits and share the same Miryoku 42-key mapping.</p>
+<hr>
+<h2>1. File locations</h2>
+<h3>Repos / working dirs</h3>
+<table><thead><tr><th>Path</th><th>What</th></tr></thead><tbody><tr><td><code>/Users/nstradeski/Projects/miryoku</code></td><td>Miryoku ZMK (this repo). Branch: <code>miryoku-hrm-tuning</code></td></tr><tr><td><code>/Users/nstradeski/Projects/zmk-build</code></td><td>Local ZMK build workspace</td></tr><tr><td><code>/Users/nstradeski/Projects/zmk-build/zmk</code></td><td>ZMK source + Zephyr west workspace (topdir)</td></tr><tr><td><code>/Users/nstradeski/Projects/zmk-build/.venv</code></td><td>Python venv with <code>west</code> + Zephyr deps</td></tr><tr><td><code>/Users/nstradeski/Projects/zmk-build/arm/arm-gnu-toolchain-14.2.rel1-darwin-x86_64-arm-none-eabi</code></td><td>ARM GCC toolchain (user-local, no sudo)</td></tr><tr><td><code>/Users/nstradeski/Projects/zmk-build/build-all.sh</code></td><td>Build script for all four images</td></tr><tr><td><code>/Users/nstradeski/Projects/zmk-build/firmware/</code></td><td>Output <code>.uf2</code> files</td></tr></tbody></table>
+<h3>Customized Miryoku source files</h3>
+<table><thead><tr><th>File</th><th>Change</th></tr></thead><tbody><tr><td><code>miryoku/custom_config.h</code></td><td>All tunable knobs + documentation (the file you edit to retune)</td></tr><tr><td><code>miryoku/miryoku.h</code></td><td><code>#ifndef</code>-guarded defaults: tapping term, flavor, quick-tap, prior-idle, positional trigger position lists</td></tr><tr><td><code>miryoku/miryoku_behaviors.h</code></td><td><code>U_MT_L</code> / <code>U_MT_R</code> macros (left/right positional)</td></tr><tr><td><code>miryoku/miryoku_behaviors.dtsi</code></td><td><code>u_mt</code>, <code>u_lt</code> retuned; new <code>u_mt_l</code> / <code>u_mt_r</code> positional behaviors</td></tr><tr><td><code>miryoku/miryoku_babel/miryoku_layer_alternatives.h</code></td><td><code>U_MT</code> → <code>U_MT_L</code>/<code>U_MT_R</code> in the active <strong>Colemak-DH (BASE)</strong> and <strong>QWERTY (EXTRA)</strong> blocks</td></tr><tr><td><code>config/corne.keymap</code></td><td>Stock Miryoku Corne keymap (used for Typeractive Corne)</td></tr><tr><td><code>config/corneish_zen.keymap</code></td><td>Stock Miryoku Corne-ish Zen keymap</td></tr></tbody></table>
+<h3>Tunable knobs (in <code>miryoku/custom_config.h</code>)</h3>
+<pre><code>#define U_HRM_FLAVOR &quot;balanced&quot;     // mod resolves on tap+release of next key
+#define U_TAPPING_TERM 200          // ms; max hold still counted as a tap
+#define U_HRM_QUICK_TAP_MS 175      // tap-then-hold repeats the tap
+#define U_HRM_PRIOR_IDLE_MS 150     // recent keypress -&gt; force tap (anti-misfire)</code></pre>
+<p>Position lists for positional HRMs default in <code>miryoku/miryoku.h</code><br>(<code>U_HRM_LEFT_TRIGGER_POSITIONS</code> / <code>U_HRM_RIGHT_TRIGGER_POSITIONS</code>); override in<br><code>custom_config.h</code> only if the physical layout changes.</p>
+<hr>
+<h2>2. Build instructions</h2>
+<h3>One-shot: rebuild everything</h3>
+<pre><code>/Users/nstradeski/Projects/zmk-build/build-all.sh</code></pre>
+<p>Produces all four <code>.uf2</code> files in <code>/Users/nstradeski/Projects/zmk-build/firmware/</code>.<br>First build compiles all of Zephyr (~several min); ccache makes reruns fast.</p>
+<h3>Tune-and-rebuild loop</h3>
+<ol><li>Edit a value in <code>/Users/nstradeski/Projects/miryoku/miryoku/custom_config.h</code></li><li>Run <code>build-all.sh</code></li><li>Reflash (section 3)</li></ol>
+<h3>What the build does (per board)</h3>
+<p><code>west build</code> is invoked with the local toolchain and explicit ZMK board roots:</p>
+<pre><code>export ZEPHYR_TOOLCHAIN_VARIANT=gnuarmemb
+export GNUARMEMB_TOOLCHAIN_PATH=/Users/nstradeski/Projects/zmk-build/arm/arm-gnu-toolchain-14.2.rel1-darwin-x86_64-arm-none-eabi
+cd /Users/nstradeski/Projects/zmk-build/zmk
+../.venv/bin/west build -p -s app -d build/&lt;name&gt; -b &lt;BOARD&gt; -- \
+  -DZMK_CONFIG=/Users/nstradeski/Projects/miryoku/config \
+  -DBOARD_ROOT=/Users/nstradeski/Projects/zmk-build/zmk/app/module \
+  -DSHIELD_ROOT=/Users/nstradeski/Projects/zmk-build/zmk/app \
+  -DDTS_ROOT=/Users/nstradeski/Projects/zmk-build/zmk/app/module \
+  [-DSHIELD=&quot;&lt;SHIELD&gt;&quot;]</code></pre>
+<table><thead><tr><th>Image</th><th>BOARD</th><th>SHIELD</th></tr></thead><tbody><tr><td><code>corne_left</code></td><td><code>nice_nano/nrf52840/zmk</code></td><td><code>corne_left nice_view_adapter nice_view</code></td></tr><tr><td><code>corne_right</code></td><td><code>nice_nano/nrf52840/zmk</code></td><td><code>corne_right nice_view_adapter nice_view</code></td></tr><tr><td><code>corneish_zen_v2_left</code></td><td><code>corneish_zen_left/nrf52840/zmk</code></td><td>*(none — onboard)*</td></tr><tr><td><code>corneish_zen_v2_right</code></td><td><code>corneish_zen_right/nrf52840/zmk</code></td><td>*(none — onboard)*</td></tr></tbody></table>
+<blockquote>HWMv2 board default revision is <code>2.0.0</code> = the v2 hardware (nice!nano v2,<br>Corne-ish Zen v2). Board roots must be passed explicitly — ZMK&#x27;s<br><code>app/module</code> (base boards) and <code>app</code> (variants/shields) are not<br>auto-registered in this workspace.</blockquote>
+<h3>Fresh environment setup (only if rebuilding the toolchain from scratch)</h3>
+<pre><code>brew install cmake ninja gperf ccache qemu dtc libusb wget
+python3 -m venv /Users/nstradeski/Projects/zmk-build/.venv
+/Users/nstradeski/Projects/zmk-build/.venv/bin/pip install --upgrade pip west
+cd /Users/nstradeski/Projects/zmk-build &amp;&amp; git clone https://github.com/zmkfirmware/zmk.git
+cd zmk &amp;&amp; ../.venv/bin/west init -l app &amp;&amp; ../.venv/bin/west update &amp;&amp; ../.venv/bin/west zephyr-export
+../.venv/bin/pip install -r zephyr/scripts/requirements.txt
+# ARM toolchain (no sudo): download + extract the macOS x86_64 tarball
+#   arm-gnu-toolchain-14.2.rel1-darwin-x86_64-arm-none-eabi.tar.xz
+#   into /Users/nstradeski/Projects/zmk-build/arm/</code></pre>
+<blockquote>Do <strong>not</strong> use <code>brew install --cask gcc-arm-embedded</code> here — its <code>.pkg</code><br>installer needs an interactive sudo password and will fail. Use the tarball.</blockquote>
+<hr>
+<h2>3. Flashing instructions</h2>
+<p>Both keyboards use UF2 bootloader flashing over USB. **Each half is flashed<br>separately** with its own image. Order doesn&#x27;t matter; flash all four.</p>
+<h3>Typeractive Corne Wireless (nice!nano v2)</h3>
+<p>For each half (<code>corne_left.uf2</code> to the left half, <code>corne_right.uf2</code> to the right):</p>
+<ol><li>Plug the half into USB.</li><li>Double-tap the <strong>reset button</strong> on the nice!nano (quick double press).</li><li>It mounts as a USB drive named <code>NICENANO</code>.</li><li>Drag/copy the matching <code>.uf2</code> onto that drive. It will flash and reboot</li></ol>
+<p>   automatically (the drive disappears).</p>
+<ol><li>Repeat for the other half.</li></ol>
+<h3>Corne-ish Zen v2</h3>
+<p>For each half (<code>corneish_zen_v2_left.uf2</code> / <code>corneish_zen_v2_right.uf2</code>):</p>
+<ol><li>Plug the half into USB.</li><li>Double-tap the <strong>reset button</strong> on that half.</li><li>It mounts as a USB drive (Zen bootloader volume).</li><li>Drag/copy the matching <code>.uf2</code> onto it; it flashes and reboots.</li><li>Repeat for the other half.</li></ol>
+<h3>After flashing</h3>
+<ul><li>Pair/connect over Bluetooth as usual; the split halves re-pair to each other</li></ul>
+<p>  automatically.</p>
+<ul><li>If a half behaves oddly after a major change, flash a ZMK <code>settings_reset</code></li></ul>
+<p>  image once, then reflash the keymap image.</p>
+<hr>
+<h2>4. Summary of what was done</h2>
+<h3>Problem</h3>
+<p>Stock Miryoku felt laggy, especially capitals. Root cause: Miryoku&#x27;s home-row<br>mods use <code>flavor = &quot;tap-preferred&quot;</code> with a 200 ms term, so a home-row Shift<br>only registers as Shift after the <strong>full 200 ms hold</strong> — a mandatory stall on<br>every capital.</p>
+<h3>Changes</h3>
+<ol><li><strong>Flavor fix</strong> — switched home-row behaviors to <code>flavor = &quot;balanced&quot;</code>: the</li></ol>
+<p>   mod resolves the instant the next key is tapped and released, so capitals<br>   are immediate.</p>
+<ol><li><strong>Anti-misfire timing</strong> — added <code>require-prior-idle-ms</code> (150) and</li></ol>
+<p>   <code>quick-tap-ms</code> (175): a key pressed right after typing is forced to a tap,<br>   killing accidental mods during fast rolls.</p>
+<ol><li><strong>Timeless / bilateral positional HRMs</strong> — added two behaviors:</li></ol>
+<ul><li><code>u_mt_l</code> (left-hand mods): hold engages **only if the next key is on the</li></ul>
+<p>     right hand or a thumb**</p>
+<ul><li><code>u_mt_r</code> (right-hand mods): hold engages **only if the next key is on the</li></ul>
+<p>     left hand or a thumb**</p>
+<p>   Plus <code>hold-trigger-on-release</code> so multi-mod chords still work. Same-hand<br>   rolls can no longer misfire, so the result is robust across typing speeds<br>   (&quot;timeless&quot; — it doesn&#x27;t depend on getting the term exactly right).</p>
+<ol><li><strong>Wiring</strong> — Miryoku uses one generic <code>&amp;u_mt</code> for both hands, so the active</li></ol>
+<p>   layers were patched to route each side to the correct behavior<br>   (<code>U_MT_L</code> / <code>U_MT_R</code>), in the <strong>Colemak-DH base</strong> layer and the<br>   <strong>QWERTY extra</strong> layer (plus their bottom-row <code>RALT</code> mods). Position indices<br>   were derived from <code>mapping/42/corne.h</code> and are correct for both keyboards.</p>
+<ol><li><strong>Tunability</strong> — every timing value and the trigger-position lists are</li></ol>
+<p>   <code>#ifndef</code>-guarded and overridable from <code>miryoku/custom_config.h</code>, so<br>   retuning is a one-number edit + rebuild, and Miryoku upstream updates won&#x27;t<br>   silently clobber the settings.</p>
+<ol><li><strong>Extra-layer (QWERTY) alignment</strong> — Miryoku&#x27;s stock QWERTY puts the</li></ol>
+<p>   apostrophe <code>&#x27;</code> on the home-right pinky and <code>P</code> on the top-right, whereas the<br>   Colemak-DH base (what the printed guide shows) has <code>&#x27;</code> on the top-right<br>   pinky. Every other non-letter key (<code>,</code> <code>.</code> <code>/</code>, thumb layer-taps, home-row<br>   mod positions) was already identical. The active <code>BASE_QWERTY</code> and the<br>   <code>TAP_QWERTY</code> fallback were patched so <code>&#x27;</code> sits in the Colemak-DH position<br>   and <code>P</code> takes the freed home-pinky slot — so the extra layer now matches the<br>   base layer in every position except the letters themselves, and the guide<br>   photo is valid in both modes.</p>
+<ol><li><strong>Local build environment</strong> — set up west + Zephyr + a sudo-free ARM</li></ol>
+<p>   toolchain, resolved HWMv2 board naming and ZMK board-root registration, and<br>   built all four images. Committed on branch <code>miryoku-hrm-tuning</code>.</p>
+<h3>Known tradeoff</h3>
+<p>Positional HRMs mean **same-hand modified keypresses no longer register the<br>mod** (e.g. a left-hand Ctrl HRM + another left-hand key). Use the mirrored<br>mod on the opposite hand for those shortcuts. This is the intended behavior<br>that makes misfires ~zero.</p>
+<h3>Tuning guide</h3>
+<ul><li>Still getting accidental mods at speed → raise <code>U_HRM_PRIOR_IDLE_MS</code> (try 175)</li><li>Deliberate mods need too long a pause → lower it (try 125)</li><li>Keep <code>U_HRM_FLAVOR</code> at <code>&quot;balanced&quot;</code></li><li>Edit in <code>custom_config.h</code>, run <code>build-all.sh</code>, reflash</li></ul></body></html>

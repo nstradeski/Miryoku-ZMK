@@ -189,7 +189,17 @@ every capital.
    retuning is a one-number edit + rebuild, and Miryoku upstream updates won't
    silently clobber the settings.
 
-6. **Local build environment** — set up west + Zephyr + a sudo-free ARM
+6. **Extra-layer (QWERTY) alignment** — Miryoku's stock QWERTY puts the
+   apostrophe `'` on the home-right pinky and `P` on the top-right, whereas the
+   Colemak-DH base (what the printed guide shows) has `'` on the top-right
+   pinky. Every other non-letter key (`,` `.` `/`, thumb layer-taps, home-row
+   mod positions) was already identical. The active `BASE_QWERTY` and the
+   `TAP_QWERTY` fallback were patched so `'` sits in the Colemak-DH position
+   and `P` takes the freed home-pinky slot — so the extra layer now matches the
+   base layer in every position except the letters themselves, and the guide
+   photo is valid in both modes.
+
+7. **Local build environment** — set up west + Zephyr + a sudo-free ARM
    toolchain, resolved HWMv2 board naming and ZMK board-root registration, and
    built all four images. Committed on branch `miryoku-hrm-tuning`.
 
