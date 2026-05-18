@@ -81,19 +81,47 @@ cd zmk &amp;&amp; ../.venv/bin/west init -l app &amp;&amp; ../.venv/bin/west upd
 #   into /Users/nstradeski/Projects/zmk-build/arm/</code></pre>
 <blockquote>Do <strong>not</strong> use <code>brew install --cask gcc-arm-embedded</code> here — its <code>.pkg</code><br>installer needs an interactive sudo password and will fail. Use the tarball.</blockquote>
 <hr>
-<h2>3. Flashing instructions</h2>
-<p>Both keyboards use UF2 bootloader flashing over USB. **Each half is flashed<br>separately** with its own image. Order doesn&#x27;t matter; flash all four.</p>
-<h3>Typeractive Corne Wireless (nice!nano v2)</h3>
-<p>For each half (<code>corne_left.uf2</code> to the left half, <code>corne_right.uf2</code> to the right):</p>
-<ol><li>Plug the half into USB.</li><li>Double-tap the <strong>reset button</strong> on the nice!nano (quick double press).</li><li>It mounts as a USB drive named <code>NICENANO</code>.</li><li>Drag/copy the matching <code>.uf2</code> onto that drive. It will flash and reboot</li></ol>
-<p>   automatically (the drive disappears).</p>
-<ol><li>Repeat for the other half.</li></ol>
-<h3>Corne-ish Zen v2</h3>
-<p>For each half (<code>corneish_zen_v2_left.uf2</code> / <code>corneish_zen_v2_right.uf2</code>):</p>
-<ol><li>Plug the half into USB.</li><li>Double-tap the <strong>reset button</strong> on that half.</li><li>It mounts as a USB drive (Zen bootloader volume).</li><li>Drag/copy the matching <code>.uf2</code> onto it; it flashes and reboots.</li><li>Repeat for the other half.</li></ol>
+<h2>3. Flashing instructions (macOS)</h2>
+<p>Both keyboards use a UF2 bootloader over USB. **Each half is flashed<br>separately with its own image.**</p>
+<blockquote><strong>macOS warning — drag-and-drop / <code>cp</code> is broken here.</strong> On recent macOS,<br>copying a <code>.uf2</code> to these nRF UF2 bootloader volumes via Finder, <code>cp</code>, or<br><code>cat</code> <strong>silently fails</strong> (Finder error <strong>-36</strong>, or <code>Device not configured</code>,<br>or a fake instant &quot;success&quot; that doesn&#x27;t actually write). You <strong>must</strong> use<br>the raw <code>dd</code> methods below. (On Windows/Linux, plain drag-and-drop works<br>fine — if you have access to one, that&#x27;s the easy path.)<br><br>The two keyboards need <strong>opposite</strong> <code>dd</code> methods (different bootloader ages).</blockquote>
+<h3>Which half must be flashed</h3>
+<p>The split&#x27;s <strong>left half is the central</strong>: it holds the keymap and runs *all*<br>behaviour for keys on <strong>both</strong> hands. The right half is only a peripheral<br>(reports key positions). So for any keymap/behaviour change, **only the left<br>half must be reflashed**; flashing the right half is hygiene only (keeps both<br>on the same build) and never affects behaviour. The Corne-ish Zen is a<br>separate keyboard — flash it only if you use it.</p>
+<h3>Finding the device node (both keyboards)</h3>
+<p>Double-tap the half&#x27;s <strong>reset</strong> button to enter the bootloader, then:</p>
+<pre><code>diskutil info /Volumes/NICENANO    | grep &quot;Device Node&quot;   # Typeractive Corne
+diskutil info /Volumes/CORNEISHZEN | grep &quot;Device Node&quot;   # Corne-ish Zen v2</code></pre>
+<p>Sanity check: the keyboard is always the small <strong>~33 MB external, removable</strong><br>disk. Your Mac&#x27;s drive is the ~500 GB internal <code>disk0</code>/<code>disk1</code> — never target<br>that. Below, replace <code>N</code> with the number from the command above (e.g. <code>disk4</code><br>→ use <code>rdisk4</code> / <code>disk4</code>).</p>
+<h3>Typeractive Corne Wireless (nice!nano v2) — raw device, while mounted</h3>
+<p>Images: <code>corne_left.uf2</code> / <code>corne_right.uf2</code>. Volume: <code>NICENANO</code>.</p>
+<ol><li>Double-tap reset on the half → <code>NICENANO</code> mounts.</li><li>Get the node (above), then write to the <strong>raw</strong> device (<code>rdiskN</code>):</li></ol>
+<p>   ```sh<br>   sudo dd if=firmware/corne_left.uf2 of=/dev/rdiskN bs=1m<br>   ```</p>
+<ol><li>A <strong>real write takes ~10–15 s</strong> and prints <code>8xxxxx bytes transferred</code>.</li></ol>
+<p>   ~1–2 s = it did <strong>not</strong> write — retry. The board then resets.</p>
+<h3>Corne-ish Zen v2 — buffered device, unmount first</h3>
+<p>Images: <code>corneish_zen_v2_left.uf2</code> / <code>corneish_zen_v2_right.uf2</code>. Volume:<br><code>CORNEISHZEN</code>. Its older bootloader needs the <strong>opposite</strong> of the Corne —<br>unmount first and write the <strong>buffered</strong> device (<code>diskN</code>, *not* <code>rdiskN</code>):</p>
+<pre><code>diskutil unmountDisk /dev/diskN &amp;&amp; sudo dd if=firmware/corneish_zen_v2_left.uf2 of=/dev/diskN bs=1m</code></pre>
+<p><code>dd</code> may report only ~2 s / full byte count (buffered — deceptive). Verify it<br>actually landed (see below) rather than trusting the time.</p>
+<h3>Verifying a flash actually took</h3>
+<p>The bootloader exposes <code>CURRENT.UF2</code> (a readback of the chip). Re-enter the<br>bootloader after flashing and byte-compare it to the source image — this is<br>definitive, independent of the misleading <code>dd</code> timing/errors:</p>
+<pre><code>diskutil mountDisk /dev/diskN                       # Zen only (Corne stays mounted)
+cp /Volumes/&lt;VOL&gt;/CURRENT.UF2 /tmp/readback.uf2
+python3 - &lt;&lt;&#x27;EOF&#x27;
+import struct
+def blocks(fn):
+    d=open(fn,&#x27;rb&#x27;).read(); o={}
+    for i in range(0,len(d),512):
+        b=d[i:i+512]
+        if len(b)&lt;512: break
+        m0,m1,fl,a,pl,bn,nb,fm=struct.unpack(&#x27;&lt;IIIIIIII&#x27;,b[:32])
+        if m0==0x0A324655 and m1==0x9E5D5157: o[a]=b[32:32+pl]
+    return o
+s=blocks(&#x27;firmware/corne_left.uf2&#x27;); r=blocks(&#x27;/tmp/readback.uf2&#x27;)
+c=set(s)&amp;set(r); m=sum(1 for a in c if s[a]==r[a])
+print(&quot;MATCH&quot; if s and m==len(s)==len(c) else &quot;DIFFERS — not flashed&quot;)
+EOF</code></pre>
 <h3>After flashing</h3>
-<ul><li>Pair/connect over Bluetooth as usual; the split halves re-pair to each other</li></ul>
-<p>  automatically.</p>
+<ul><li>Single-tap reset (or replug) so the half boots the firmware instead of</li></ul>
+<p>  staying in the bootloader. Halves re-pair to each other automatically.</p>
 <ul><li>If a half behaves oddly after a major change, flash a ZMK <code>settings_reset</code></li></ul>
 <p>  image once, then reflash the keymap image.</p>
 <hr>
