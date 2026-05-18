@@ -1,6 +1,30 @@
 # Copyright 2023 Manna Harbour
 # https://github.com/manna-harbour/miryoku
 
+#+begin_quote
+*Customised fork.* This is a personal fork of [[https://github.com/manna-harbour/miryoku_zmk][Miryoku ZMK]], tuned for a
+Typeractive Corne Wireless (nice!nano v2) and a Corne-ish Zen v2 used with
+macOS. Changes from upstream Miryoku:
+
+- *Home-row mods, lag fixed* — ~balanced~ flavour + ~require-prior-idle-ms~ /
+  ~quick-tap-ms~ so capitals are instant instead of waiting out the tapping term.
+- *Timeless / bilateral positional HRMs* — left/right ~u_mt_l~ / ~u_mt_r~
+  behaviours; a mod only engages when the next key is on the opposite hand,
+  so same-hand rolls can't misfire.
+- *macOS symbol fix* — the host's active layout is US-ANSI-equivalent except
+  ~#~; only ~SYM #~ is remapped to ~Option+3~ (everything else is stock).
+- *Mouse layer enabled* — ~CONFIG_ZMK_POINTING=y~ via [[file:config/pointing.conf][config/pointing.conf]]
+  (the upstream MOUSE layer is inert without it).
+- *macOS clipboard* — ~MIRYOKU_CLIPBOARD_MAC~ so undo/cut/copy/paste/redo send
+  ⌘ combos instead of usages macOS ignores.
+- *Local build tooling* — [[file:local-build/][local-build/]] (portable ~build-all.sh~ + ~md2html.py~)
+  to build all four images without GitHub Actions.
+
+Tunable knobs live in [[file:miryoku/custom_config.h][miryoku/custom_config.h]]. Full details, build, and
+flashing instructions: [[file:CUSTOM_BUILD.md][CUSTOM_BUILD.md]] (or [[file:CUSTOM_BUILD.html][CUSTOM_BUILD.html]]).
+The upstream Miryoku ZMK documentation follows below, unmodified.
+#+end_quote
+
 * Miryoku ZMK [[https://raw.githubusercontent.com/manna-harbour/miryoku/master/data/logos/miryoku-roa-32.png]]
 
 [[https://raw.githubusercontent.com/manna-harbour/miryoku/master/data/cover/miryoku-kle-cover-miryoku_zmk.png]]
