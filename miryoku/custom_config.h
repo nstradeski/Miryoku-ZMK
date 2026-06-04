@@ -67,4 +67,40 @@
 // is upstream-stock and correct as-is. If the active input source is ever
 // changed away from this "British", revert this one line to stock &kp HASH.
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Outer-column app hotkeys (custom)
+//
+// The Corne / Corne-ish Zen are 42-key, but Miryoku only uses the inner 36
+// keys; the outer pinky column on each half (6 keys: 3 rows x 2 halves) is
+// blanked to &none on every layer by mapping/42/corne.h. We fill four of those
+// six slots with global launch hotkeys for three macOS keyboard-nav apps. The
+// edits live in mapping/42/corne.h and apply to ALL layers (both keyboards),
+// so a launcher is reachable regardless of which layer is held.
+//
+//   Layout (outer slots):
+//     top    row:  [Witch back ] ...base...  [Witch fwd  ]   (two DIFFERENT keys)
+//     home   row:  [Mouseless   ] ...base...  [Mouseless  ]   (mirrored)
+//     bottom row:  [Homerow     ] ...base...  [Homerow    ]   (mirrored)
+//
+// All four are sent as HYPER chords (Ctrl+Alt+Gui+Shift + an F-key). Rationale:
+// a bare F13-F24 that an app fails to CONSUME passes through to the front app,
+// and terminals interpret high F-keys as CSI escape sequences (the "leak" seen
+// with Mouseless, whose activation only observes the key instead of swallowing
+// it). A Hyper-modified key can't render as a stray terminal escape and is
+// captured reliably by these utility apps. Bind each app's global shortcut in
+// its own settings to the matching Hyper+F-key below. F16-F19 are macOS-visible
+// and unbound by default.
+//
+// To retune: change the F-key (or swap U_HYPER(...) for a plain &kp Fnn to go
+// back to bare F-keys). Witch uses two distinct keys so you can shuffle
+// forward/back; Mouseless and Homerow are mirrored across both halves.
+// ---------------------------------------------------------------------------
+
+#define U_HYPER(key)  LC(LA(LG(LS(key))))   // Ctrl+Alt+Gui+Shift
+
+#define U_WITCH_BACK  &kp U_HYPER(F16)       // top-left  outer  (Witch: previous)
+#define U_WITCH_FWD   &kp U_HYPER(F17)       // top-right outer  (Witch: next)
+#define U_MOUSELESS   &kp U_HYPER(F18)       // home-row  outer, both halves
+#define U_HOMEROW     &kp U_HYPER(F19)       // bottom-row outer, both halves
 // ---------------------------------------------------------------------------
