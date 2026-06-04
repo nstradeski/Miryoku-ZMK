@@ -1,0 +1,111 @@
+# Build the personal Miryoku firmware images (Typeractive Corne + Corne-ish
+# Zen v2) on every push to master, and on demand, so the .uf2 files can be
+# downloaded straight from the run's artifacts without a local toolchain.
+#
+# This mirrors local-build/build-all.sh exactly: same HWMv2 board names, the
+# same nice_view shields for the Corne, and -DEXTRA_CONF_FILE=pointing.conf so
+# the Miryoku MOUSE layer (ZMK pointing) is enabled. Only the left/central half
+# drives behaviour, but all four halves are built for parity.
+
+name: 'Build Firmware'
+
+on:
+  push:
+    branches: ['master']
+    paths:
+      - 'config/**'
+      - 'miryoku/**'
+      - '.github/workflows/build-firmware.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    container:
+      image: zmkfirmware/zmk-build-arm:stable
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: corne_left
+            board: 'nice_nano/nrf52840/zmk'
+            shield: 'corne_left nice_view_adapter nice_view'
+          - name: corne_right
+            board: 'nice_nano/nrf52840/zmk'
+            shield: 'corne_right nice_view_adapter nice_view'
+          - name: corneish_zen_v2_left
+            board: 'corneish_zen_left/nrf52840/zmk'
+            shield: ''
+          - name: corneish_zen_v2_right
+            board: 'corneish_zen_right/nrf52840/zmk'
+            shield: ''
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: 'miryoku_zmk'
+
+      - name: Clone ZMK
+        run: git clone --depth 1 https://github.com/zmkfirmware/zmk.git zmk
+
+      - name: Cache Zephyr/modules
+        uses: actions/cache@v4
+        continue-on-error: true
+        with:
+          path: |
+            zmk/modules/
+            zmk/zephyr/
+          key: zephyr-${{ runner.os }}-${{ hashFiles('zmk/app/west.yml') }}
+
+      - name: West init/update
+        working-directory: zmk
+        run: |
+          west init -l app
+          west update
+          west zephyr-export
+
+      - name: Build ${{ matrix.name }}
+        working-directory: zmk/app
+        shell: bash
+        run: |
+          # Array keeps the multi-word -DSHIELD as a single argument.
+          args=(-p -s app -d "build/${{ matrix.name }}" -b "${{ matrix.board }}" --
+            -DZMK_CONFIG="${GITHUB_WORKSPACE}/miryoku_zmk/config"
+            -DEXTRA_CONF_FILE="${GITHUB_WORKSPACE}/miryoku_zmk/config/pointing.conf")
+          if [ -n "${{ matrix.shield }}" ]; then
+            args+=(-DSHIELD="${{ matrix.shield }}")
+          fi
+          west build "${args[@]}"
+
+      - name: Stage artifact
+        run: |
+          mkdir -p firmware
+          cp "zmk/app/build/${{ matrix.name }}/zephyr/zmk.uf2" "firmware/${{ matrix.name }}.uf2"
+
+      - name: Upload ${{ matrix.name }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'firmware-${{ matrix.name }}'
+          path: 'firmware/${{ matrix.name }}.uf2'
+          if-no-files-found: error
+
+  bundle:
+    name: Bundle all firmware
+    needs: build
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Collect images
+        uses: actions/download-artifact@v4
+        with:
+          pattern: 'firmware-*'
+          path: firmware
+          merge-multiple: true
+
+      - name: Upload combined bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'miryoku-firmware'
+          path: 'firmware/*.uf2'
+          if-no-files-found: error
