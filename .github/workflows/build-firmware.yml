@@ -66,9 +66,10 @@ jobs:
           west zephyr-export
 
       - name: Build ${{ matrix.name }}
-        working-directory: zmk/app
+        working-directory: zmk
         shell: bash
         run: |
+          # Run from the zmk topdir with -s app (mirrors build-all.sh).
           # Array keeps the multi-word -DSHIELD as a single argument.
           args=(-p -s app -d "build/${{ matrix.name }}" -b "${{ matrix.board }}" --
             -DZMK_CONFIG="${GITHUB_WORKSPACE}/miryoku_zmk/config"
@@ -81,7 +82,7 @@ jobs:
       - name: Stage artifact
         run: |
           mkdir -p firmware
-          cp "zmk/app/build/${{ matrix.name }}/zephyr/zmk.uf2" "firmware/${{ matrix.name }}.uf2"
+          cp "zmk/build/${{ matrix.name }}/zephyr/zmk.uf2" "firmware/${{ matrix.name }}.uf2"
 
       - name: Upload ${{ matrix.name }}
         uses: actions/upload-artifact@v4
