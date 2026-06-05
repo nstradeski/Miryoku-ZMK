@@ -34,7 +34,7 @@ Both are 6-column 42-key splits and share the same Miryoku 42-key mapping.
 | `miryoku/miryoku_behaviors.h` | `U_MT_L` / `U_MT_R` macros (left/right positional) |
 | `miryoku/miryoku_behaviors.dtsi` | `u_mt`, `u_lt` retuned; new `u_mt_l` / `u_mt_r` positional behaviors |
 | `miryoku/miryoku_babel/miryoku_layer_alternatives.h` | `U_MT` → `U_MT_L`/`U_MT_R` in the active **Colemak-DH (BASE)** and **QWERTY (EXTRA)** blocks |
-| `miryoku/mapping/42/corne.h` | Outer pinky columns (were `&none`) filled with Witch / Mouseless / Homerow Hyper hotkeys via `U_WITCH_BACK`/`U_WITCH_FWD`/`U_MOUSELESS`/`U_HOMEROW` — on **all layers**, both keyboards |
+| `miryoku/mapping/42/corne.h` | All 6 outer pinky keys (were `&none`) filled with Witch / Mouseless / Homerow Hyper hotkeys via `U_WITCH_L`/`U_WITCH_R`/`U_MOUSELESS_L`/`U_MOUSELESS_R`/`U_HOMEROW_L`/`U_HOMEROW_R` (distinct L/R) — on **all layers**, both keyboards |
 | `config/corne.keymap` | Stock Miryoku Corne keymap (used for Typeractive Corne) |
 | `config/corneish_zen.keymap` | Stock Miryoku Corne-ish Zen keymap |
 
@@ -285,25 +285,28 @@ every capital.
 
 11. **Outer-column app hotkeys (Witch / Mouseless / Homerow).** The 42-key
    Corne/Zen leave the outer pinky column (6 keys: 3 rows × 2 halves) as
-   `&none` on every layer — Miryoku only uses the inner 36 keys. Four of those
-   slots now send global launch hotkeys for three macOS keyboard-nav apps, on
-   **all layers** so they're reachable regardless of the held layer:
-   - top row: `U_WITCH_BACK` (left) / `U_WITCH_FWD` (right) — two **different**
-     keys so Witch can shuffle backward/forward
-   - home row: `U_MOUSELESS` — **mirrored** on both halves
-   - bottom row: `U_HOMEROW` — **mirrored** on both halves
+   `&none` on every layer — Miryoku only uses the inner 36 keys. All six slots
+   now send global launch hotkeys for three macOS keyboard-nav apps, with a
+   **distinct key for the left and right half** (each slot is an independent
+   trigger), on **all layers** so they're reachable regardless of the held
+   layer:
+   - top row: `U_WITCH_L` (F16) / `U_WITCH_R` (F17) — e.g. Witch prev / next
+   - home row: `U_MOUSELESS_L` (F18) / `U_MOUSELESS_R` (F19)
+   - bottom row: `U_HOMEROW_L` (F20) / `U_HOMEROW_R` (F21)
 
-   All four are **Hyper chords** (`U_HYPER(key)` = `⌃⌥⌘⇧` + an F-key:
-   F16/F17/F18/F19). Defined in `custom_config.h`, referenced from
-   `mapping/42/corne.h`. Bind each app's global shortcut to the matching
-   Hyper+F-key in its own settings. Rationale: a bare F13–F24 that an app fails
-   to **consume** falls through to the front app, and terminals interpret high
-   F-keys as CSI escape sequences (the Mouseless "leak" — its activation only
-   observed the key instead of swallowing it). A Hyper-modified key can't
-   render as a stray terminal escape and is captured reliably. The outer
-   positions are excluded from the HRM trigger lists, so this doesn't affect
-   home-row mods. Retune by editing the F-keys in `custom_config.h` (or swap
-   `U_HYPER(Fnn)` back to a plain `Fnn` to use bare F-keys).
+   All six are **Hyper chords** (`U_HYPER(key)` = `⌃⌥⌘⇧` + an F-key, F16–F21).
+   Defined in `custom_config.h`, referenced from `mapping/42/corne.h`. Bind each
+   app's global shortcut(s) to the matching Hyper+F-key in its own settings; the
+   left/right keys can do whatever two actions you assign in-app. Rationale: a
+   bare F13–F24 that an app fails to **consume** falls through to the front app,
+   and terminals interpret high F-keys as CSI escape sequences (the Mouseless
+   "leak" — its activation only observed the key instead of swallowing it). A
+   Hyper-modified key can't render as a stray terminal escape and is captured
+   reliably. (Note: F16–F20 are macOS-visible and unbound; F21 works as HID but
+   some macOS shortcut recorders won't display it.) The outer positions are
+   excluded from the HRM trigger lists, so this doesn't affect home-row mods.
+   Retune by editing the F-keys in `custom_config.h` (or swap `U_HYPER(Fnn)`
+   back to a plain `Fnn` to use bare F-keys).
 
 ### Known tradeoff
 Positional HRMs mean **same-hand modified keypresses no longer register the
