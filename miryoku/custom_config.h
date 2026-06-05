@@ -73,39 +73,43 @@
 //
 // The Corne / Corne-ish Zen are 42-key, but Miryoku only uses the inner 36
 // keys; the outer pinky column on each half (6 keys: 3 rows x 2 halves) is
-// blanked to &none on every layer by mapping/42/corne.h. We fill all six of
-// those slots with global launch hotkeys for three macOS keyboard-nav apps:
-// each app owns one row, with a DISTINCT key for the left and right half so
-// every slot is an independent trigger. The edits live in mapping/42/corne.h
-// and apply to ALL layers (both keyboards), so a launcher is reachable
-// regardless of which layer is held.
+// blanked to &none on every layer by mapping/42/corne.h. We fill those slots
+// as follows: the top and home rows are global launch hotkeys for two macOS
+// keyboard-nav apps (each owns a row, with a DISTINCT key per half so every
+// slot is an independent trigger), and the BOTTOM row is a bare HYPER modifier
+// on both halves — hold it to chord window-management shortcuts (Amethyst etc.)
+// with the other hand. The edits live in mapping/42/corne.h and apply to ALL
+// layers (both keyboards), so they're reachable regardless of the held layer.
 //
 //   Layout (outer slots):
 //     top    row:  [Witch L    ] ...base...  [Witch R    ]   (e.g. prev / next)
 //     home   row:  [Mouseless L ] ...base...  [Mouseless R]
-//     bottom row:  [Homerow L   ] ...base...  [Homerow R  ]
+//     bottom row:  [HYPER (hold)] ...base...  [HYPER (hold)]  (window mgmt mod)
 //
-// All six are sent as HYPER chords (Ctrl+Alt+Gui+Shift + an F-key). Rationale:
-// a bare F13-F24 that an app fails to CONSUME passes through to the front app,
-// and terminals interpret high F-keys as CSI escape sequences (the "leak" seen
-// with Mouseless, whose activation only observes the key instead of swallowing
-// it). A Hyper-modified key can't render as a stray terminal escape and is
-// captured reliably by these utility apps. Bind each app's global shortcut(s)
-// in its own settings to the matching Hyper+F-keys below. F16-F20 are
-// macOS-visible and unbound by default; F21 works as HID but some macOS
-// shortcut recorders won't display it (these apps' own recorders capture it).
+// The app keys (top/home) are sent as HYPER chords (Ctrl+Alt+Gui+Shift + an
+// F-key). Rationale: a bare F13-F24 that an app fails to CONSUME passes through
+// to the front app, and terminals interpret high F-keys as CSI escape sequences
+// (the "leak" seen with Mouseless, whose activation only observes the key
+// instead of swallowing it). A Hyper-modified key can't render as a stray
+// terminal escape and is captured reliably. Bind each app's global shortcut(s)
+// in its own settings to the matching Hyper+F-key below (F16-F19, all
+// macOS-visible and unbound by default).
 //
-// To retune: change the F-key (or swap U_HYPER(...) for a plain &kp Fnn to go
-// back to bare F-keys). Each app's left/right keys can do whatever two actions
+// The bottom-row U_HYPER_MOD keys hold Ctrl+Alt+Gui+Shift while pressed (they
+// emit nothing on their own), so configure Amethyst / your WM to use the Hyper
+// combo as its modifier and chord Hyper+<key> from either pinky.
+//
+// To retune: change an F-key, or swap U_HYPER(...) for a plain &kp Fnn to go
+// back to bare F-keys. Each app's left/right keys can do whatever two actions
 // you assign them in-app (Witch is naturally prev/next).
 // ---------------------------------------------------------------------------
 
-#define U_HYPER(key)  LC(LA(LG(LS(key))))   // Ctrl+Alt+Gui+Shift
+#define U_HYPER(key)  LC(LA(LG(LS(key))))   // Ctrl+Alt+Gui+Shift (modified keycode)
+#define U_HYPER_MOD   &kp LC(LA(LG(LSHIFT)))  // hold = Hyper modifier (no keycode)
 
 #define U_WITCH_L      &kp U_HYPER(F16)      // top-left    outer  (Witch:     e.g. prev)
 #define U_WITCH_R      &kp U_HYPER(F17)      // top-right   outer  (Witch:     e.g. next)
 #define U_MOUSELESS_L  &kp U_HYPER(F18)      // home-left   outer  (Mouseless: left half)
 #define U_MOUSELESS_R  &kp U_HYPER(F19)      // home-right  outer  (Mouseless: right half)
-#define U_HOMEROW_L    &kp U_HYPER(F20)      // bottom-left  outer (Homerow:   left half)
-#define U_HOMEROW_R    &kp U_HYPER(F21)      // bottom-right outer (Homerow:   right half)
+// bottom row -> U_HYPER_MOD on both halves (defined above; window-mgmt modifier)
 // ---------------------------------------------------------------------------
