@@ -43,6 +43,24 @@
 #define U_HRM_QUICK_TAP_MS 175
 #define U_HRM_PRIOR_IDLE_MS 150
 
+// ---------------------------------------------------------------------------
+// Base alpha layout: QWERTY (was Colemak-DH)
+//
+// Inverts Miryoku's BASE and EXTRA. Stock Miryoku defaults to Colemak-DH on
+// BASE with QWERTY on the toggled EXTRA layer; these flip that so QWERTY is the
+// layer you type on and Colemak-DH lives on EXTRA. The TAP layer (the
+// momentary no-home-row-mods version, for gaming etc.) is set to QWERTY too so
+// it matches the new base.
+//
+// HRMs are preserved: the QWERTY BASE block already carries our timeless
+// positional home-row mods (U_MT_L / U_MT_R) and bottom-row RALT, so typing on
+// QWERTY keeps the same mod behavior. TAP_QWERTY is plain &kp (no mods) by
+// design.
+#define MIRYOKU_ALPHAS_QWERTY      // BASE  = QWERTY
+#define MIRYOKU_EXTRA_COLEMAKDH    // EXTRA = Colemak-DH
+#define MIRYOKU_TAP_QWERTY         // TAP   = QWERTY (no HRMs)
+// ---------------------------------------------------------------------------
+
 // Clipboard cluster (undo/cut/copy/paste/redo on NAV/MOUSE/BUTTON layers).
 // Miryoku's default uses K_UNDO/LS(INS)/LC(INS)/LS(DEL)/K_AGAIN, which macOS
 // ignores. MAC maps them to Cmd combos (Cmd+Z/X/C/V, Shift+Cmd+Z). Host is

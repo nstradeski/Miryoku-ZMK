@@ -47,7 +47,11 @@ jobs:
           path: 'miryoku_zmk'
 
       - name: Clone ZMK
-        run: git clone --depth 1 https://github.com/zmkfirmware/zmk.git zmk
+        # Pinned to the v0.3.0 release (not main): ZMK main has a deep-sleep
+        # regression where the split CENTRAL half fails to wake and drains the
+        # battery (zmkfirmware/zmk#3207), not present in v0.3. Pinning also makes
+        # builds reproducible. v0.3.0 still uses HWMv2 board names.
+        run: git clone --branch v0.3.0 --depth 1 https://github.com/zmkfirmware/zmk.git zmk
 
       - name: Cache Zephyr/modules
         uses: actions/cache@v4

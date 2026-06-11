@@ -33,7 +33,7 @@ Both are 6-column 42-key splits and share the same Miryoku 42-key mapping.
 | `miryoku/miryoku.h` | `#ifndef`-guarded defaults: tapping term, flavor, quick-tap, prior-idle, positional trigger position lists |
 | `miryoku/miryoku_behaviors.h` | `U_MT_L` / `U_MT_R` macros (left/right positional) |
 | `miryoku/miryoku_behaviors.dtsi` | `u_mt`, `u_lt` retuned; new `u_mt_l` / `u_mt_r` positional behaviors |
-| `miryoku/miryoku_babel/miryoku_layer_alternatives.h` | `U_MT` → `U_MT_L`/`U_MT_R` in the active **Colemak-DH (BASE)** and **QWERTY (EXTRA)** blocks |
+| `miryoku/miryoku_babel/miryoku_layer_alternatives.h` | `U_MT` → `U_MT_L`/`U_MT_R` positional HRMs in both the **QWERTY** and **Colemak-DH** base blocks (BASE is now QWERTY, EXTRA is Colemak-DH — see `custom_config.h`) |
 | `miryoku/mapping/42/corne.h` | All 6 outer pinky keys (were `&none`): top = Witch (`U_WITCH_L`/`_R`), home = Mouseless (`U_MOUSELESS_L`/`_R`), bottom = bare Hyper modifier (`U_HYPER_MOD`, both halves) for window mgmt — on **all layers**, both keyboards |
 | `config/corne.keymap` | Stock Miryoku Corne keymap (used for Typeractive Corne) |
 | `config/corneish_zen.keymap` | Stock Miryoku Corne-ish Zen keymap |
@@ -104,7 +104,11 @@ cd /Users/nstradeski/Projects/zmk-build/zmk
 brew install cmake ninja gperf ccache qemu dtc libusb wget
 python3 -m venv /Users/nstradeski/Projects/zmk-build/.venv
 /Users/nstradeski/Projects/zmk-build/.venv/bin/pip install --upgrade pip west
-cd /Users/nstradeski/Projects/zmk-build && git clone https://github.com/zmkfirmware/zmk.git
+# Pin to the v0.3.0 release, NOT main: ZMK main has a deep-sleep regression that
+# drains the split central half (zmkfirmware/zmk#3207). v0.3.0 keeps HWMv2 board
+# names so the build args below are unchanged. To move off the pin later, drop
+# `--branch v0.3.0` (and re-check #3207 is fixed first).
+cd /Users/nstradeski/Projects/zmk-build && git clone --branch v0.3.0 https://github.com/zmkfirmware/zmk.git
 cd zmk && ../.venv/bin/west init -l app && ../.venv/bin/west update && ../.venv/bin/west zephyr-export
 ../.venv/bin/pip install -r zephyr/scripts/requirements.txt
 # ARM toolchain (no sudo): download + extract the macOS x86_64 tarball
@@ -251,13 +255,12 @@ every capital.
    retuning is a one-number edit + rebuild, and Miryoku upstream updates won't
    silently clobber the settings.
 
-6. **Extra-layer (QWERTY) — kept stock.** An earlier change relocated `'`/`P`
-   to make QWERTY's apostrophe match the Colemak-DH guide position, but the
-   non-standard `P` placement hurt QWERTY muscle memory more than it helped, so
-   it was reverted: `BASE_QWERTY`/`TAP_QWERTY` are back to upstream (`P`
-   top-right, `'` on the home-right pinky). Consequence: on the QWERTY extra
-   layer the apostrophe is *not* where the Colemak-DH guide photo shows it;
-   every other key still matches.
+6. **QWERTY layout — kept stock.** An earlier change relocated `'`/`P` to make
+   QWERTY's apostrophe match the Colemak-DH guide position, but the non-standard
+   `P` placement hurt QWERTY muscle memory more than it helped, so it was
+   reverted: `BASE_QWERTY`/`TAP_QWERTY` are back to upstream (`P` top-right, `'`
+   on the home-right pinky). (As of the base swap below QWERTY is the BASE
+   layer, so this applies to your everyday layer.)
 
 7. **macOS "British" compatibility (single-key remap).** The host's active
    macOS input source ("British") was verified by Keyboard Viewer: it behaves
@@ -307,6 +310,23 @@ every capital.
    and chord Hyper+`<key>` with the other hand. It's on both halves so either
    pinky works. The outer positions are excluded from the HRM trigger lists, so
    none of this affects home-row mods. Retune in `custom_config.h`.
+
+12. **ZMK pinned to v0.3.0 (battery-drain fix).** Both the CI clone and the
+   local-setup clone now use `--branch v0.3.0` instead of tracking `main`. ZMK
+   `main` has a deep-sleep regression where a split's **central half fails to
+   wake and drains the battery** (zmkfirmware/zmk#3207), not present in v0.3;
+   it was hitting both keyboards (worst on the Zen, central + display). v0.3.0
+   is the latest tagged release (Aug 2025), predates the regression, and keeps
+   the HWMv2 board names, so no build-arg changes were needed. Bonus: builds
+   are now reproducible. To move off the pin, drop `--branch v0.3.0` once #3207
+   is confirmed fixed.
+
+13. **Base layout swapped to QWERTY.** `custom_config.h` now sets
+   `MIRYOKU_ALPHAS_QWERTY` + `MIRYOKU_EXTRA_COLEMAKDH` + `MIRYOKU_TAP_QWERTY`,
+   so BASE is QWERTY (everyday typing), EXTRA is Colemak-DH, and the no-HRM TAP
+   layer matches QWERTY. The QWERTY base block already carries the timeless
+   positional home-row mods (`U_MT_L`/`U_MT_R` + bottom-row `RALT`), so mod
+   behavior is unchanged; `TAP_QWERTY` stays plain `&kp`.
 
 ### Known tradeoff
 Positional HRMs mean **same-hand modified keypresses no longer register the
