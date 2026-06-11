@@ -27,18 +27,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # v0.3.0 uses the flat (pre-HWMv2) board names, not the
+        # board/soc/variant form (nice_nano/nrf52840/zmk) that newer ZMK main
+        # accepts. These match the official LOWPROKB Zen config + ZMK examples.
         include:
           - name: corne_left
-            board: 'nice_nano/nrf52840/zmk'
+            board: 'nice_nano_v2'
             shield: 'corne_left nice_view_adapter nice_view'
           - name: corne_right
-            board: 'nice_nano/nrf52840/zmk'
+            board: 'nice_nano_v2'
             shield: 'corne_right nice_view_adapter nice_view'
           - name: corneish_zen_v2_left
-            board: 'corneish_zen_left/nrf52840/zmk'
+            board: 'corneish_zen_v2_left'
             shield: ''
           - name: corneish_zen_v2_right
-            board: 'corneish_zen_right/nrf52840/zmk'
+            board: 'corneish_zen_v2_right'
             shield: ''
     steps:
       - name: Checkout

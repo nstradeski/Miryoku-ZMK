@@ -88,15 +88,16 @@ cd /Users/nstradeski/Projects/zmk-build/zmk
 
 | Image | BOARD | SHIELD |
 |---|---|---|
-| `corne_left` | `nice_nano/nrf52840/zmk` | `corne_left nice_view_adapter nice_view` |
-| `corne_right` | `nice_nano/nrf52840/zmk` | `corne_right nice_view_adapter nice_view` |
-| `corneish_zen_v2_left` | `corneish_zen_left/nrf52840/zmk` | *(none — onboard)* |
-| `corneish_zen_v2_right` | `corneish_zen_right/nrf52840/zmk` | *(none — onboard)* |
+| `corne_left` | `nice_nano_v2` | `corne_left nice_view_adapter nice_view` |
+| `corne_right` | `nice_nano_v2` | `corne_right nice_view_adapter nice_view` |
+| `corneish_zen_v2_left` | `corneish_zen_v2_left` | *(none — onboard)* |
+| `corneish_zen_v2_right` | `corneish_zen_v2_right` | *(none — onboard)* |
 
-> HWMv2 board default revision is `2.0.0` = the v2 hardware (nice!nano v2,
-> Corne-ish Zen v2). Board roots must be passed explicitly — ZMK's
-> `app/module` (base boards) and `app` (variants/shields) are not
-> auto-registered in this workspace.
+> Because ZMK is pinned to **v0.3.0**, boards use the flat pre-HWMv2 names
+> (`nice_nano_v2`, `corneish_zen_v2_left/right`) — the `board/soc/variant`
+> form (`nice_nano/nrf52840/zmk`) only exists on newer ZMK main and is
+> rejected by v0.3.0. These boards live in ZMK's default `app/boards`, so no
+> board roots are required.
 
 ### Fresh environment setup (only if rebuilding the toolchain from scratch)
 

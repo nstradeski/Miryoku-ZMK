@@ -56,10 +56,12 @@ build() {  # name  board  shield(optional)
   echo ">>> $name -> $OUT/$name.uf2"
 }
 
-build corne_left             nice_nano/nrf52840/zmk          "corne_left nice_view_adapter nice_view"
-build corne_right            nice_nano/nrf52840/zmk          "corne_right nice_view_adapter nice_view"
-build corneish_zen_v2_left   corneish_zen_left/nrf52840/zmk
-build corneish_zen_v2_right  corneish_zen_right/nrf52840/zmk
+# v0.3.0 (pinned, see CUSTOM_BUILD.md) uses flat board names, not the
+# board/soc/variant form that newer ZMK main accepts.
+build corne_left             nice_nano_v2            "corne_left nice_view_adapter nice_view"
+build corne_right            nice_nano_v2            "corne_right nice_view_adapter nice_view"
+build corneish_zen_v2_left   corneish_zen_v2_left
+build corneish_zen_v2_right  corneish_zen_v2_right
 
 trap - ERR
 echo ""
