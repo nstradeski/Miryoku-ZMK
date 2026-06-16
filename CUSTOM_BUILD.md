@@ -34,7 +34,8 @@ Both are 6-column 42-key splits and share the same Miryoku 42-key mapping.
 | `miryoku/miryoku_behaviors.h` | `U_MT_L` / `U_MT_R` macros (left/right positional) |
 | `miryoku/miryoku_behaviors.dtsi` | `u_mt`, `u_lt` retuned; new `u_mt_l` / `u_mt_r` positional behaviors |
 | `miryoku/miryoku_babel/miryoku_layer_alternatives.h` | `U_MT` → `U_MT_L`/`U_MT_R` positional HRMs in both the **QWERTY** and **Colemak-DH** base blocks (BASE is now QWERTY, EXTRA is Colemak-DH — see `custom_config.h`) |
-| `miryoku/mapping/42/corne.h` | All 6 outer pinky keys (were `&none`): top = Witch (`U_WITCH_L`/`_R`), home = Mouseless (`U_MOUSELESS_L`/`_R`), bottom = bare Hyper modifier (`U_HYPER_MOD`, both halves) for window mgmt — on **all layers**, both keyboards |
+| `miryoku/mapping/42/corne.h` | All 6 outer pinky keys (were `&none`): top = Witch (`U_WITCH_L`/`_R`), home = Mouseless (`U_MOUSELESS_L`/`_R`), bottom = momentary WINDOW layer (`U_WIN_MO`, both halves) for window mgmt — on **all layers**, both keyboards |
+| `miryoku/miryoku_babel/miryoku_layer_list.h` | Added `WINDOW` layer (index 10) for tiling-WM (Amethyst) control |
 | `config/corne.keymap` | Stock Miryoku Corne keymap (used for Typeractive Corne) |
 | `config/corneish_zen.keymap` | Stock Miryoku Corne-ish Zen keymap |
 
@@ -293,7 +294,7 @@ every capital.
    layers** so they're reachable regardless of the held layer:
    - top row: `U_WITCH_L` (F16) / `U_WITCH_R` (F17) — e.g. Witch prev / next
    - home row: `U_MOUSELESS_L` (F18) / `U_MOUSELESS_R` (F19) — Mouseless, L/R
-   - bottom row: `U_HYPER_MOD` on **both halves** — a bare Hyper modifier
+   - bottom row: `U_WIN_MO` on **both halves** — momentary WINDOW layer (see #15)
 
    The four app keys (top/home) are **Hyper chords** (`U_HYPER(key)` = `⌃⌥⌘⇧` +
    an F-key, F16–F19), with a distinct key per half so each is an independent
@@ -305,10 +306,10 @@ every capital.
    terminal escape and is captured reliably. F16–F19 are macOS-visible and
    unbound by default.
 
-   The bottom-row `U_HYPER_MOD` (`&kp LC(LA(LG(LSHIFT)))`) **holds**
-   Ctrl+Alt+Gui+Shift while pressed and emits nothing on its own — use it as the
-   modifier for a tiling WM (Amethyst etc.): set the WM's mod to the Hyper combo
-   and chord Hyper+`<key>` with the other hand. It's on both halves so either
+   The bottom-row `U_WIN_MO` (`&mo U_WINDOW`) **holds a momentary window-
+   management layer** (item #15) instead of a bare Hyper modifier. It used to
+   hold `Ctrl+Alt+Gui+Shift`, but that made *every* key a live Hyper chord —
+   firing macOS diagnostics on a stray `.`/`,`/`W`. It's on both halves so either
    pinky works. The outer positions are excluded from the HRM trigger lists, so
    none of this affects home-row mods. Retune in `custom_config.h`.
 
@@ -353,6 +354,26 @@ every capital.
    masks the physical Shift, so each shift binding sets its own modifiers. The
    bottom-row Bluetooth/output keys are untouched. (Tab-move/in-out-of-window
    across *windows* has no Chrome default and was deferred.)
+
+15. **WINDOW layer for tiling-WM control (Amethyst), replacing the bare Hyper
+   hold.** Holding either bottom-pinky (`U_WIN_MO` = `&mo U_WINDOW`) now activates
+   a momentary **WINDOW** layer (index 10, added to `miryoku_babel/
+   miryoku_layer_list.h`) instead of holding raw Hyper. Every inner alpha key
+   emits a Hyper (`Ctrl+Alt+Gui+Shift`) chord of its own letter, so you tap one
+   key per command instead of clawing four modifiers — and because it's a real
+   layer, only the defined keys are live, so a stray press can't fire anything.
+
+   Crucially, the three **macOS-reserved Hyper diagnostic shortcuts** are
+   neutralised: the `W`, `,` and `.` positions emit `Hyper+F13/F14/F15` instead
+   of `Hyper+W` / `Hyper+,` / `Hyper+.` — which run Wi-Fi diagnostics, open the
+   most-recent sysdiagnose, and run a full sysdiagnose (and can't be unbound via
+   normal UI). Configure Amethyst to use the Hyper combo as its modifier and bind
+   each command to the matching `Hyper+<key>`.
+
+   `MIRYOKU_LAYER_WINDOW` + `MIRYOKU_LAYERMAPPING_WINDOW` live in
+   `custom_config.h`; thumbs / 4th row are `&none` (extend as needed). The layer
+   is compiled for all boards but only reachable on the 42-key Corne/Zen (the
+   36-key minidox has no outer column, so it's an inert spare layer there).
 
 ### Known tradeoff
 Positional HRMs mean **same-hand modified keypresses no longer register the

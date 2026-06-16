@@ -130,7 +130,7 @@
 //   Layout (outer slots):
 //     top    row:  [Witch L    ] ...base...  [Witch R    ]   (e.g. prev / next)
 //     home   row:  [Mouseless L ] ...base...  [Mouseless R]
-//     bottom row:  [HYPER (hold)] ...base...  [HYPER (hold)]  (window mgmt mod)
+//     bottom row:  [WINDOW(hold)] ...base...  [WINDOW(hold)]  (window-mgmt layer)
 //
 // The app keys (top/home) are sent as HYPER chords (Ctrl+Alt+Gui+Shift + an
 // F-key). Rationale: a bare F13-F24 that an app fails to CONSUME passes through
@@ -141,9 +141,9 @@
 // in its own settings to the matching Hyper+F-key below (F16-F19, all
 // macOS-visible and unbound by default).
 //
-// The bottom-row U_HYPER_MOD keys hold Ctrl+Alt+Gui+Shift while pressed (they
-// emit nothing on their own), so configure Amethyst / your WM to use the Hyper
-// combo as its modifier and chord Hyper+<key> from either pinky.
+// The bottom-row keys (U_WIN_MO) hold the momentary WINDOW layer (defined
+// below), which turns the alpha block into curated Hyper chords for Amethyst /
+// your WM -- so configure the WM to use the Hyper combo as its modifier.
 //
 // To retune: change an F-key, or swap U_HYPER(...) for a plain &kp Fnn to go
 // back to bare F-keys. Each app's left/right keys can do whatever two actions
@@ -151,11 +151,41 @@
 // ---------------------------------------------------------------------------
 
 #define U_HYPER(key)  LC(LA(LG(LS(key))))   // Ctrl+Alt+Gui+Shift (modified keycode)
-#define U_HYPER_MOD   &kp LC(LA(LG(LSHIFT)))  // hold = Hyper modifier (no keycode)
+#define U_WIN_MO      &mo U_WINDOW            // hold = momentary WINDOW (window-mgmt) layer
 
 #define U_WITCH_L      &kp U_HYPER(F16)      // top-left    outer  (Witch:     e.g. prev)
 #define U_WITCH_R      &kp U_HYPER(F17)      // top-right   outer  (Witch:     e.g. next)
 #define U_MOUSELESS_L  &kp U_HYPER(F18)      // home-left   outer  (Mouseless: left half)
 #define U_MOUSELESS_R  &kp U_HYPER(F19)      // home-right  outer  (Mouseless: right half)
-// bottom row -> U_HYPER_MOD on both halves (defined above; window-mgmt modifier)
+// bottom row -> U_WIN_MO on both halves (defined above; momentary window layer)
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// WINDOW layer (window management, e.g. Amethyst) — custom
+//
+// Holding either bottom outer pinky (U_WIN_MO) activates this momentary layer.
+// Every inner key emits a Hyper (Ctrl+Alt+Gui+Shift) chord of its own letter,
+// turning the alpha block into a curated, collision-free Hyper pad: tap one key
+// per command instead of clawing four modifiers. Because it's a real layer,
+// only these keys are live, so a stray press can't trigger anything unexpected.
+//
+// The three macOS-reserved diagnostic chords are neutralised -- the W, comma
+// and period positions emit Hyper+F13 / F14 / F15 instead of Hyper+W / , / .
+// (which fire sysdiagnose / recent-sysdiagnose / Wi-Fi diagnostics). Bind each
+// WM command to the matching Hyper+<key> in Amethyst. Thumbs / 4th row are
+// inert (&none) -- extend if you want more commands.
+//
+//   position (QWERTY):  Q  [W]  E   R   T      Y   U   I   O   P
+//                       A   S   D   F   G      H   J   K   L   '
+//                       Z   X   C   V   B      N   M  [,] [.]  /
+//   emits Hyper +    :  Q  F13  E   R   T      Y   U   I   O   P
+//                       A   S   D   F   G      H   J   K   L   '
+//                       Z   X   C   V   B      N   M  F14 F15  /
+//
+#define MIRYOKU_LAYERMAPPING_WINDOW MIRYOKU_MAPPING
+#define MIRYOKU_LAYER_WINDOW \
+&kp U_HYPER(Q),    &kp U_HYPER(F13),  &kp U_HYPER(E),    &kp U_HYPER(R),    &kp U_HYPER(T),    &kp U_HYPER(Y),    &kp U_HYPER(U),    &kp U_HYPER(I),    &kp U_HYPER(O),    &kp U_HYPER(P),    \
+&kp U_HYPER(A),    &kp U_HYPER(S),    &kp U_HYPER(D),    &kp U_HYPER(F),    &kp U_HYPER(G),    &kp U_HYPER(H),    &kp U_HYPER(J),    &kp U_HYPER(K),    &kp U_HYPER(L),    &kp U_HYPER(SQT),  \
+&kp U_HYPER(Z),    &kp U_HYPER(X),    &kp U_HYPER(C),    &kp U_HYPER(V),    &kp U_HYPER(B),    &kp U_HYPER(N),    &kp U_HYPER(M),    &kp U_HYPER(F14),  &kp U_HYPER(F15),  &kp U_HYPER(SLASH),\
+U_NP,              U_NP,              U_NA,              U_NA,              U_NA,              U_NA,              U_NA,              U_NA,              U_NP,              U_NP
 // ---------------------------------------------------------------------------
