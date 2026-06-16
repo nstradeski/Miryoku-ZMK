@@ -61,6 +61,26 @@
 #define MIRYOKU_TAP_QWERTY         // TAP   = QWERTY (no HRMs)
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Browser controls on the MEDIA layer (macOS)
+//
+// The MEDIA top row was RGB underglow control, inert on these boards (no
+// underglow LEDs). Repurpose those 5 keys -- plus the external-power toggle
+// directly below (also removed so it can't be pressed by accident) -- as
+// browser controls. Right hand, reached by holding the left-thumb Esc/MEDIA
+// key; the media transport (prev/vol/next) on the rest of the middle row stays:
+//
+//   top:  Back   Forward  Prev-tab  Next-tab  Refresh
+//   mid:  AddrBar | Prev  Vol-  Vol+  Next
+//
+#define U_BRO_BACK    &kp LG(LBKT)     // Back          Cmd+[
+#define U_BRO_FWD     &kp LG(RBKT)     // Forward       Cmd+]
+#define U_BRO_TABP    &kp LC(LS(TAB))  // Previous tab  Ctrl+Shift+Tab
+#define U_BRO_TABN    &kp LC(TAB)      // Next tab      Ctrl+Tab
+#define U_BRO_RELOAD  &kp LG(R)        // Refresh       Cmd+R
+#define U_BRO_URL     &kp LG(L)        // Address bar   Cmd+L
+// ---------------------------------------------------------------------------
+
 // Clipboard cluster (undo/cut/copy/paste/redo on NAV/MOUSE/BUTTON layers).
 // Miryoku's default uses K_UNDO/LS(INS)/LC(INS)/LS(DEL)/K_AGAIN, which macOS
 // ignores. MAC maps them to Cmd combos (Cmd+Z/X/C/V, Shift+Cmd+Z). Host is
