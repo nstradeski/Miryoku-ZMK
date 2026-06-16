@@ -329,21 +329,30 @@ every capital.
    positional home-row mods (`U_MT_L`/`U_MT_R` + bottom-row `RALT`), so mod
    behavior is unchanged; `TAP_QWERTY` stays plain `&kp`.
 
-14. **Browser controls on the MEDIA layer.** The MEDIA top row was RGB
-   underglow control (`U_RGB_*`), inert on these boards (no underglow LEDs).
-   Repurposed those 5 keys, plus the external-power toggle (`U_EP_TOG`) directly
-   below — also removed so it can't be hit by accident — as macOS browser
-   controls (right hand; hold the left-thumb Esc/MEDIA key):
+14. **Browser controls on the MEDIA layer (Chrome, tap/shift).** The MEDIA top
+   row was RGB underglow control (`U_RGB_*`), inert on these boards (no
+   underglow LEDs). Repurposed those 5 keys, plus the external-power toggle
+   (`U_EP_TOG`) directly below — also removed so it can't be hit by accident —
+   as browser controls (right hand; hold the left-thumb Esc/MEDIA key). Five are
+   **tap/shift morphs**: hold the left-index Shift (MEDIA home row) for the 2nd
+   action.
 
    ```
-   top:  Back(⌘[)  Forward(⌘])  Prev-tab(⌃⇧Tab)  Next-tab(⌃Tab)  Refresh(⌘R)
-   mid:  Address-bar(⌘L) | Prev  Vol-  Vol+  Next   (media transport kept)
+               TAP              SHIFT
+   top:  Back ⌘[           Forward ⌘]
+         Close ⌘W          Reopen ⇧⌘T
+         Prev-tab          Move tab ← (⌃⇧PgUp)
+         Next-tab          Move tab → (⌃⇧PgDn)
+         Refresh ⌘R        Hard refresh ⇧⌘R
+   mid:  Address-bar ⌘L    (no shift) | Prev  Vol-  Vol+  Next
    ```
 
-   Keycodes are editable `#define`s in `custom_config.h` (`U_BRO_*`), wired into
-   the non-flip `MIRYOKU_ALTERNATIVES_MEDIA` block in
-   `miryoku_babel/miryoku_layer_alternatives.h`. The bottom-row Bluetooth/output
-   keys are untouched.
+   The `u_bro_*` mod-morph behaviors are defined via `MIRYOKU_SHIFT_FUNCTION` in
+   `miryoku_shift_functions.dtsi`; `custom_config.h` maps `U_BRO_*` to them and
+   they're wired into the non-flip `MIRYOKU_ALTERNATIVES_MEDIA` block. mod-morph
+   masks the physical Shift, so each shift binding sets its own modifiers. The
+   bottom-row Bluetooth/output keys are untouched. (Tab-move/in-out-of-window
+   across *windows* has no Chrome default and was deferred.)
 
 ### Known tradeoff
 Positional HRMs mean **same-hand modified keypresses no longer register the

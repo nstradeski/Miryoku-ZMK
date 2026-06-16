@@ -67,18 +67,26 @@
 // The MEDIA top row was RGB underglow control, inert on these boards (no
 // underglow LEDs). Repurpose those 5 keys -- plus the external-power toggle
 // directly below (also removed so it can't be pressed by accident) -- as
-// browser controls. Right hand, reached by holding the left-thumb Esc/MEDIA
-// key; the media transport (prev/vol/next) on the rest of the middle row stays:
+// browser controls (Chrome, macOS). Right hand, reached by holding the
+// left-thumb Esc/MEDIA key; the media transport (prev/vol/next) on the rest of
+// the middle row stays. Five of the keys are tap/shift morphs: hold the
+// left-index Shift (on the MEDIA home row) for the second action.
 //
-//   top:  Back   Forward  Prev-tab  Next-tab  Refresh
-//   mid:  AddrBar | Prev  Vol-  Vol+  Next
+//             TAP              SHIFT
+//   top:  Back ⌘[           Forward ⌘]
+//         Close ⌘W          Reopen ⇧⌘T
+//         Prev-tab          Move tab ←  (⌃⇧PgUp)
+//         Next-tab          Move tab →  (⌃⇧PgDn)
+//         Refresh ⌘R        Hard refresh ⇧⌘R
+//   mid:  Address-bar ⌘L    (no shift) | Prev  Vol-  Vol+  Next
 //
-#define U_BRO_BACK    &kp LG(LBKT)     // Back          Cmd+[
-#define U_BRO_FWD     &kp LG(RBKT)     // Forward       Cmd+]
-#define U_BRO_TABP    &kp LC(LS(TAB))  // Previous tab  Ctrl+Shift+Tab
-#define U_BRO_TABN    &kp LC(TAB)      // Next tab      Ctrl+Tab
-#define U_BRO_RELOAD  &kp LG(R)        // Refresh       Cmd+R
-#define U_BRO_URL     &kp LG(L)        // Address bar   Cmd+L
+// The morph behaviors live in miryoku_shift_functions.dtsi (u_bro_*).
+#define U_BRO_BACK    &u_bro_back      // tap Back ⌘[     / shift Forward ⌘]
+#define U_BRO_CLOSE   &u_bro_close     // tap Close ⌘W    / shift Reopen ⇧⌘T
+#define U_BRO_TABP    &u_bro_tabp      // tap Prev-tab    / shift Move tab ←
+#define U_BRO_TABN    &u_bro_tabn      // tap Next-tab    / shift Move tab →
+#define U_BRO_RELOAD  &u_bro_reload    // tap Refresh ⌘R  / shift Hard refresh ⇧⌘R
+#define U_BRO_URL     &kp LG(L)        // Address bar ⌘L  (no shift variant)
 // ---------------------------------------------------------------------------
 
 // Clipboard cluster (undo/cut/copy/paste/redo on NAV/MOUSE/BUTTON layers).

@@ -27,6 +27,15 @@ MIRYOKU_SHIFT_FUNCTION(u_out_tog, &out OUT_TOG, &out OUT_USB)
 
 MIRYOKU_SHIFT_FUNCTION(u_caps_word, &caps_word, &kp CAPS)
 
+// Custom: browser controls on the MEDIA layer (tap / shift). Right hand; the
+// shift variant is the left-index Shift on the MEDIA home row. Chrome (macOS).
+// mod-morph masks the physical shift, so each shift binding sets its own mods.
+MIRYOKU_SHIFT_FUNCTION(u_bro_back,   &kp LG(LBKT),    &kp LG(RBKT))      // Back / Forward
+MIRYOKU_SHIFT_FUNCTION(u_bro_close,  &kp LG(W),       &kp LG(LS(T)))     // Close tab / Reopen tab
+MIRYOKU_SHIFT_FUNCTION(u_bro_tabp,   &kp LC(LS(TAB)), &kp LC(LS(PG_UP))) // Prev tab / Move tab left
+MIRYOKU_SHIFT_FUNCTION(u_bro_tabn,   &kp LC(TAB),     &kp LC(LS(PG_DN))) // Next tab / Move tab right
+MIRYOKU_SHIFT_FUNCTION(u_bro_reload, &kp LG(R),       &kp LG(LS(R)))     // Refresh / Hard refresh
+
 #if defined (MIRYOKU_KLUDGE_GLOBALSHIFTFUNCTIONS)
 
 MIRYOKU_SHIFT_FUNCTION(u_rgb_tog, &rgb_ug RGB_TOG, &rgb_ug RGB_OFF)
