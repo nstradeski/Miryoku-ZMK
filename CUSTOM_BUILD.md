@@ -370,10 +370,16 @@ every capital.
    normal UI). Configure Amethyst to use the Hyper combo as its modifier and bind
    each command to the matching `Hyper+<key>`.
 
+   The thumbs carry macOS **window controls** (mirrored on both halves): minimize
+   (`⌘M`) and close-window (`⇧⌘W`) are native and fire directly; maximize has no
+   native shortcut, so it emits `Hyper+F20` — bind it once in App Shortcuts to
+   "Fill" (Sequoia tiling) or "Zoom". Thumb order L→R: `Close Min Max | Max Min
+   Close`.
+
    `MIRYOKU_LAYER_WINDOW` + `MIRYOKU_LAYERMAPPING_WINDOW` live in
-   `custom_config.h`; thumbs / 4th row are `&none` (extend as needed). The layer
-   is compiled for all boards but only reachable on the 42-key Corne/Zen (the
-   36-key minidox has no outer column, so it's an inert spare layer there).
+   `custom_config.h` (`U_WIN_MIN`/`_MAX`/`_CLOSE`). The layer is compiled for all
+   boards but only reachable on the 42-key Corne/Zen (the 36-key minidox has no
+   outer column, so it's an inert spare layer there).
 
 ### Known tradeoff
 Positional HRMs mean **same-hand modified keypresses no longer register the
