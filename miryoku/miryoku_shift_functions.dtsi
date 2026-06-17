@@ -35,6 +35,7 @@ MIRYOKU_SHIFT_FUNCTION(u_bro_close,  &kp LG(W),       &kp LG(LS(T)))     // Clos
 MIRYOKU_SHIFT_FUNCTION(u_bro_tabp,   &kp LC(LS(TAB)), &kp LC(LS(PG_UP))) // Prev tab / Move tab left
 MIRYOKU_SHIFT_FUNCTION(u_bro_tabn,   &kp LC(TAB),     &kp LC(LS(PG_DN))) // Next tab / Move tab right
 MIRYOKU_SHIFT_FUNCTION(u_bro_reload, &kp LG(R),       &kp LG(LS(R)))     // Refresh / Hard refresh
+MIRYOKU_SHIFT_FUNCTION(u_bro_url,    &kp LG(L),       &kp LG(T))         // Address bar / New tab
 
 #if defined (MIRYOKU_KLUDGE_GLOBALSHIFTFUNCTIONS)
 

@@ -86,7 +86,7 @@
 #define U_BRO_TABP    &u_bro_tabp      // tap Prev-tab    / shift Move tab ←
 #define U_BRO_TABN    &u_bro_tabn      // tap Next-tab    / shift Move tab →
 #define U_BRO_RELOAD  &u_bro_reload    // tap Refresh ⌘R  / shift Hard refresh ⇧⌘R
-#define U_BRO_URL     &kp LG(L)        // Address bar ⌘L  (no shift variant)
+#define U_BRO_URL     &u_bro_url       // tap Address bar ⌘L / shift New tab ⌘T
 // ---------------------------------------------------------------------------
 
 // Clipboard cluster (undo/cut/copy/paste/redo on NAV/MOUSE/BUTTON layers).

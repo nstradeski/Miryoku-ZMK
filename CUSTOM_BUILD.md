@@ -345,7 +345,7 @@ every capital.
          Prev-tab          Move tab ← (⌃⇧PgUp)
          Next-tab          Move tab → (⌃⇧PgDn)
          Refresh ⌘R        Hard refresh ⇧⌘R
-   mid:  Address-bar ⌘L    (no shift) | Prev  Vol-  Vol+  Next
+   mid:  Address-bar ⌘L    New tab ⌘T  | Prev  Vol-  Vol+  Next
    ```
 
    The `u_bro_*` mod-morph behaviors are defined via `MIRYOKU_SHIFT_FUNCTION` in
