@@ -187,10 +187,11 @@
 //                       A   S   D   F   G      H   J   K   L   '
 //                       Z   X   C   V   B      N   M  F14 F15  /
 //   thumbs (L | R)   :  Close  Min  Max  |  Max  Min  Close
+//   (on the Esc/Space/Tab | Enter/Bksp/Del thumbs respectively)
 //
-#define U_WIN_MIN    &kp LG(M)         // minimize      Cmd+M (native)
-#define U_WIN_CLOSE  &kp LG(LS(W))     // close window  Shift+Cmd+W (native)
-#define U_WIN_MAX    &kp U_HYPER(F20)  // maximize      Hyper+F20 -> App Shortcut (Fill/Zoom)
+#define U_WIN_MIN    &kp LG(M)            // minimize   Cmd+M           (native)
+#define U_WIN_CLOSE  &kp LG(W)            // close      Cmd+W           (native, universal)
+#define U_WIN_MAX    &kp LC(LA(LG(F)))    // maximize   Ctrl+Alt+Cmd+F  -> bind to Fill/Zoom in App Shortcuts
 #define MIRYOKU_LAYERMAPPING_WINDOW MIRYOKU_MAPPING
 #define MIRYOKU_LAYER_WINDOW \
 &kp U_HYPER(Q),    &kp U_HYPER(F13),  &kp U_HYPER(E),    &kp U_HYPER(R),    &kp U_HYPER(T),    &kp U_HYPER(Y),    &kp U_HYPER(U),    &kp U_HYPER(I),    &kp U_HYPER(O),    &kp U_HYPER(P),    \

@@ -370,11 +370,13 @@ every capital.
    normal UI). Configure Amethyst to use the Hyper combo as its modifier and bind
    each command to the matching `Hyper+<key>`.
 
-   The thumbs carry macOS **window controls** (mirrored on both halves): minimize
-   (`⌘M`) and close-window (`⇧⌘W`) are native and fire directly; maximize has no
-   native shortcut, so it emits `Hyper+F20` — bind it once in App Shortcuts to
-   "Fill" (Sequoia tiling) or "Zoom". Thumb order L→R: `Close Min Max | Max Min
-   Close`.
+   The thumbs carry macOS **window controls** (mirrored on both halves, sitting on
+   the Esc/Space/Tab | Enter/Bksp/Del thumbs): minimize (`⌘M`) and close (`⌘W`)
+   are native and fire directly; maximize emits `⌃⌥⌘F` (Hyper minus Shift, so it
+   never collides with the alpha keys' `Hyper+<letter>`) — bind it once in App
+   Shortcuts to "Fill" (Sequoia tiling) or "Zoom". `⌃⌥⌘F` records cleanly in the
+   App-Shortcut recorder, unlike high F-keys such as `F20`. Thumb order L→R:
+   `Close Min Max | Max Min Close`.
 
    `MIRYOKU_LAYER_WINDOW` + `MIRYOKU_LAYERMAPPING_WINDOW` live in
    `custom_config.h` (`U_WIN_MIN`/`_MAX`/`_CLOSE`). The layer is compiled for all
