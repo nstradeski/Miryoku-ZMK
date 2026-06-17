@@ -186,16 +186,16 @@
 //   emits Hyper +    :  Q  F13  E   R   T      Y   U   I   O   P
 //                       A   S   D   F   G      H   J   K   L   '
 //                       Z   X   C   V   B      N   M  F14 F15  /
-//   thumbs (L | R)   :  Close  Min  Max  |  Max  Min  Close
+//   thumbs (L | R)   :  Close  Min  Full |  Full  Min  Close
 //   (on the Esc/Space/Tab | Enter/Bksp/Del thumbs respectively)
 //
-#define U_WIN_MIN    &kp LG(M)            // minimize   Cmd+M           (native)
-#define U_WIN_CLOSE  &kp LG(W)            // close      Cmd+W           (native, universal)
-#define U_WIN_MAX    &kp LC(LA(LG(F)))    // maximize   Ctrl+Alt+Cmd+F  -> bind to Fill/Zoom in App Shortcuts
+#define U_WIN_MIN    &kp LG(M)            // minimize     Cmd+M       (native)
+#define U_WIN_CLOSE  &kp LG(W)            // close        Cmd+W       (native, universal)
+#define U_WIN_FULL   &kp LC(LG(F))        // full screen  Ctrl+Cmd+F  (native, no setup)
 #define MIRYOKU_LAYERMAPPING_WINDOW MIRYOKU_MAPPING
 #define MIRYOKU_LAYER_WINDOW \
 &kp U_HYPER(Q),    &kp U_HYPER(F13),  &kp U_HYPER(E),    &kp U_HYPER(R),    &kp U_HYPER(T),    &kp U_HYPER(Y),    &kp U_HYPER(U),    &kp U_HYPER(I),    &kp U_HYPER(O),    &kp U_HYPER(P),    \
 &kp U_HYPER(A),    &kp U_HYPER(S),    &kp U_HYPER(D),    &kp U_HYPER(F),    &kp U_HYPER(G),    &kp U_HYPER(H),    &kp U_HYPER(J),    &kp U_HYPER(K),    &kp U_HYPER(L),    &kp U_HYPER(SQT),  \
 &kp U_HYPER(Z),    &kp U_HYPER(X),    &kp U_HYPER(C),    &kp U_HYPER(V),    &kp U_HYPER(B),    &kp U_HYPER(N),    &kp U_HYPER(M),    &kp U_HYPER(F14),  &kp U_HYPER(F15),  &kp U_HYPER(SLASH),\
-U_NP,              U_NP,              U_WIN_CLOSE,       U_WIN_MIN,         U_WIN_MAX,         U_WIN_MAX,         U_WIN_MIN,         U_WIN_CLOSE,       U_NP,              U_NP
+U_NP,              U_NP,              U_WIN_CLOSE,       U_WIN_MIN,         U_WIN_FULL,        U_WIN_FULL,        U_WIN_MIN,         U_WIN_CLOSE,       U_NP,              U_NP
 // ---------------------------------------------------------------------------
