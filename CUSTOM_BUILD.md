@@ -351,9 +351,22 @@ every capital.
    The `u_bro_*` mod-morph behaviors are defined via `MIRYOKU_SHIFT_FUNCTION` in
    `miryoku_shift_functions.dtsi`; `custom_config.h` maps `U_BRO_*` to them and
    they're wired into the non-flip `MIRYOKU_ALTERNATIVES_MEDIA` block. mod-morph
-   masks the physical Shift, so each shift binding sets its own modifiers. The
-   bottom-row Bluetooth/output keys are untouched. (Tab-move/in-out-of-window
-   across *windows* has no Chrome default and was deferred.)
+   masks the physical Shift, so each shift binding sets its own modifiers.
+   (Tab-move/in-out-of-window across *windows* has no Chrome default and was
+   deferred.)
+
+   **Bluetooth/output moved off the MEDIA bottom row.** The MEDIA (`Esc` thumb)
+   and NAV (`Space` thumb) layer-taps are physical neighbours, so a mis-hold that
+   should have hit the NAV bottom row (`Ins/Home/PgDn/PgUp/End`) instead landed on
+   MEDIA's `out-toggle + BT 0-3` and silently switched Bluetooth profiles. The BT
+   cluster (`&u_out_tog` + `&u_bt_sel_0..3`) now lives on the **FUN** layer (`Del`
+   thumb, right hand) bottom row — reached deliberately, opposite the NAV mix-up —
+   and the MEDIA bottom-row right hand is blanked to `U_NA` so a slip there does
+   nothing. This displaced FUN's bottom-row layer-lock keys (`u_to_U_FUN`,
+   `u_to_U_MEDIA`) and one `RALT`; the top-row layer switches to base layouts
+   remain. Note undo/redo were never broken — they emit `⌘Z`/`⇧⌘Z` on the **NAV**
+   layer (`MIRYOKU_CLIPBOARD_MAC`); the same MEDIA/NAV mix-up put presses on the
+   browser back/refresh keys of MEDIA's top row instead.
 
 15. **WINDOW layer for tiling-WM control (Amethyst), replacing the bare Hyper
    hold.** Holding either bottom-pinky (`U_WIN_MO` = `&mo U_WINDOW`) now activates
