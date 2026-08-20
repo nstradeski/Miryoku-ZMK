@@ -3,11 +3,19 @@
 
 #pragma once
 
-#define ZMK_POINTING_DEFAULT_MOVE_VAL 1250
+// Cursor speed knobs (custom):
+//   MOVE_VAL  = top cursor velocity (max px/s-ish). Raise for a faster ceiling.
+//   MOVE_TIME = time-to-max-speed (ms): how long a held direction ramps from 0
+//               to MOVE_VAL. LOWER = snappier; short taps actually move. This is
+//               the main "feels slow" knob -- stock 1500ms means taps crawl.
+//   EXPONENT  = accel curve (0 constant, 1 linear, 2 quadratic). 1 = proportional.
+// Retune: too twitchy -> lower MOVE_VAL or raise MOVE_TIME; still too slow ->
+// raise MOVE_VAL or lower MOVE_TIME further.
+#define ZMK_POINTING_DEFAULT_MOVE_VAL 2000
 #define ZMK_POINTING_DEFAULT_SCRL_VAL 100
 
 #define U_MOUSE_MOVE_EXPONENT 1
-#define U_MOUSE_MOVE_TIME 1500
+#define U_MOUSE_MOVE_TIME 600
 #define U_MOUSE_MOVE_DELAY 0
 #define U_MOUSE_SCROLL_EXPONENT 1
 #define U_MOUSE_SCROLL_TIME 5000
