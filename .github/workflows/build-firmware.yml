@@ -44,6 +44,17 @@ jobs:
           - name: corneish_zen_v2_right
             board: 'corneish_zen_v2_right'
             shield: ''
+          # beekeeb Toucan2 (42-key, Azoteq TPS43 trackpad on the right half).
+          # Needs out-of-tree modules; `toucan: true` gates the clone step and
+          # the -DZMK_EXTRA_MODULES argument so the other boards are untouched.
+          - name: toucan_left
+            board: 'seeeduino_xiao_ble'
+            shield: 'toucan_left rgbled_adapter nice_view_gem'
+            toucan: true
+          - name: toucan_right
+            board: 'seeeduino_xiao_ble'
+            shield: 'toucan_right rgbled_adapter'
+            toucan: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -73,6 +84,19 @@ jobs:
           west update
           west zephyr-export
 
+      - name: Clone Toucan2 modules
+        # Only for the Toucan: the toucan/nice_view_gem shields, the Azoteq
+        # TPS43 driver, the zoom input processor and the RGB LED widget all
+        # live outside the ZMK tree. Revisions match beekeeb's own west.yml.
+        if: matrix.toucan
+        run: |
+          set -e
+          mkdir -p modules
+          git clone --depth 1 https://github.com/beekeeb/zmk-keyboard-toucan2.git modules/toucan2
+          git clone --depth 1 https://github.com/beekeeb/zmk_driver_azoteq.git   modules/azoteq
+          git clone --depth 1 https://github.com/beekeeb/zmk-input-zoom.git      modules/input-zoom
+          git clone --depth 1 --branch v0.3 https://github.com/caksoylar/zmk-rgbled-widget.git modules/rgbled
+
       - name: Build ${{ matrix.name }}
         working-directory: zmk
         shell: bash
@@ -84,6 +108,10 @@ jobs:
             -DEXTRA_CONF_FILE="${GITHUB_WORKSPACE}/miryoku_zmk/config/pointing.conf")
           if [ -n "${{ matrix.shield }}" ]; then
             args+=(-DSHIELD="${{ matrix.shield }}")
+          fi
+          if [ -n "${{ matrix.toucan }}" ]; then
+            M="${GITHUB_WORKSPACE}/modules"
+            args+=(-DZMK_EXTRA_MODULES="$M/toucan2;$M/azoteq;$M/input-zoom;$M/rgbled")
           fi
           west build "${args[@]}"
 

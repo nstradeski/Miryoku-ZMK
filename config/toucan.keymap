@@ -1,0 +1,47 @@
+// Copyright 2021 Manna Harbour
+// https://github.com/manna-harbour/miryoku
+
+// beekeeb Toucan2 (42-key) -- Piantor/Cantor layout with an Azoteq TPS43
+// multi-touch trackpad on the RIGHT half.
+//
+// The key matrix is identical in shape and order to the Corne: 12/12/12 plus
+// six thumbs, so the stock Miryoku 42-key Corne mapping applies unchanged,
+// including our outer-column Witch / Mouseless / WINDOW keys.
+
+#include "../miryoku/custom_config.h"
+#include "../miryoku/mapping/42/corne.h"
+#include "../miryoku/miryoku.dtsi"
+
+// ---------------------------------------------------------------------------
+// Trackpad: re-point the shield's input processors at Miryoku's layer numbers
+//
+// The toucan shield ships processors that reference layer indices from
+// beekeeb's OWN keymap. Miryoku numbers its layers completely differently, so
+// without these overrides the trackpad silently drives the wrong layers:
+//
+//   index:  0 BASE  1 EXTRA  2 TAP  3 BUTTON  4 NAV  5 MOUSE
+//           6 MEDIA  7 NUM   8 SYM  9 FUN    10 WINDOW
+//
+// Everything else in the shield is already macOS-correct and left alone:
+// the zoom mapper sends Cmd+- / Cmd+= and the three-finger swipes send
+// Ctrl+Cmd+arrows (Mission Control / move between Spaces).
+// ---------------------------------------------------------------------------
+
+// Touching the pad held layer 4. In beekeeb's keymap that is their click
+// layer; in Miryoku layer 4 is NAV, so merely resting a finger on the
+// trackpad would have swapped the whole right hand to arrows and clipboard.
+// BUTTON (3) is Miryoku's mouse-button layer -- while touching the pad the
+// thumbs become left / right / middle click, which is the intended effect.
+&is_touching_processor {
+    bindings = <&mo U_BUTTON>;
+};
+
+// "Scroll instead of move" was bound to layers 1 and 2. In Miryoku those are
+// the alternate alpha layouts (EXTRA / TAP), so the trackpad would have turned
+// into a scroll wheel whenever a different base layout was locked on. Point it
+// at the two layers where scrolling is what you actually want.
+&trackpad_listener {
+    scroller {
+        layers = <U_MOUSE U_NAV>;
+    };
+};
