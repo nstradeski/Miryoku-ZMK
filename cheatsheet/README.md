@@ -31,18 +31,23 @@ tables to drift out of date.
 
 ## Build
 
-`miryoku-cheatsheet.html` is **build output and is deliberately not committed**
-(it is in `.gitignore`). A checked-in copy could disagree with the keymap beside
-it, which is the staleness problem this tool exists to remove. It is always
-generated from the current source instead:
+`miryoku-cheatsheet.html` is generated output, but it **is** committed — kept
+current by CI rather than by hand, so it can never disagree with the keymap
+beside it:
 
-- **CI** — the `Build Firmware` workflow's `cheatsheet` job regenerates it and
-  the bundle step drops `miryoku-cheatsheet.html` into the **`miryoku-firmware`**
-  artifact alongside the four `.uf2` files. One download gives you the firmware
-  and the reference that matches it.
+- **CI** — the `Build Firmware` workflow's `cheatsheet` job regenerates it,
+  **commits it back to the branch** if it changed, and the bundle step drops it
+  into the **`miryoku-firmware`** artifact alongside the four `.uf2` files. One
+  download gives you the firmware and the reference that matches it. The
+  commit-back uses `GITHUB_TOKEN`, whose pushes do not re-trigger workflows, so
+  it cannot loop; a failed push is a warning and never blocks the firmware.
 - **Local** — `local-build/build-all.sh` regenerates it after the four images,
   copies it next to the `.uf2` output, and refreshes `~/.hammerspoon/` in place
   if the HUD is installed.
+
+You therefore never need to run the generator to keep the repo honest. If you
+edit the keymap locally and commit without building, CI regenerates and commits
+the sheet for you on the next run.
 
 To run it by hand:
 

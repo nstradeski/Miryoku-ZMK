@@ -102,12 +102,19 @@ jobs:
   cheatsheet:
     # Regenerated from the same sources the images are built from, so the
     # reference can never describe a firmware you aren't running. Ships inside
-    # the miryoku-firmware bundle next to the .uf2 files.
+    # the miryoku-firmware bundle next to the .uf2 files, AND is committed back
+    # so the copy in the repo is always current without anyone running the
+    # generator by hand.
     name: Keymap cheat sheet
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Full history so the commit-back can rebase if the branch moved.
+          fetch-depth: 0
 
       - name: Generate cheat sheet
         # build.py expands the real layer macros with cpp (present on the
@@ -120,6 +127,33 @@ jobs:
           name: 'cheatsheet'
           path: 'cheatsheet/miryoku-cheatsheet.html'
           if-no-files-found: error
+
+      - name: Commit regenerated cheat sheet
+        # Pushes made with GITHUB_TOKEN do not re-trigger workflows, so this
+        # cannot loop. Never fails the run: a docs commit must not block
+        # firmware delivery.
+        if: github.event_name != 'pull_request'
+        env:
+          SHEET: cheatsheet/miryoku-cheatsheet.html
+        run: |
+          if git diff --quiet -- "$SHEET"; then
+            echo "Cheat sheet already up to date; nothing to commit."
+            exit 0
+          fi
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$SHEET"
+          git commit -m 'chore(cheatsheet): regenerate from keymap [skip ci]'
+          for i in 1 2 3; do
+            if git pull --rebase --autostash origin "$GITHUB_REF_NAME" \
+               && git push origin "HEAD:$GITHUB_REF_NAME"; then
+              echo "Committed the regenerated cheat sheet to $GITHUB_REF_NAME."
+              exit 0
+            fi
+            echo "push attempt $i failed; retrying"
+            sleep $((i * 5))
+          done
+          echo "::warning::Could not push the regenerated cheat sheet. If this is a 403, enable Settings -> Actions -> General -> Workflow permissions -> Read and write permissions. The copy in this run's artifact is still correct."
 
   bundle:
     name: Bundle all firmware
