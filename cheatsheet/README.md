@@ -31,14 +31,15 @@ tables to drift out of date.
 
 ## Build
 
-It regenerates **automatically as part of the firmware build**, so the sheet can
-never describe a firmware you aren't running:
+`miryoku-cheatsheet.html` is **build output and is deliberately not committed**
+(it is in `.gitignore`). A checked-in copy could disagree with the keymap beside
+it, which is the staleness problem this tool exists to remove. It is always
+generated from the current source instead:
 
-- **CI** — the `Build Firmware` workflow has a `cheatsheet` job that regenerates
-  it and drops `miryoku-cheatsheet.html` into the **`miryoku-firmware`** artifact
-  alongside the four `.uf2` files. Download once, get firmware and the matching
-  reference together. If the copy committed to the repo has gone stale the run
-  posts a warning (it never fails the firmware build).
+- **CI** — the `Build Firmware` workflow's `cheatsheet` job regenerates it and
+  the bundle step drops `miryoku-cheatsheet.html` into the **`miryoku-firmware`**
+  artifact alongside the four `.uf2` files. One download gives you the firmware
+  and the reference that matches it.
 - **Local** — `local-build/build-all.sh` regenerates it after the four images,
   copies it next to the `.uf2` output, and refreshes `~/.hammerspoon/` in place
   if the HUD is installed.
@@ -61,7 +62,8 @@ never the generated HTML.
 ```sh
 brew install --cask hammerspoon
 mkdir -p ~/.hammerspoon
-cp cheatsheet/hammerspoon.lua        ~/.hammerspoon/miryoku.lua
+python3 cheatsheet/build.py                          # generate the HTML first
+cp cheatsheet/hammerspoon.lua         ~/.hammerspoon/miryoku.lua
 cp cheatsheet/miryoku-cheatsheet.html ~/.hammerspoon/
 echo 'require("miryoku")' >> ~/.hammerspoon/init.lua
 ```

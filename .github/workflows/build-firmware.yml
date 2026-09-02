@@ -114,15 +114,6 @@ jobs:
         # runner) -- no Python packages needed.
         run: python3 cheatsheet/build.py
 
-      - name: Warn if the committed copy is stale
-        run: |
-          MSG="Committed cheat sheet is out of date with the keymap. Run 'python3 cheatsheet/build.py' and commit it. The copy in this run's artifact is correct."
-          if git diff --quiet -- cheatsheet/miryoku-cheatsheet.html; then
-            echo "Committed cheat sheet is in sync with the keymap."
-          else
-            echo "::warning file=cheatsheet/miryoku-cheatsheet.html::$MSG"
-          fi
-
       - name: Upload cheat sheet
         uses: actions/upload-artifact@v4
         with:
