@@ -15,6 +15,7 @@ on:
     paths:
       - 'config/**'
       - 'miryoku/**'
+      - 'cheatsheet/**'
       - '.github/workflows/build-firmware.yml'
   workflow_dispatch:
 
@@ -98,9 +99,40 @@ jobs:
           path: 'firmware/${{ matrix.name }}.uf2'
           if-no-files-found: error
 
+  cheatsheet:
+    # Regenerated from the same sources the images are built from, so the
+    # reference can never describe a firmware you aren't running. Ships inside
+    # the miryoku-firmware bundle next to the .uf2 files.
+    name: Keymap cheat sheet
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate cheat sheet
+        # build.py expands the real layer macros with cpp (present on the
+        # runner) -- no Python packages needed.
+        run: python3 cheatsheet/build.py
+
+      - name: Warn if the committed copy is stale
+        run: |
+          MSG="Committed cheat sheet is out of date with the keymap. Run 'python3 cheatsheet/build.py' and commit it. The copy in this run's artifact is correct."
+          if git diff --quiet -- cheatsheet/miryoku-cheatsheet.html; then
+            echo "Committed cheat sheet is in sync with the keymap."
+          else
+            echo "::warning file=cheatsheet/miryoku-cheatsheet.html::$MSG"
+          fi
+
+      - name: Upload cheat sheet
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'cheatsheet'
+          path: 'cheatsheet/miryoku-cheatsheet.html'
+          if-no-files-found: error
+
   bundle:
     name: Bundle all firmware
-    needs: build
+    needs: [build, cheatsheet]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -108,12 +140,22 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           pattern: 'firmware-*'
-          path: firmware
+          path: bundle
           merge-multiple: true
+
+      - name: Collect cheat sheet
+        # Never block firmware delivery on the reference doc.
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: 'cheatsheet'
+          path: bundle
 
       - name: Upload combined bundle
         uses: actions/upload-artifact@v4
         with:
           name: 'miryoku-firmware'
-          path: 'firmware/*.uf2'
+          path: |
+            bundle/*.uf2
+            bundle/*.html
           if-no-files-found: error

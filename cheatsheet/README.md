@@ -31,12 +31,26 @@ tables to drift out of date.
 
 ## Build
 
+It regenerates **automatically as part of the firmware build**, so the sheet can
+never describe a firmware you aren't running:
+
+- **CI** — the `Build Firmware` workflow has a `cheatsheet` job that regenerates
+  it and drops `miryoku-cheatsheet.html` into the **`miryoku-firmware`** artifact
+  alongside the four `.uf2` files. Download once, get firmware and the matching
+  reference together. If the copy committed to the repo has gone stale the run
+  posts a warning (it never fails the firmware build).
+- **Local** — `local-build/build-all.sh` regenerates it after the four images,
+  copies it next to the `.uf2` output, and refreshes `~/.hammerspoon/` in place
+  if the HUD is installed.
+
+To run it by hand:
+
 ```sh
 python3 cheatsheet/build.py
 ```
 
 Writes `cheatsheet/miryoku-cheatsheet.html` — one self-contained file, no
-network, no dependencies. Open it in a browser and it works as-is.
+network, no dependencies (just `cpp`). Open it in a browser and it works as-is.
 
 Wording lives in `keymap_labels.py` (labels, search synonyms, layer blurbs);
 layout and logic in `build.py`; the UI in `template.html`. Edit the template,
@@ -58,10 +72,13 @@ Hotkey is **`⌃⌥⌘K`** — press to toggle the panel over whatever you are d
 `esc` to dismiss. Change `HOTKEY_MODS` / `HOTKEY_KEY` at the top of
 `hammerspoon.lua` to rebind.
 
-After changing the keymap, re-run the build and copy the HTML across again:
+After a keymap change you normally do nothing: `build-all.sh` refreshes
+`~/.hammerspoon/` for you (reload Hammerspoon to pick it up). If you flashed from
+a CI artifact instead, copy the `miryoku-cheatsheet.html` out of the same
+`miryoku-firmware` download:
 
 ```sh
-python3 cheatsheet/build.py && cp cheatsheet/miryoku-cheatsheet.html ~/.hammerspoon/
+cp ~/Downloads/miryoku-firmware/miryoku-cheatsheet.html ~/.hammerspoon/
 ```
 
 ## A note on live layer highlighting

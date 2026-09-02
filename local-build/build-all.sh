@@ -63,6 +63,20 @@ build corne_right            nice_nano_v2            "corne_right nice_view_adap
 build corneish_zen_v2_left   corneish_zen_v2_left
 build corneish_zen_v2_right  corneish_zen_v2_right
 
+# Regenerate the keymap cheat sheet from the same sources these images were
+# built from, so the reference can never describe a firmware you aren't running.
+CURRENT="keymap cheat sheet"
+SHEET=$MIRYOKU_DIR/cheatsheet/miryoku-cheatsheet.html
+python3 "$MIRYOKU_DIR/cheatsheet/build.py"
+cp "$SHEET" "$OUT/"
+echo ">>> cheat sheet -> $OUT/miryoku-cheatsheet.html"
+
+# If the Hammerspoon HUD is installed, refresh it in place too.
+if [[ -d $HOME/.hammerspoon ]]; then
+  cp "$SHEET" "$HOME/.hammerspoon/"
+  echo ">>> cheat sheet -> ~/.hammerspoon/ (reload Hammerspoon to pick it up)"
+fi
+
 trap - ERR
 echo ""
 echo "############################################"
