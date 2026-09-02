@@ -88,14 +88,23 @@ jobs:
         # Only for the Toucan: the toucan/nice_view_gem shields, the Azoteq
         # TPS43 driver, the zoom input processor and the RGB LED widget all
         # live outside the ZMK tree. Revisions match beekeeb's own west.yml.
+        #
+        # Every branch is pinned explicitly, and that matters for the Azoteq
+        # driver: its DEFAULT branch is `master`, but beekeeb pin `main`, and
+        # only `main` declares the `three-finger-swipe` properties the toucan
+        # shield sets. A plain clone silently picks up `master` and the build
+        # dies in devicetree with "not declared in 'properties:'".
         if: matrix.toucan
         run: |
           set -e
           mkdir -p modules
-          git clone --depth 1 https://github.com/beekeeb/zmk-keyboard-toucan2.git modules/toucan2
-          git clone --depth 1 https://github.com/beekeeb/zmk_driver_azoteq.git   modules/azoteq
-          git clone --depth 1 https://github.com/beekeeb/zmk-input-zoom.git      modules/input-zoom
-          git clone --depth 1 --branch v0.3 https://github.com/caksoylar/zmk-rgbled-widget.git modules/rgbled
+          git clone --depth 1 --branch main https://github.com/beekeeb/zmk-keyboard-toucan2.git modules/toucan2
+          git clone --depth 1 --branch main https://github.com/beekeeb/zmk_driver_azoteq.git    modules/azoteq
+          git clone --depth 1 --branch main https://github.com/beekeeb/zmk-input-zoom.git       modules/input-zoom
+          git clone --depth 1 --branch v0.3 https://github.com/caksoylar/zmk-rgbled-widget.git  modules/rgbled
+          for m in toucan2 azoteq input-zoom rgbled; do
+            echo "$m -> $(git -C modules/$m rev-parse --abbrev-ref HEAD) @ $(git -C modules/$m rev-parse --short HEAD)"
+          done
 
       - name: Build ${{ matrix.name }}
         working-directory: zmk
