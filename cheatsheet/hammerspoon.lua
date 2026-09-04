@@ -68,6 +68,21 @@ end
 
 hs.hotkey.bind(HOTKEY_MODS, HOTKEY_KEY, M.toggle)
 
+-- Pre-warm the panel.
+--
+-- Without this the webview is built on the FIRST hotkey press, so that press
+-- pays for spinning up a WebKit process and parsing the page -- a visible
+-- delay exactly when you are in a hurry to look something up. Building it
+-- up front (hidden) makes every press, including the first, a plain show().
+--
+-- Deferred by a second so it never slows Hammerspoon's own config load, and
+-- guarded so a missing HTML file just leaves it to be retried on first use.
+hs.timer.doAfter(1, function()
+  if not webview then
+    webview = build()
+  end
+end)
+
 -- Escape closes the panel while it is focused.
 M.escWatcher = hs.hotkey.bind({}, "escape", function()
   local win = webview and webview:hswindow()
