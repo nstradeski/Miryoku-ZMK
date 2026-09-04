@@ -55,6 +55,27 @@ jobs:
             board: 'seeeduino_xiao_ble'
             shield: 'toucan_right rgbled_adapter'
             toucan: true
+          # settings_reset wipes all Bluetooth bonds and stored settings. Flash
+          # it onto a half that has got into a confused pairing state, then
+          # reflash the real image. `reset: true` drops ZMK_CONFIG and the
+          # pointing conf -- this shield ships its own minimal keymap and must
+          # not pull in ours.
+          - name: settings_reset_nice_nano_v2
+            board: 'nice_nano_v2'
+            shield: 'settings_reset'
+            reset: true
+          - name: settings_reset_corneish_zen_v2_left
+            board: 'corneish_zen_v2_left'
+            shield: 'settings_reset'
+            reset: true
+          - name: settings_reset_corneish_zen_v2_right
+            board: 'corneish_zen_v2_right'
+            shield: 'settings_reset'
+            reset: true
+          - name: settings_reset_seeeduino_xiao_ble
+            board: 'seeeduino_xiao_ble'
+            shield: 'settings_reset'
+            reset: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -112,9 +133,13 @@ jobs:
         run: |
           # Run from the zmk topdir with -s app (mirrors build-all.sh).
           # Array keeps the multi-word -DSHIELD as a single argument.
-          args=(-p -s app -d "build/${{ matrix.name }}" -b "${{ matrix.board }}" --
-            -DZMK_CONFIG="${GITHUB_WORKSPACE}/miryoku_zmk/config"
-            -DEXTRA_CONF_FILE="${GITHUB_WORKSPACE}/miryoku_zmk/config/pointing.conf")
+          args=(-p -s app -d "build/${{ matrix.name }}" -b "${{ matrix.board }}" --)
+          if [ -z "${{ matrix.reset }}" ]; then
+            # settings_reset must NOT get our keymap or pointing conf; it ships
+            # its own minimal keymap and exists only to wipe stored settings.
+            args+=(-DZMK_CONFIG="${GITHUB_WORKSPACE}/miryoku_zmk/config"
+                   -DEXTRA_CONF_FILE="${GITHUB_WORKSPACE}/miryoku_zmk/config/pointing.conf")
+          fi
           if [ -n "${{ matrix.shield }}" ]; then
             args+=(-DSHIELD="${{ matrix.shield }}")
           fi
