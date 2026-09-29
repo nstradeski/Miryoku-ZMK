@@ -5,10 +5,12 @@
 if(CONFIG_ZMK_BLE_MIDI)
   zephyr_library()
   zephyr_library_include_directories(${APPLICATION_SOURCE_DIR}/include)
-  zephyr_library_include_directories(include)
+  # Global, so a display module can include <zmk_ble_midi/midi_state.h>.
+  zephyr_include_directories(include)
   zephyr_library_sources(
     src/ble_midi.c
     src/behavior_midi.c
     src/input_processor_midi_xy.c
+    src/midi_state.c
   )
 endif()

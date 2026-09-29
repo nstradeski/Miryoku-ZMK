@@ -1,49 +1,149 @@
-// MIDI layer (custom) -- Bluetooth MIDI controller for iPad / Mac.
+// MIDI layers (custom) -- Bluetooth MIDI controller for iPad / Mac.
 //
 // Used by keymaps that define MIRYOKU_MIDI and build the zmk-ble-midi module
-// (modules/zmk-ble-midi). Toggled on AND off by pressing both bottom outer
-// pinky keys together (a combo in config/toucan.keymap). It is sticky: it
-// stays on until you press the combo again.
+// (modules/zmk-ble-midi). Full guide: docs/MIDI.md.
 //
-// Unlike every other layer this one covers all 42 keys, including the outer
-// pinky columns, so it bypasses the Corne mapping macro (which pins those
-// columns to the Witch / Mouseless / WINDOW keys) and lists positions
-// directly, row by row: 12 top, 12 home, 12 bottom, 6 thumbs.
+//   Enter / leave:  press both bottom outer pinky keys together (a combo in
+//                   config/toucan.keymap). Entering always lands on Piano.
+//   Switch mode:    hold the right outer thumb (MODE) and tap a top-row key.
 //
-// Notes follow GarageBand's Musical Typing: the home row is the white keys
-// from C on the A position, and a sharp sits directly ABOVE its natural (key
-// above = one semitone up; the gaps above E and B are empty). Octave keys
-// shift everything; a held note always releases correctly.
+// The MIDI layers cover all 42 keys, including the outer pinky columns, so
+// they bypass the Corne mapping macro (which pins those columns to the Witch
+// / Mouseless / WINDOW keys) and list positions directly, row by row:
+// 12 top, 12 home, 12 bottom, 6 thumbs.
 //
-//        outer  Q/A   W/S   E/D   R/F   T/G  |  Y/H   U/J   I/K   O/L   P/'  outer
-//   top   --    C#    D#    --    F#    G#   |  A#    --    C#'   D#'   --   F#'
-//   home  B,    C     D     E     F     G    |  A     B     C'    D'    E'   F'
-//   bot  Panic Oct-  Oct+  Vel-  Vel+  Mod   | Tg20  Tg21  Tg22  Tg23  Tg24  Pair
-//   thumbs            --    Sustain CC25     | Rec   Play  Stop
+// Every playing mode shares the same thumbs:
+//   Oct-  Sustain  Oct+  |  Mod  Hold  MODE      (Drums: drum sounds instead)
+//   Mod  = mod wheel (CC 1) while held; Hold = CC 85 while held (MIDI Learn)
 //
-//   C = middle C (MIDI 60; GarageBand calls it C3).
-//   Mod     = mod wheel (CC 1) at full while held
-//   Sustain = sustain pedal (CC 64) while held
-//   CC25    = CC 25 at 127 while held, for MIDI Learn (e.g. momentary mute)
-//   Tg20-24 = CC 20-24 toggle 127 / 0 per press, for MIDI Learn (mutes, FX)
-//   Rec/Play/Stop = MIDI Machine Control, plus MIDI Start/Stop on Play/Stop
-//   Panic + Pair together = leave the MIDI layer (the toggle combo)
-//   Pair    = advertise the MIDI service so the iPad's MIDI app can find the
-//             keyboard (see docs/MIDI.md)
-//
-// While this layer is active the trackpad is an XY pad instead of a mouse:
-// left/right drives CC 16, up/down drives CC 17 (see config/toucan.keymap).
+// The trackpad is an XY pad on every MIDI layer (CC 16 / CC 17).
 
 #pragma once
 
 #include <dt-bindings/zmk/midi.h>
 
 #define U_MN(note, octave) &midi_note MIDI_N(note, octave)
+#define U_MIDI_MODE_MO &mo U_MIDI_MODE
 
-#define MIRYOKU_LAYERMAPPING_MIDI(...) __VA_ARGS__
-#define MIRYOKU_LAYER_MIDI \
+#define U_MIDI_PLAY_THUMBS \
+&midi_ctl MIDI_OCT_DN  &midi_cc 64  &midi_ctl MIDI_OCT_UP      &midi_cc 1  &midi_cc 85  U_MIDI_MODE_MO
+
+// ---------------------------------------------------------------------------
+// PIANO -- GarageBand Musical Typing, plus a lower octave of white keys.
+//
+// The home row is the white keys with middle C on the A key; each sharp sits
+// directly ABOVE its natural (key above = one semitone up; above E and B is
+// empty). The bottom row repeats the home row an octave lower (key below =
+// octave down), mostly for left-hand bass. 32 keys, B2..F#5.
+//
+//        outer  Q/A   W/S   E/D   R/F   T/G  |  Y/H   U/J   I/K   O/L   P/'  outer
+//   top   --    C#4   D#4   --    F#4   G#4  |  A#4   --    C#5   D#5   --    F#5
+//   home  B3    C4    D4    E4    F4    G4   |  A4    B4    C5    D5    E5    F5
+//   bot   B2    C3    D3    E3    F3    G3   |  A3    B3    C4    D4    E4    F4
+//
+// C4 is middle C (MIDI 60); GarageBand calls it C3.
+#define MIRYOKU_LAYERMAPPING_MIDI_PIANO(...) __VA_ARGS__
+#define MIRYOKU_LAYER_MIDI_PIANO \
 U_NU            U_MN(MN_CS, 4)  U_MN(MN_DS, 4)  U_NU            U_MN(MN_FS, 4)  U_MN(MN_GS, 4)      U_MN(MN_AS, 4)  U_NU            U_MN(MN_CS, 5)  U_MN(MN_DS, 5)  U_NU            U_MN(MN_FS, 5) \
 U_MN(MN_B, 3)   U_MN(MN_C, 4)   U_MN(MN_D, 4)   U_MN(MN_E, 4)   U_MN(MN_F, 4)   U_MN(MN_G, 4)       U_MN(MN_A, 4)   U_MN(MN_B, 4)   U_MN(MN_C, 5)   U_MN(MN_D, 5)   U_MN(MN_E, 5)   U_MN(MN_F, 5)  \
-&midi_ctl MIDI_PANIC  &midi_ctl MIDI_OCT_DN  &midi_ctl MIDI_OCT_UP  &midi_ctl MIDI_VEL_DN  &midi_ctl MIDI_VEL_UP  &midi_cc 1 \
-    &midi_cc_tog 20  &midi_cc_tog 21  &midi_cc_tog 22  &midi_cc_tog 23  &midi_cc_tog 24  &midi_ctl MIDI_PAIR \
-                                U_NU            &midi_cc 64     &midi_cc 25         &midi_ctl MIDI_REC  &midi_ctl MIDI_PLAY  &midi_ctl MIDI_STOP
+U_MN(MN_B, 2)   U_MN(MN_C, 3)   U_MN(MN_D, 3)   U_MN(MN_E, 3)   U_MN(MN_F, 3)   U_MN(MN_G, 3)       U_MN(MN_A, 3)   U_MN(MN_B, 3)   U_MN(MN_C, 4)   U_MN(MN_D, 4)   U_MN(MN_E, 4)   U_MN(MN_F, 4)  \
+U_MIDI_PLAY_THUMBS
+
+// ---------------------------------------------------------------------------
+// GRID -- one octave per row, chromatic left to right. 36 notes, C3..B5,
+// every semitone exactly once. Key above = octave up.
+//
+//        col:   1     2     3     4     5     6   |  7     8     9     10    11    12
+//   top         C5    C#5   D5    D#5   E5    F5  |  F#5   G5    G#5   A5    A#5   B5
+//   home        C4    C#4   D4    D#4   E4    F4  |  F#4   G4    G#4   A4    A#4   B4
+//   bot         C3    C#3   D3    D#3   E3    F3  |  F#3   G3    G#3   A3    A#3   B3
+#define U_MIDI_GRID_ROW(o) \
+U_MN(MN_C, o)   U_MN(MN_CS, o)  U_MN(MN_D, o)   U_MN(MN_DS, o)  U_MN(MN_E, o)   U_MN(MN_F, o)       U_MN(MN_FS, o)  U_MN(MN_G, o)   U_MN(MN_GS, o)  U_MN(MN_A, o)   U_MN(MN_AS, o)  U_MN(MN_B, o)
+#define MIRYOKU_LAYERMAPPING_MIDI_GRID(...) __VA_ARGS__
+#define MIRYOKU_LAYER_MIDI_GRID \
+U_MIDI_GRID_ROW(5) \
+U_MIDI_GRID_ROW(4) \
+U_MIDI_GRID_ROW(3) \
+U_MIDI_PLAY_THUMBS
+
+// ---------------------------------------------------------------------------
+// DRUMS -- General MIDI drum kit. Fixed notes: octave and key don't move them.
+// Kick and snare are on the thumbs as well as under the index fingers.
+//
+//        outer   Q/A    W/S    E/D    R/F    T/G   |  Y/H    U/J    I/K    O/L    P/'    outer
+//   top  Crash2 Splash OpenHH Crash  HiTom  HMTom  |  LMTom  LoTom  Ride   Bell   China  Ride2
+//   home Tamb   Stick  HiHat  Snare  Kick   Clap   |  Kick   Snare  FlrHi  FlrLo  Cowbl  Maraca
+//   bot  Claves PedHH  Snare2 BongoH BongoL CongaO |  CongaM CongaL TimbH  TimbL  Tri    Cabasa
+//   thumbs            HiHat  Kick   PedHH          |  Snare  Clap   MODE
+#define U_MD(n) &midi_drum GM_##n
+#define MIRYOKU_LAYERMAPPING_MIDI_DRUMS(...) __VA_ARGS__
+#define MIRYOKU_LAYER_MIDI_DRUMS \
+U_MD(CRASH2)    U_MD(SPLASH)    U_MD(HIHAT_OPEN)  U_MD(CRASH)     U_MD(TOM_HI)    U_MD(TOM_HIMID)       U_MD(TOM_LOMID)       U_MD(TOM_LO)      U_MD(RIDE)          U_MD(RIDE_BELL)     U_MD(CHINA)       U_MD(RIDE2)   \
+U_MD(TAMBOURINE) U_MD(SIDESTICK) U_MD(HIHAT_CLOSED) U_MD(SNARE)   U_MD(KICK)      U_MD(CLAP)            U_MD(KICK)            U_MD(SNARE)       U_MD(FLOOR_TOM_HI)  U_MD(FLOOR_TOM_LO)  U_MD(COWBELL)     U_MD(MARACAS) \
+U_MD(CLAVES)    U_MD(HIHAT_PEDAL) U_MD(SNARE2)    U_MD(BONGO_HI)  U_MD(BONGO_LO)  U_MD(CONGA_HI_OPEN)   U_MD(CONGA_HI_MUTE)   U_MD(CONGA_LO)    U_MD(TIMBALE_HI)    U_MD(TIMBALE_LO)    U_MD(TRIANGLE_OPEN) U_MD(CABASA) \
+U_MD(HIHAT_CLOSED)  U_MD(KICK)  U_MD(HIHAT_PEDAL)     U_MD(SNARE)  U_MD(CLAP)  U_MIDI_MODE_MO
+
+// ---------------------------------------------------------------------------
+// CHORD -- one key, one chord, always in the current key and scale.
+//
+// Columns are scale degrees I..VII then I..III an octave up. Top row = 7th
+// chords, home row = triads, bottom row = just the root an octave lower (a
+// bass note for the left hand). In C major: C Dm Em F G Am Bdim C Dm Em.
+// Change key and every chord follows, so the same shapes work in any key.
+//
+//        outer  Q/A   W/S   E/D   R/F   T/G  |  Y/H   U/J   I/K   O/L   P/'  outer
+//   top   Key-  I7    ii7   iii7  IV7   V7   |  vi7   vii7  I7'   ii7'  iii7' Key+
+//   home  Maj/m I     ii    iii   IV    V    |  vi    vii   I'    ii'   iii'  Inv
+//   bot   Panic I     ii    iii   IV    V    |  vi    vii   I'    ii'   iii'  Reset   (bass)
+//
+//   Key-/Key+  move the key a semitone (display shows it, e.g. "G MAJ")
+//   Maj/m      toggle major / natural minor
+//   Inv        cycle root position -> 1st -> 2nd inversion
+//   Reset      back to C major, root position, octave 0
+#define U_MC(flags) &midi_chord (flags)
+#define U_MIDI_CHORD_ROW(f) \
+U_MC(MC_I | f)  U_MC(MC_II | f) U_MC(MC_III | f) U_MC(MC_IV | f) U_MC(MC_V | f)     U_MC(MC_VI | f) U_MC(MC_VII | f) U_MC(MC_I | MC_8VA | f) U_MC(MC_II | MC_8VA | f) U_MC(MC_III | MC_8VA | f)
+#define MIRYOKU_LAYERMAPPING_MIDI_CHORD(...) __VA_ARGS__
+#define MIRYOKU_LAYER_MIDI_CHORD \
+&midi_ctl MIDI_KEY_DN   U_MIDI_CHORD_ROW(MC_7TH)   &midi_ctl MIDI_KEY_UP \
+&midi_ctl MIDI_SCALE    U_MIDI_CHORD_ROW(0)        &midi_ctl MIDI_INV    \
+&midi_ctl MIDI_PANIC    U_MIDI_CHORD_ROW(MC_BASS)  &midi_ctl MIDI_KEY_RST \
+U_MIDI_PLAY_THUMBS
+
+// ---------------------------------------------------------------------------
+// CTRL -- a MIDI Learn control surface for AUM / Loopy Pro / Logic.
+//
+//        outer  Q/A   W/S   E/D   R/F   T/G  |  Y/H   U/J   I/K   O/L   P/'  outer
+//   top   PC-   T20   T21   T22   T23   T24  |  T25   T26   T27   T28   T29   PC+
+//   home  Ch-   M102  M103  M104  M105  M106 |  M107  M108  M109  M110  M111  Ch+
+//   bot   Panic Rec   Play  Stop  Cont  Vel- |  Vel+  Oct-  Oct+  Key-  Key+  Pair
+//   thumbs            Rec   Play  Stop       |  --    --    MODE
+//
+//   T = CC toggle (127 / 0 per press): mutes, FX on/off, loop tracks
+//   M = CC 127 while held: clip / scene launch, momentary actions
+//   PC = program change (previous / next patch), Ch = MIDI channel
+#define U_MCT(cc) &midi_cc_tog cc
+#define U_MCM(cc) &midi_cc cc
+#define MIRYOKU_LAYERMAPPING_MIDI_CTRL(...) __VA_ARGS__
+#define MIRYOKU_LAYER_MIDI_CTRL \
+&midi_ctl MIDI_PC_DN  U_MCT(20)  U_MCT(21)  U_MCT(22)  U_MCT(23)  U_MCT(24)      U_MCT(25)  U_MCT(26)  U_MCT(27)  U_MCT(28)  U_MCT(29)  &midi_ctl MIDI_PC_UP \
+&midi_ctl MIDI_CH_DN  U_MCM(102) U_MCM(103) U_MCM(104) U_MCM(105) U_MCM(106)     U_MCM(107) U_MCM(108) U_MCM(109) U_MCM(110) U_MCM(111) &midi_ctl MIDI_CH_UP \
+&midi_ctl MIDI_PANIC  &midi_ctl MIDI_REC  &midi_ctl MIDI_PLAY  &midi_ctl MIDI_STOP  &midi_ctl MIDI_CONT  &midi_ctl MIDI_VEL_DN \
+    &midi_ctl MIDI_VEL_UP  &midi_ctl MIDI_OCT_DN  &midi_ctl MIDI_OCT_UP  &midi_ctl MIDI_KEY_DN  &midi_ctl MIDI_KEY_UP  &midi_ctl MIDI_PAIR \
+&midi_ctl MIDI_REC  &midi_ctl MIDI_PLAY  &midi_ctl MIDI_STOP     U_NU  U_NU  U_MIDI_MODE_MO
+
+// ---------------------------------------------------------------------------
+// MODE -- held with the right outer thumb from any MIDI layer.
+//
+//        outer  Q/A    W/S    E/D    R/F    T/G   |  Y/H    U/J   I/K   O/L   P/'  outer
+//   top   --    Piano  Grid   Drums  Chord  Ctrl  |  --     --    --    --    --    --
+//   home  --    Vel-   Vel+   Ch-    Ch+    OctR  |  KeyR   --    --    --    --    --
+//   bot   Panic --     --     --     --     --    |  --     --    --    --    --    Pair
+//   thumbs             Exit   --     --           |  --     --    (held)
+#define MIRYOKU_LAYERMAPPING_MIDI_MODE(...) __VA_ARGS__
+#define MIRYOKU_LAYER_MIDI_MODE \
+U_NU  &to U_MIDI_PIANO  &to U_MIDI_GRID  &to U_MIDI_DRUMS  &to U_MIDI_CHORD  &to U_MIDI_CTRL      U_NU  U_NU  U_NU  U_NU  U_NU  U_NU \
+U_NU  &midi_ctl MIDI_VEL_DN  &midi_ctl MIDI_VEL_UP  &midi_ctl MIDI_CH_DN  &midi_ctl MIDI_CH_UP  &midi_ctl MIDI_OCT_RST \
+      &midi_ctl MIDI_KEY_RST  U_NU  U_NU  U_NU  U_NU  U_NU \
+&midi_ctl MIDI_PANIC  U_NU  U_NU  U_NU  U_NU  U_NU      U_NU  U_NU  U_NU  U_NU  U_NU  &midi_ctl MIDI_PAIR \
+&to U_BASE  U_NU  U_NU      U_NU  U_NU  U_NU

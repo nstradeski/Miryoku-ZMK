@@ -1,0 +1,135 @@
+diff --git a/boards/shields/nice_view_gem/widgets/screen.c b/boards/shields/nice_view_gem/widgets/screen.c
+index e6e93cf..9a03318 100644
+--- a/boards/shields/nice_view_gem/widgets/screen.c
++++ b/boards/shields/nice_view_gem/widgets/screen.c
+@@ -45,12 +45,52 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
+ #include "screen.h"
+ #include "sleep.h"
+ 
++#if IS_ENABLED(CONFIG_ZMK_BLE_MIDI)
++#include <stdio.h>
++#include <zmk_ble_midi/midi_state.h>
++#include "../assets/custom_fonts.h"
++#endif
++
+ struct connection_status_state {
+     bool connected;
+ };
+ 
+ static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
+ 
++#if IS_ENABLED(CONFIG_ZMK_BLE_MIDI)
++/**
++ * MIDI status (Miryoku-ZMK patch): drawn in place of the WPM chart while a
++ * MIDI layer is active.
++ *
++ *   G MAJ            key + scale, or NO MIDI when no app is connected
++ *   OCT+1 V100 C1    octave, velocity, MIDI channel
++ *
++ * Both lines start at x=6 and may use the full width: at this height nothing
++ * else is drawn to their right (the profile squares start lower, at y=105),
++ * so the longest line, "OCT-4 V127 C16", fits without wrapping.
++ **/
++static void draw_midi_status(lv_obj_t *canvas, const struct status_state *state) {
++    const struct zmk_midi_state_changed *m = &state->midi;
++    lv_draw_label_dsc_t big, small;
++    char line1[16], line2[24];
++
++    init_label_dsc(&big, LVGL_FOREGROUND, &quinquefive_12, LV_TEXT_ALIGN_LEFT);
++    init_label_dsc(&small, LVGL_FOREGROUND, &quinquefive_8, LV_TEXT_ALIGN_LEFT);
++
++    if (m->connected) {
++        snprintf(line1, sizeof(line1), "%s %s", zmk_ble_midi_key_name(m->transpose),
++                 m->scale == ZMK_MIDI_SCALE_MINOR ? "MIN" : "MAJ");
++    } else {
++        snprintf(line1, sizeof(line1), "NO MIDI");
++    }
++    snprintf(line2, sizeof(line2), "OCT%c%d V%d C%d", m->octave < 0 ? '-' : '+',
++             m->octave < 0 ? -m->octave : m->octave, m->velocity, m->channel + 1);
++
++    lv_canvas_draw_text(canvas, 6, 74, SCREEN_WIDTH - 6, &big, line1);
++    lv_canvas_draw_text(canvas, 6, 92, SCREEN_WIDTH - 6, &small, line2);
++}
++#endif
++
+ /**
+  * Draw buffers
+  **/
+@@ -67,6 +107,11 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
+     // Draw widgets
+     draw_output_status(canvas, state);
+     #if defined(CONFIG_TOUCAN_STATUS_SCREEN) && CONFIG_TOUCAN_STATUS_SCREEN == 2
++#if IS_ENABLED(CONFIG_ZMK_BLE_MIDI)
++    if (zmk_ble_midi_layer_is_midi(state->layer_index)) {
++        draw_midi_status(canvas, state);
++    } else
++#endif
+     draw_chart_status(canvas, state);
+     #endif
+     draw_layer_status(canvas, state);
+@@ -283,6 +328,31 @@ ZMK_DISPLAY_WIDGET_LISTENER(widget_chart_status, struct chart_status_state,
+ ZMK_SUBSCRIPTION(widget_chart_status, zmk_wpm_state_changed);
+ #endif
+ 
++#if IS_ENABLED(CONFIG_ZMK_BLE_MIDI)
++/**
++ * MIDI state (key, octave, velocity, channel, connection)
++ **/
++static void set_midi_status(struct zmk_widget_screen *widget,
++                            struct zmk_midi_state_changed state) {
++    widget->state.midi = state;
++    draw_top(widget->obj, widget->cbuf, &widget->state);
++}
++
++static void midi_status_update_cb(struct zmk_midi_state_changed state) {
++    struct zmk_widget_screen *widget;
++    SYS_SLIST_FOR_EACH_CONTAINER(&widgets, widget, node) { set_midi_status(widget, state); }
++}
++
++static struct zmk_midi_state_changed midi_status_get_state(const zmk_event_t *eh) {
++    const struct zmk_midi_state_changed *ev = eh ? as_zmk_midi_state_changed(eh) : NULL;
++    return ev ? *ev : zmk_ble_midi_state();
++}
++
++ZMK_DISPLAY_WIDGET_LISTENER(widget_midi_status, struct zmk_midi_state_changed,
++                            midi_status_update_cb, midi_status_get_state)
++ZMK_SUBSCRIPTION(widget_midi_status, zmk_midi_state_changed);
++#endif
++
+ /**
+  * Initialization
+  **/
+@@ -300,6 +370,9 @@ int zmk_widget_screen_init(struct zmk_widget_screen *widget, lv_obj_t *parent) {
+     widget_battery_peripheral_status_init();
+     widget_layer_status_init();
+     widget_output_status_init();
++#if IS_ENABLED(CONFIG_ZMK_BLE_MIDI)
++    widget_midi_status_init();
++#endif
+ 
+     #if defined(CONFIG_TOUCAN_STATUS_SCREEN) && CONFIG_TOUCAN_STATUS_SCREEN == 2
+     widget_chart_status_init();
+diff --git a/boards/shields/nice_view_gem/widgets/util.h b/boards/shields/nice_view_gem/widgets/util.h
+index 7563670..5b32cd9 100644
+--- a/boards/shields/nice_view_gem/widgets/util.h
++++ b/boards/shields/nice_view_gem/widgets/util.h
+@@ -2,6 +2,9 @@
+ 
+ #include <lvgl.h>
+ #include <zmk/endpoints.h>
++#if IS_ENABLED(CONFIG_ZMK_BLE_MIDI)
++#include <zmk_ble_midi/midi_state.h>
++#endif
+ 
+ #define SCREEN_WIDTH 144
+ #define SCREEN_HEIGHT 168
+@@ -26,6 +29,9 @@ struct status_state {
+     bool active_profile_bonded;
+     uint8_t layer_index;
+     const char *layer_label;
++#if IS_ENABLED(CONFIG_ZMK_BLE_MIDI)
++    struct zmk_midi_state_changed midi;
++#endif
+ #else
+     bool connected;
+ #endif

@@ -1,17 +1,36 @@
 # Toucan2 as a Bluetooth MIDI controller (iPad)
 
-The Toucan2 firmware includes a **MIDI layer**. On that layer the keys send
-MIDI over Bluetooth instead of keystrokes, and the trackpad works as an XY
-pad. The keyboard connects to the iPad over the same Bluetooth link it
-already uses for typing. You don't need a cable, a dongle, or a second pairing.
+The Toucan2 firmware has five **MIDI modes**: Piano, Grid, Drums, Chord and
+Control. In them the keys send MIDI over Bluetooth instead of keystrokes, and
+the trackpad works as an XY pad. The keyboard connects to the iPad over the
+same Bluetooth link it already uses for typing. You don't need a cable, a
+dongle, or a second pairing.
 
 The firmware side is `modules/zmk-ble-midi`, a small ZMK module added for this
 build. ZMK has no MIDI support of its own. The module adds the standard
 Bluetooth LE MIDI service next to the keyboard service. iPadOS treats that as
 a class-compliant Bluetooth MIDI device, so any MIDI app can use it:
-GarageBand, Logic Pro, AUM, Loopy Pro, Drambo, Koala, and others.
+GarageBand, Logic Pro, AUM, Loopy Pro, Drambo, Melodics, and others.
 
 Only the Toucan2 has this. The Corne and Corne-ish Zen builds are unchanged.
+
+## At a glance
+
+| To... | Do this |
+|---|---|
+| Turn MIDI on / off | Press **both bottom outer pinky keys together**. MIDI always starts in Piano. |
+| Switch mode | Hold the **right outer thumb** (MODE) and tap **Q** Piano, **W** Grid, **E** Drums, **R** Chord or **T** Control |
+| Make the iPad find it | Hold MODE and tap **Pair** (bottom-right outer key) |
+| Silence stuck notes | Hold MODE and tap **Panic** (bottom-left outer key) |
+| Leave MIDI | The pinky combo again, or hold MODE and tap the left outer thumb |
+
+**About the on/off combo:**
+- It's ignored for 150 ms after any other keypress. Fast playing or typing
+  can't trigger it by accident, and the two keys under it never wait on it
+  mid-phrase.
+- After a pause, those two keys can take up to 50 ms to sound, while the
+  keyboard waits to see if the other one follows. In Piano that's B2 and F4
+  (F4 is also on the home row), in Grid C3 and B3.
 
 ## One-time setup
 
@@ -19,7 +38,8 @@ Only the Toucan2 has this. The Corne and Corne-ish Zen builds are unchanged.
    The MIDI service runs on the left (central) half.
 2. **Let the iPad see the new service.** The iPad caches the list of services
    from when you paired the keyboard. The firmware tells it the list changed,
-   but if the MIDI device never appears in step 4 below, re-pair from scratch:
+   but if the MIDI device never appears in the steps below, re-pair from
+   scratch:
    - iPad: Settings → Bluetooth → Toucan ⓘ → *Forget This Device*.
    - Keyboard: on the **FUN** layer, press the iPad's profile key (the
      `BT 0–3` keys on the bottom-right row) *shifted*. That clears the profile.
@@ -30,116 +50,231 @@ Only the Toucan2 has this. The Corne and Corne-ish Zen builds are unchanged.
 iPadOS apps connect to Bluetooth MIDI devices themselves, from their own
 "Bluetooth MIDI Devices" panel. The panel only lists devices that are
 advertising MIDI. A keyboard that is already connected for typing isn't
-advertising, so there's a **Pair** key that makes it advertise for 60 seconds:
+advertising, so **Pair** makes it advertise for 60 seconds:
 
-1. Switch to the MIDI layer: press **both bottom outer pinky keys together**.
+1. Turn MIDI on (the pinky combo).
 2. Open the app's Bluetooth MIDI panel:
    - **GarageBand:** open a song → Settings (gear) → Advanced →
      *Bluetooth MIDI Devices*.
-   - **AUM / Loopy Pro / others:** look for *Bluetooth MIDI* in the app's
-     settings or MIDI routing page.
-3. Tap **Pair**, the bottom-right outer key on the MIDI layer. The keyboard
-   shows up in the list under its Bluetooth name. Tap it to connect.
-   Advertising stops by itself once the app connects.
+   - **Other apps** (AUM, Loopy Pro, Melodics...): look for *Bluetooth
+     MIDI* in the app's settings or MIDI setup. If an app has no such panel,
+     connect once from GarageBand's panel and then switch apps. The
+     connection is shared by every app.
+3. Hold MODE and tap **Pair**. The keyboard shows up under its Bluetooth
+   name. Tap it to connect. Advertising stops by itself once the app
+   connects.
 
-After that, every MIDI app on the iPad sees the keyboard as a MIDI input until
-it disconnects: sleep, walking away, or a profile switch. After a disconnect,
-repeat step 3.
+The connection lasts until the keyboard disconnects: sleep, walking away, or
+a Bluetooth profile switch. After that, pair again. Turning MIDI off doesn't
+disconnect it, so you can flip between typing and playing freely.
 
-Press both bottom outer pinky keys together again to leave the MIDI layer.
-The keyboard and trackpad work normally again, and the MIDI connection stays
-up in the background.
+## The status screen
 
-## The MIDI layer
+While a MIDI mode is on, the left half's screen replaces the typing-speed
+graph with the MIDI state. The big text at the bottom is the mode.
 
-**Turn it on and off by pressing both bottom outer pinky keys together.** The
-same gesture works both ways, and the layer stays on until you press it again.
-Either key alone still does its normal job (hold for WINDOW on the base
-layers; Panic or Pair on the MIDI layer). The combo only fires when both go
-down within 50 ms.
+![Status screen preview](midi-screen-preview.png)
 
-Notes follow GarageBand's *Musical Typing*. The home row is the white keys,
-starting with **C on the A key**. Each sharp is **directly above** its natural,
-so the key above is one semitone higher. The keys above E and B are empty, as
-on a piano.
+*Approximate preview, rendered from the screen's real font and coordinates.*
+
+- **Line 1** is the key and scale, e.g. `G MAJ`. It reads **`NO MIDI`**
+  until an app is connected, which makes it a quick connection check.
+- **Line 2** is octave, velocity and MIDI channel: `OCT+1 V100 C1`.
+
+## Shared thumbs
+
+In Piano, Grid and Chord, the thumbs are:
 
 ```
-         outer  Q/A   W/S   E/D   R/F   T/G  │  Y/H   U/J   I/K   O/L   P/'  outer
-top       --    C#    D#    --    F#    G#   │  A#    --    C#'   D#'   --    F#'
-home      B,    C     D     E     F     G    │  A     B     C'    D'    E'    F'
-bottom  Panic  Oct-  Oct+  Vel-  Vel+  Mod   │ Tg20  Tg21  Tg22  Tg23  Tg24  Pair
-thumbs               --  Sustain CC25       │  Rec  Play  Stop
+left:  Oct−   Sustain   Oct+        right:  Mod   Hold   MODE
 ```
 
-| Key | Sends |
-|---|---|
-| C (A key) | Middle C, MIDI note 60. GarageBand labels it **C3**. |
-| Oct− / Oct+ | Shift all notes an octave, ±4. Held notes still release correctly. |
-| Vel− / Vel+ | Note velocity ±16. It starts at 100. |
-| Mod | Mod wheel (CC 1) at full while held |
-| Sustain | Sustain pedal (CC 64) while held. The left thumb, in the Space position. |
-| CC25 | CC 25 at 127 while held, 0 on release. Use it with MIDI Learn for momentary actions. |
-| Tg20–Tg24 | CC 20–24. Each press toggles 127 / 0. Use them with MIDI Learn for mutes, FX on/off, loop tracks. |
-| Rec / Play / Stop | MIDI Machine Control (MMC) Record / Play / Stop. Play and Stop also send MIDI Start / Stop. |
-| Panic | Releases every held note and sends All Notes Off and Sustain Off |
-| Pair | Advertises the MIDI service for 60 s (see above) |
-| Panic + Pair together | Leaves the MIDI layer (the toggle combo) |
+- **Sustain** (Space position): sustain pedal, CC 64, while held.
+- **Mod**: mod wheel at full (CC 1) while held.
+- **Hold**: CC 85 at 127 while held, for MIDI Learn.
+- Drums and Control use their own thumbs (see below). **MODE** is always the
+  right outer thumb.
 
-### Trackpad = XY pad
+## The trackpad
 
-On the MIDI layer the trackpad no longer moves the cursor. Instead:
+On every MIDI layer the trackpad is an **XY pad** instead of a mouse:
 
 - **left / right** sends **CC 16**, from 0 to 127
 - **up / down** sends **CC 17**, from 0 to 127
 
-Both start at 64. They work like two knobs you move with one finger: filter
-cutoff on X and resonance on Y, for example. Map them with the app's MIDI
-Learn. To change how far you swipe for the full 0–127 range, set `divisor` on
-`&midi_xy` in `config/toucan.keymap`. The default is 4; higher gives finer
-control and needs more travel.
+Both start at 64. Map them with the app's MIDI Learn to two "knobs", for
+example filter cutoff and resonance. To change how far you swipe for the full
+0–127 range, set `divisor` on `&midi_xy` in `config/toucan.keymap`. The
+default is 4; higher gives finer control and needs more travel.
 
-### What works where
+## Piano: 32 keys, laid out like a piano
 
-- **Notes** work in any instrument app. GarageBand plays whichever
+GarageBand's *Musical Typing*, plus an octave of white keys below it.
+
+- The **home row is the white keys**, starting with **middle C on the A key**.
+- Each **sharp sits directly above** its natural, so the key above is one
+  semitone higher. The keys above E and B are empty, as on a piano.
+- The **bottom row repeats the home row an octave lower**, so the key below is
+  one octave down. It's mostly for left-hand bass.
+
+```
+         outer  Q/A   W/S   E/D   R/F   T/G  │  Y/H   U/J   I/K   O/L   P/'  outer
+top       --    C#4   D#4   --    F#4   G#4  │  A#4   --    C#5   D#5   --    F#5
+home      B3    C4    D4    E4    F4    G4   │  A4    B4    C5    D5    E5    F5
+bottom    B2    C3    D3    E3    F3    G3   │  A3    B3    C4    D4    E4    F4
+```
+
+C4 is middle C, MIDI note 60. GarageBand labels it **C3**. This is the mode
+to use for Melodics piano lessons, because it matches the piano Melodics
+shows on screen.
+
+## Grid: 36 notes, one octave per row
+
+Every semitone from C3 to B5 appears exactly once. Each row runs chromatically
+from left to right, and the key above is an octave higher. It covers more
+range than Piano, but it doesn't look like a piano.
+
+```
+         col:  1     2     3     4     5     6   │  7     8     9     10    11    12
+top            C5    C#5   D5    D#5   E5    F5  │  F#5   G5    G#5   A5    A#5   B5
+home           C4    C#4   D4    D#4   E4    F4  │  F#4   G4    G#4   A4    A#4   B4
+bottom         C3    C#3   D3    D#3   E3    F3  │  F#3   G3    G#3   A3    A#3   B3
+```
+
+## Drums: a General MIDI kit
+
+Each key plays a fixed drum sound; octave and key shifts don't affect it. It
+uses the standard General MIDI drum notes, which GarageBand drum kits,
+Melodics pad lessons and most drum apps understand. Kick and snare are under
+your index fingers **and** on the thumbs, like pedals.
+
+```
+         outer   Q/A    W/S    E/D    R/F    T/G   │  Y/H    U/J    I/K    O/L    P/'    outer
+top      Crash2 Splash OpenHH Crash  HiTom  HMTom  │  LMTom  LoTom  Ride   Bell   China  Ride2
+home     Tamb   Stick  HiHat  Snare  Kick   Clap   │  Kick   Snare  FlrHi  FlrLo  Cowbl  Maraca
+bottom   Claves PedHH  Snare2 BongoH BongoL CongaO │  CongaM CongaL TimbH  TimbL  Tri    Cabasa
+thumbs                 HiHat  Kick   PedHH         │  Snare  Clap   MODE
+```
+
+## Chord: one key, one chord, in any key
+
+The chord keys play the chords that belong to the current key, not fixed
+chords. Change the key and every chord follows, so the same hand shapes work
+in any key.
+
+The columns are scale degrees I–VII, then I–III an octave up. Each row plays
+them differently:
+
+- **Top row:** seventh chords (four notes)
+- **Home row:** triads (three notes)
+- **Bottom row:** just the root, an octave lower, as a bass note for your
+  left hand
+
+```
+         outer  Q/A   W/S   E/D   R/F   T/G  │  Y/H   U/J   I/K   O/L   P/'   outer
+top       Key−  I7    ii7   iii7  IV7   V7   │  vi7   vii7  I7'   ii7'  iii7'  Key+
+home      Maj/m I     ii    iii   IV    V    │  vi    vii   I'    ii'   iii'   Inv
+bottom    Panic I     ii    iii   IV    V    │  vi    vii   I'    ii'   iii'   Reset
+```
+
+In C major the home row plays C Dm Em F G Am Bdim C Dm Em. Switch to G major
+and the same keys play G Am Bm C D Em F#dim G Am Bm.
+
+| Key | Does |
+|---|---|
+| Key− / Key+ | Move the key a semitone. The screen shows it, e.g. `G MAJ`. Key shifts Piano and Grid too, so they transpose along with it. |
+| Maj/m | Switch between major and (natural) minor |
+| Inv | Cycle root position → 1st → 2nd inversion. Inversions keep chord changes closer together, so they sound smoother. |
+| Reset | Back to C major, root position, octave 0 |
+
+## Control: a MIDI Learn control surface
+
+Keys for AUM, Loopy Pro, Logic and other apps that let you map controls with
+MIDI Learn.
+
+```
+         outer  Q/A   W/S   E/D   R/F   T/G  │  Y/H   U/J   I/K   O/L   P/'  outer
+top       PC−   T20   T21   T22   T23   T24  │  T25   T26   T27   T28   T29   PC+
+home      Ch−   M102  M103  M104  M105  M106 │  M107  M108  M109  M110  M111  Ch+
+bottom    Panic Rec   Play  Stop  Cont  Vel− │  Vel+  Oct−  Oct+  Key−  Key+  Pair
+thumbs                Rec   Play  Stop       │  --    --    MODE
+```
+
+- **T20–T29** are CC toggles: each press alternates 127 / 0. Use them for
+  mutes, effects on/off, or loop tracks.
+- **M102–M111** send CC 127 while held. Use them for clip or scene launch and
+  other momentary actions.
+- **PC−/+** send the previous or next program change, which switches patches
+  in apps that support it. **Ch−/+** change the MIDI channel.
+- **Rec / Play / Stop** send MIDI Machine Control (MMC). Play and Stop also
+  send MIDI Start / Stop. Whether they work depends on the app; if one
+  ignores them, map a toggle key with MIDI Learn instead.
+
+## The MODE layer
+
+Hold the right outer thumb:
+
+```
+         outer  Q/A    W/S    E/D    R/F    T/G   │  Y/H    U/J   ...
+top       --    Piano  Grid   Drums  Chord  Ctrl  │  --
+home      --    Vel−   Vel+   Ch−    Ch+    OctR  │  KeyR
+bottom    Panic --     --     --     --     --    │  ...                Pair
+thumbs    Exit (left outer)
+```
+
+## What works where
+
+- **Notes and drums** work in any instrument app. GarageBand plays whichever
   instrument is open.
-- **CCs** need a host that maps MIDI CC, which most do through *MIDI Learn*:
-  AUM, Loopy Pro, Logic Pro, Drambo, and most synth apps. GarageBand
-  responds to sustain (CC 64) and mod wheel (CC 1) but has no general MIDI
-  Learn.
-- **Transport** (MMC / Start / Stop) depends on the app. If an app ignores
-  it, map one of the toggle CCs to play/record with MIDI Learn instead.
+- **Melodics:** use **Piano** for keys lessons and **Drums** for pad lessons.
+  Melodics filters lessons by how many keys your controller has. Some wider
+  keys lessons may still be out of reach, and every note plays at the same
+  velocity.
+- **CCs, the trackpad and transport** need an app with MIDI Learn: AUM, Loopy
+  Pro, Logic Pro, Drambo and most synths. GarageBand only responds to sustain
+  (CC 64) and the mod wheel (CC 1).
 
 ## Customizing
 
-The layer is defined in `miryoku/miryoku_midi.h`, one row per line. These
+All the layouts are in `miryoku/miryoku_midi.h`, one row per line. These
 bindings are available:
 
 ```c
-&midi_note MIDI_N(MN_FS, 4)   // a note: MN_C, MN_CS, MN_D, ... MN_B + octave
+&midi_note MIDI_N(MN_FS, 4)   // a note, moved by Oct and Key
+&midi_drum GM_SNARE           // a fixed note (GM_* names for the drum map)
+&midi_chord (MC_V | MC_7TH)   // chord on a scale degree; MC_BASS, MC_8VA
 &midi_cc 74                   // CC 74 = 127 while held, 0 on release
 &midi_cc_tog 80               // CC 80 toggles 127 / 0
-&midi_ctl MIDI_OCT_UP         // see the list below
+&midi_ctl MIDI_OCT_UP         // a command, see below
 ```
 
-`&midi_ctl` commands: `MIDI_OCT_DN/UP/RST`, `MIDI_SEMI_DN/UP` (transpose),
-`MIDI_VEL_DN/UP`, `MIDI_CH_DN/UP` (MIDI channel, which starts at 1),
-`MIDI_PC_DN/UP` (previous/next program change), `MIDI_PANIC`, `MIDI_PLAY`,
-`MIDI_STOP`, `MIDI_CONT`, `MIDI_REC`, `MIDI_PAIR`. The full list with comments
-is in `modules/zmk-ble-midi/include/dt-bindings/zmk/midi.h`.
+`&midi_ctl` commands: `MIDI_OCT_DN/UP/RST`, `MIDI_KEY_DN/UP/RST`,
+`MIDI_SCALE`, `MIDI_INV`, `MIDI_VEL_DN/UP`, `MIDI_CH_DN/UP`, `MIDI_PC_DN/UP`,
+`MIDI_PANIC`, `MIDI_PLAY`, `MIDI_STOP`, `MIDI_CONT`, `MIDI_REC`, `MIDI_PAIR`.
+The full list with comments is in
+`modules/zmk-ble-midi/include/dt-bindings/zmk/midi.h`.
 
-Tuning knobs, such as the default velocity and how long Pair advertises, are
-Kconfig options in `modules/zmk-ble-midi/Kconfig`. Set them in
+The Kconfig options, such as the default velocity and how long Pair
+advertises, are in `modules/zmk-ble-midi/Kconfig`. Set them in
 `config/toucan_left.conf`.
+
+**The status screen** is drawn by beekeeb's Toucan2 module, which lives
+outside this repo. `patches/toucan2-midi-status.patch` adds the MIDI panel,
+and CI applies it to a pinned commit of that module. To move to a newer
+upstream commit, bump the SHA in `.github/workflows/build-firmware.yml` and
+refresh the patch. The panel only exists in the default screen style
+(`CONFIG_TOUCAN_STATUS_SCREEN=2`).
 
 ## Limits
 
-- **Velocity is per layer, not per keystroke.** Key switches can't sense how
-  hard you press, so every note uses the current Vel−/Vel+ setting.
+- **Velocity is a setting, not per keystroke.** Key switches can't
+  sense how hard you press, so every note uses the current Vel−/Vel+ setting.
 - **Bluetooth only, to the active profile.** MIDI goes to the host on the
   currently selected Bluetooth profile. It doesn't go over USB.
 - **Latency** is set by the Bluetooth connection interval the iPad chooses,
   typically 7.5–15 ms. That's fine for playing and triggering, but not for
   sample-tight drumming.
-- **Not yet tested on hardware.** The firmware compiles and the layer is
-  wired up, but the board hasn't arrived yet. The first things to check on a
-  real iPad are the Pair → connect flow and the trackpad `divisor`.
+- **Not yet tested on hardware.** The firmware compiles and every layer
+  decodes to the layouts above, but the board hasn't arrived yet. The first
+  things to check on a real iPad are the Pair → connect flow, the screen, and
+  the trackpad `divisor`.

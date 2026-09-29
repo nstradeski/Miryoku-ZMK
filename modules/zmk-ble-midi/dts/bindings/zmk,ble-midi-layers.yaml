@@ -1,0 +1,8 @@
+description: Marks keymap layers as MIDI layers (used to show MIDI status on a display)
+
+compatible: "zmk,ble-midi-layers"
+
+properties:
+  layers:
+    type: array
+    required: true

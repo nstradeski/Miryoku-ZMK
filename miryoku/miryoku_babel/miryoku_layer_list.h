@@ -6,10 +6,17 @@
 
 #if !defined (MIRYOKU_LAYER_LIST)
 
-// MIDI layer (custom): only on keyboards whose keymap defines MIRYOKU_MIDI
-// and builds the zmk-ble-midi module (see miryoku/miryoku_midi.h).
+// MIDI layers (custom): only on keyboards whose keymap defines MIRYOKU_MIDI
+// and builds the zmk-ble-midi module (see miryoku/miryoku_midi.h). Display
+// names are kept to five characters so they fit the Toucan's status screen.
 #if defined (MIRYOKU_MIDI)
-#define U_MIRYOKU_LAYER_MIDI MIRYOKU_X(MIDI, "MIDI")
+#define U_MIRYOKU_LAYER_MIDI \
+MIRYOKU_X(MIDI_PIANO, "Piano") \
+MIRYOKU_X(MIDI_GRID,  "Grid") \
+MIRYOKU_X(MIDI_DRUMS, "Drums") \
+MIRYOKU_X(MIDI_CHORD, "Chord") \
+MIRYOKU_X(MIDI_CTRL,  "Ctrl") \
+MIRYOKU_X(MIDI_MODE,  "Mode")
 #else
 #define U_MIRYOKU_LAYER_MIDI
 #endif
@@ -39,6 +46,11 @@ U_MIRYOKU_LAYER_MIDI
 #define U_SYM    8
 #define U_FUN    9
 #define U_WINDOW 10
-#define U_MIDI   11
+#define U_MIDI_PIANO 11
+#define U_MIDI_GRID  12
+#define U_MIDI_DRUMS 13
+#define U_MIDI_CHORD 14
+#define U_MIDI_CTRL  15
+#define U_MIDI_MODE  16
 
 #endif

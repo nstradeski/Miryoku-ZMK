@@ -13,3 +13,5 @@ properties:
       - "cc"         # param: CC number; 127 while held, 0 on release
       - "cc-toggle"  # param: CC number; alternates 127 / 0 on each press
       - "control"    # param: MIDI_* command from dt-bindings/zmk/midi.h
+      - "fixed-note" # param: MIDI note, not shifted by octave or key (drums)
+      - "chord"      # param: MC_* scale degree and flags; chord in the current key

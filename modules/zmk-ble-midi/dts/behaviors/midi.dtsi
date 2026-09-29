@@ -12,6 +12,16 @@
             #binding-cells = <1>;
             midi-type = "note";
         };
+        midi_drum: midi_drum {
+            compatible = "zmk,behavior-midi";
+            #binding-cells = <1>;
+            midi-type = "fixed-note";
+        };
+        midi_chord: midi_chord {
+            compatible = "zmk,behavior-midi";
+            #binding-cells = <1>;
+            midi-type = "chord";
+        };
         midi_cc: midi_cc {
             compatible = "zmk,behavior-midi";
             #binding-cells = <1>;

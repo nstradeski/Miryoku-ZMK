@@ -9,7 +9,7 @@
 // including our outer-column Witch / Mouseless / WINDOW keys.
 
 // Bluetooth MIDI: this board builds the zmk-ble-midi module (see
-// docs/MIDI.md), which adds the MIDI layer and the midi_* behaviors.
+// docs/MIDI.md), which adds the MIDI layers and the midi_* behaviors.
 #define MIRYOKU_MIDI
 #include <behaviors/midi.dtsi>
 
@@ -18,21 +18,47 @@
 #include "../miryoku/miryoku_midi.h"
 #include "../miryoku/miryoku.dtsi"
 
-// MIDI layer toggle: press both bottom outer pinky keys together to turn the
-// MIDI layer on, and again to turn it off. It is the only way in or out.
+// MIDI on / off: press both bottom outer pinky keys together. The same
+// gesture enters (always on Piano) and leaves (back to BASE) from any MIDI
+// mode. It is the only way in or out.
 //
 // Positions 24 and 35 are the bottom-row outer keys (row by row: 12 top,
 // 12 home, 12 bottom, 6 thumbs). Normally each one holds the WINDOW layer;
-// alone they still do, the combo only fires when both go down within 50 ms.
-// On the MIDI layer they are Panic and Pair, again unaffected one at a time.
+// in the MIDI modes they are notes, drums or Panic / Reset. Alone, every one
+// of them still does its own job; the combo only fires when both go down
+// within 50 ms. require-prior-idle-ms keeps it out of the way while you
+// type or play: if any key was pressed in the last 150 ms, the two keys act
+// alone immediately, so fast passages never wait on the combo and can't
+// accidentally drop you out of MIDI.
+//
+// Combos only look at the highest active layer, hence two combos: one for
+// the typing layers, one for the MIDI layers (including the held MODE layer).
+#define U_MIDI_COMBO_KEYS 24 35
 / {
     combos {
         compatible = "zmk,combos";
-        combo_midi_toggle {
+        combo_midi_on {
             timeout-ms = <50>;
-            key-positions = <24 35>;
-            bindings = <&tog U_MIDI>;
+            require-prior-idle-ms = <150>;
+            key-positions = <U_MIDI_COMBO_KEYS>;
+            layers = <U_BASE U_EXTRA U_TAP U_BUTTON U_NAV U_MOUSE U_MEDIA U_NUM U_SYM U_FUN U_WINDOW>;
+            bindings = <&to U_MIDI_PIANO>;
         };
+        combo_midi_off {
+            timeout-ms = <50>;
+            require-prior-idle-ms = <150>;
+            key-positions = <U_MIDI_COMBO_KEYS>;
+            layers = <U_MIDI_PIANO U_MIDI_GRID U_MIDI_DRUMS U_MIDI_CHORD U_MIDI_CTRL U_MIDI_MODE>;
+            bindings = <&to U_BASE>;
+        };
+    };
+
+    // Tells the zmk-ble-midi module (and through it the status screen)
+    // which layers are MIDI layers, so the screen shows key / octave /
+    // velocity / channel there instead of the typing-speed graph.
+    midi_layers {
+        compatible = "zmk,ble-midi-layers";
+        layers = <U_MIDI_PIANO U_MIDI_GRID U_MIDI_DRUMS U_MIDI_CHORD U_MIDI_CTRL U_MIDI_MODE>;
     };
 };
 
@@ -44,7 +70,8 @@
 // without these overrides the trackpad silently drives the wrong layers:
 //
 //   index:  0 BASE  1 EXTRA  2 TAP  3 BUTTON  4 NAV  5 MOUSE
-//           6 MEDIA  7 NUM   8 SYM  9 FUN    10 WINDOW  11 MIDI
+//           6 MEDIA  7 NUM   8 SYM  9 FUN    10 WINDOW
+//           11-16 MIDI: PIANO GRID DRUMS CHORD CTRL MODE
 //
 // Everything else in the shield is already macOS-correct and left alone:
 // the zoom mapper sends Cmd+- / Cmd+= and the three-finger swipes send
@@ -69,12 +96,12 @@
         layers = <U_MOUSE U_NAV>;
     };
 
-    // On the MIDI layer the trackpad is an XY controller: left/right sends
+    // On every MIDI layer the trackpad is an XY controller: left/right sends
     // CC 16, up/down CC 17, each 0-127. The processor swallows every trackpad
     // event there, so the cursor stays put and touching the pad does not pull
     // in the BUTTON layer. Tune travel with `divisor` on &midi_xy.
     midi {
-        layers = <U_MIDI>;
+        layers = <U_MIDI_PIANO U_MIDI_GRID U_MIDI_DRUMS U_MIDI_CHORD U_MIDI_CTRL U_MIDI_MODE>;
         input-processors = <&midi_xy 16 17>;
     };
 };

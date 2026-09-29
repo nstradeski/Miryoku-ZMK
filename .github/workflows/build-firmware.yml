@@ -16,6 +16,7 @@ on:
       - 'config/**'
       - 'miryoku/**'
       - 'modules/**'
+      - 'patches/**'
       - 'cheatsheet/**'
       - '.github/workflows/build-firmware.yml'
   workflow_dispatch:
@@ -120,7 +121,15 @@ jobs:
         run: |
           set -e
           mkdir -p modules
-          git clone --depth 1 --branch main https://github.com/beekeeb/zmk-keyboard-toucan2.git modules/toucan2
+          # toucan2 is pinned to an exact commit, because we patch its status
+          # screen (patches/toucan2-midi-status.patch adds the MIDI panel). A
+          # moving branch could make the patch stop applying; bump the SHA and
+          # refresh the patch together.
+          TOUCAN2_SHA=6882c95bec5be89988e90feb621f78a7511e9ed7
+          git init -q modules/toucan2
+          git -C modules/toucan2 fetch -q --depth 1 https://github.com/beekeeb/zmk-keyboard-toucan2.git "$TOUCAN2_SHA"
+          git -C modules/toucan2 checkout -q FETCH_HEAD
+          git -C modules/toucan2 apply --verbose "${GITHUB_WORKSPACE}/miryoku_zmk/patches/toucan2-midi-status.patch"
           git clone --depth 1 --branch main https://github.com/beekeeb/zmk_driver_azoteq.git    modules/azoteq
           git clone --depth 1 --branch main https://github.com/beekeeb/zmk-input-zoom.git       modules/input-zoom
           git clone --depth 1 --branch v0.3 https://github.com/caksoylar/zmk-rgbled-widget.git  modules/rgbled

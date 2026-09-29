@@ -21,6 +21,7 @@
 #include <zmk/event_manager.h>
 #include <zmk/events/ble_active_profile_changed.h>
 #include <zmk_ble_midi/ble_midi.h>
+#include <zmk_ble_midi/midi_state.h>
 
 LOG_MODULE_REGISTER(zmk_ble_midi, CONFIG_ZMK_LOG_LEVEL);
 
@@ -60,6 +61,7 @@ static ssize_t write_midi_io(struct bt_conn *conn, const struct bt_gatt_attr *at
 static void midi_ccc_changed(const struct bt_gatt_attr *attr, uint16_t value) {
     bool on = value == BT_GATT_CCC_NOTIFY;
     LOG_INF("MIDI notifications %s", on ? "enabled" : "disabled");
+    zmk_ble_midi_state_notify();
     if (on) {
         /* A MIDI app found us; no need to keep advertising for it. */
         k_work_reschedule(&pair_adv_stop_work, K_NO_WAIT);
@@ -254,11 +256,14 @@ static void midi_disconnected(struct bt_conn *conn, uint8_t reason) {
      * Get out of its way synchronously, before that runs. */
     k_work_cancel_delayable(&pair_adv_stop_work);
     pair_adv_stop();
+    zmk_ble_midi_state_notify();
 }
 
 /* Selecting another profile makes ZMK try to advertise straight away, which
  * fails while this advertiser holds the radio. Hand it back and retry. */
 static int midi_profile_changed_listener(const zmk_event_t *eh) {
+    /* A different host may or may not be subscribed to MIDI. */
+    zmk_ble_midi_state_notify();
     if (pair_adv_active) {
         k_work_cancel_delayable(&pair_adv_stop_work);
         pair_adv_stop();
