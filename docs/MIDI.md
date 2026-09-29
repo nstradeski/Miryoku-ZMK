@@ -32,8 +32,7 @@ iPadOS apps connect to Bluetooth MIDI devices themselves, from their own
 advertising MIDI. A keyboard that is already connected for typing isn't
 advertising, so there's a **Pair** key that makes it advertise for 60 seconds:
 
-1. Switch to the MIDI layer: hold **Space** (NAV) and **double-tap T**. That
-   key sits next to the Base/Extra/Tap layer keys in the same row.
+1. Switch to the MIDI layer: press **both bottom outer pinky keys together**.
 2. Open the app's Bluetooth MIDI panel:
    - **GarageBand:** open a song → Settings (gear) → Advanced →
      *Bluetooth MIDI Devices*.
@@ -47,11 +46,17 @@ After that, every MIDI app on the iPad sees the keyboard as a MIDI input until
 it disconnects: sleep, walking away, or a profile switch. After a disconnect,
 repeat step 3.
 
-The keyboard keeps typing normally on every other layer. Back on the base
-layer it's an ordinary keyboard again, and the MIDI connection stays up in the
-background.
+Press both bottom outer pinky keys together again to leave the MIDI layer.
+The keyboard and trackpad work normally again, and the MIDI connection stays
+up in the background.
 
 ## The MIDI layer
+
+**Turn it on and off by pressing both bottom outer pinky keys together.** The
+same gesture works both ways, and the layer stays on until you press it again.
+Either key alone still does its normal job (hold for WINDOW on the base
+layers; Panic or Pair on the MIDI layer). The combo only fires when both go
+down within 50 ms.
 
 Notes follow GarageBand's *Musical Typing*. The home row is the white keys,
 starting with **C on the A key**. Each sharp is **directly above** its natural,
@@ -63,7 +68,7 @@ on a piano.
 top       --    C#    D#    --    F#    G#   │  A#    --    C#'   D#'   --    F#'
 home      B,    C     D     E     F     G    │  A     B     C'    D'    E'    F'
 bottom  Panic  Oct-  Oct+  Vel-  Vel+  Mod   │ Tg20  Tg21  Tg22  Tg23  Tg24  Pair
-thumbs              Base  Sustain CC25       │  Rec  Play  Stop
+thumbs               --  Sustain CC25       │  Rec  Play  Stop
 ```
 
 | Key | Sends |
@@ -78,7 +83,7 @@ thumbs              Base  Sustain CC25       │  Rec  Play  Stop
 | Rec / Play / Stop | MIDI Machine Control (MMC) Record / Play / Stop. Play and Stop also send MIDI Start / Stop. |
 | Panic | Releases every held note and sends All Notes Off and Sustain Off |
 | Pair | Advertises the MIDI service for 60 s (see above) |
-| Base | Leaves the MIDI layer |
+| Panic + Pair together | Leaves the MIDI layer (the toggle combo) |
 
 ### Trackpad = XY pad
 

@@ -18,6 +18,24 @@
 #include "../miryoku/miryoku_midi.h"
 #include "../miryoku/miryoku.dtsi"
 
+// MIDI layer toggle: press both bottom outer pinky keys together to turn the
+// MIDI layer on, and again to turn it off. It is the only way in or out.
+//
+// Positions 24 and 35 are the bottom-row outer keys (row by row: 12 top,
+// 12 home, 12 bottom, 6 thumbs). Normally each one holds the WINDOW layer;
+// alone they still do, the combo only fires when both go down within 50 ms.
+// On the MIDI layer they are Panic and Pair, again unaffected one at a time.
+/ {
+    combos {
+        compatible = "zmk,combos";
+        combo_midi_toggle {
+            timeout-ms = <50>;
+            key-positions = <24 35>;
+            bindings = <&tog U_MIDI>;
+        };
+    };
+};
+
 // ---------------------------------------------------------------------------
 // Trackpad: re-point the shield's input processors at Miryoku's layer numbers
 //

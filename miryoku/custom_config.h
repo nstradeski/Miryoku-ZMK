@@ -199,18 +199,3 @@
 &kp U_HYPER(Z),    &kp U_HYPER(X),    &kp U_HYPER(C),    &kp U_HYPER(V),    &kp U_HYPER(B),    &kp U_HYPER(N),    &kp U_HYPER(M),    &kp U_HYPER(F14),  &kp U_HYPER(F15),  &kp U_HYPER(SLASH),\
 U_NP,              U_NP,              U_WIN_CLOSE,       U_WIN_MIN,         U_WIN_FULL,        U_WIN_FULL,        U_WIN_MIN,         U_WIN_CLOSE,       U_NP,              U_NP
 // ---------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------
-// MIDI layer entry (custom)
-//
-// Keyboards built with the zmk-ble-midi module define MIRYOKU_MIDI in their
-// keymap (currently only the Toucan2). For them, the empty key at the T
-// position of the NAV layer's layer-switch row -- next to Base / Extra / Tap
-// -- switches to the MIDI layer (double-tap, like its neighbours). Everywhere
-// else that key stays inert. The layer itself is in miryoku/miryoku_midi.h.
-#if defined (MIRYOKU_MIDI)
-#define U_TO_MIDI &u_to_U_MIDI
-#else
-#define U_TO_MIDI U_NA
-#endif
-// ---------------------------------------------------------------------------
