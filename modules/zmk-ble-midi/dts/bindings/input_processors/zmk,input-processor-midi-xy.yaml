@@ -1,4 +1,6 @@
-description: Turns relative X/Y movement into two MIDI CCs (param1 = X CC, param2 = Y CC)
+description: |
+  Trackpad as a MIDI controller. One finger: X/Y drive two CCs (param1 = X CC,
+  param2 = Y CC). Two fingers up/down: note velocity slider. Pinch: a third CC.
 
 compatible: "zmk,input-processor-midi-xy"
 
@@ -8,4 +10,19 @@ properties:
   divisor:
     type: int
     default: 4
-    description: Movement units per CC step. Higher = finer control, more travel for 0-127.
+    description: One-finger movement units per CC step. Higher = finer, more travel.
+  velocity-divisor:
+    type: int
+    default: 2
+    description: Two-finger scroll units per velocity step (1-127).
+  velocity-invert:
+    type: boolean
+    description: Flip the velocity slider if moving fingers up makes notes quieter.
+  pinch-cc:
+    type: int
+    default: 18
+    description: CC sent by pinching (spread = up). -1 turns pinch off.
+  pinch-divisor:
+    type: int
+    default: 2
+    description: Pinch units per CC step.

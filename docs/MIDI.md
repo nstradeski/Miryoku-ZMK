@@ -2,7 +2,7 @@
 
 The Toucan2 firmware has five **MIDI modes**: Piano, Grid, Drums, Chord and
 Control. In them the keys send MIDI over Bluetooth instead of keystrokes, and
-the trackpad works as an XY pad. The keyboard connects to the iPad over the
+the trackpad works as an XY pad and velocity slider. The keyboard connects to the iPad over the
 same Bluetooth link it already uses for typing. You don't need a cable, a
 dongle, or a second pairing.
 
@@ -97,15 +97,33 @@ left:  Oct−   Sustain   Oct+        right:  Mod   Hold   MODE
 
 ## The trackpad
 
-On every MIDI layer the trackpad is an **XY pad** instead of a mouse:
+On every MIDI layer the trackpad is a MIDI controller instead of a mouse. It
+does three different jobs depending on how many fingers you use:
 
-- **left / right** sends **CC 16**, from 0 to 127
-- **up / down** sends **CC 17**, from 0 to 127
+| Gesture | Does |
+|---|---|
+| **One finger** | **XY pad for effects.** Left/right sends **CC 16**, up/down sends **CC 17**, each 0–127. Map them with MIDI Learn to two "knobs", e.g. filter cutoff and resonance. |
+| **Two fingers up / down** | **Velocity slider.** Sets how loud every note key plays, from 1 to 127. Up is louder. The screen's `V` value updates as you slide. |
+| **Pinch** | **A third knob, CC 18.** Spread your fingers to raise it, pinch to lower it. |
 
-Both start at 64. Map them with the app's MIDI Learn to two "knobs", for
-example filter cutoff and resonance. To change how far you swipe for the full
-0–127 range, set `divisor` on `&midi_xy` in `config/toucan.keymap`. The
-default is 4; higher gives finer control and needs more travel.
+- **The gestures can't interfere.** The trackpad itself tells one finger,
+  two fingers and a pinch apart, so sliding velocity never moves the effect
+  knobs and vice versa.
+- **Starting values:** the three knobs start at 64. Velocity keeps whatever
+  it was, and MODE + A/S still adjust it in steps of 16.
+- **The mouse is off.** Clicks, scrolling and zoom do nothing on the MIDI
+  layers; they come back when you turn MIDI off.
+
+**Tuning:** the settings live on `&midi_xy` in `config/toucan.keymap` (add a
+`&midi_xy { ... };` block).
+
+| Setting | Default | Controls |
+|---|---|---|
+| `divisor` | 4 | How far one finger travels for the full 0–127. Higher gives finer control and needs more travel. |
+| `velocity-divisor` | 2 | The same for the velocity slider |
+| `velocity-invert` | off | Set this if moving your fingers up makes notes quieter |
+| `pinch-cc` | 18 | Which CC pinch sends; `-1` turns pinch off |
+| `pinch-divisor` | 2 | How much pinching covers the full range |
 
 ## Piano: 32 keys, laid out like a piano
 
@@ -230,7 +248,7 @@ thumbs    Exit (left outer)
   Melodics filters lessons by how many keys your controller has. Some wider
   keys lessons may still be out of reach, and every note plays at the same
   velocity.
-- **CCs, the trackpad and transport** need an app with MIDI Learn: AUM, Loopy
+- **CCs, the trackpad knobs and transport** need an app with MIDI Learn: AUM, Loopy
   Pro, Logic Pro, Drambo and most synths. GarageBand only responds to sustain
   (CC 64) and the mod wheel (CC 1).
 
@@ -274,7 +292,8 @@ refresh the patch. The panel only exists in the default screen style
 - **Latency** is set by the Bluetooth connection interval the iPad chooses,
   typically 7.5–15 ms. That's fine for playing and triggering, but not for
   sample-tight drumming.
-- **Not yet tested on hardware.** The firmware compiles and every layer
-  decodes to the layouts above, but the board hasn't arrived yet. The first
-  things to check on a real iPad are the Pair → connect flow, the screen, and
-  the trackpad `divisor`.
+- **Not yet tried on the keyboard with an iPad.** The firmware builds and
+  every layer decodes to the layouts above, but none of it has been used on
+  the real board yet. The first things to check are the Pair → connect flow,
+  the screen, the direction of the velocity slider, and the trackpad travel
+  settings.

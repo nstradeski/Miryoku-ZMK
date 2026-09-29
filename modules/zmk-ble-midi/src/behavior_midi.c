@@ -156,6 +156,16 @@ static void panic(void) {
     send3(0xB0 | ch, 123, 0); /* all notes off */
 }
 
+uint8_t zmk_ble_midi_velocity(void) { return velocity; }
+
+void zmk_ble_midi_set_velocity(int value) {
+    value = CLAMP(value, 1, 127);
+    if (value != velocity) {
+        velocity = value;
+        zmk_ble_midi_state_notify();
+    }
+}
+
 struct zmk_midi_state_changed zmk_ble_midi_state(void) {
     return (struct zmk_midi_state_changed){
         .octave = octave,

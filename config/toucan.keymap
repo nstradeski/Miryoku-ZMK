@@ -96,10 +96,14 @@
         layers = <U_MOUSE U_NAV>;
     };
 
-    // On every MIDI layer the trackpad is an XY controller: left/right sends
-    // CC 16, up/down CC 17, each 0-127. The processor swallows every trackpad
-    // event there, so the cursor stays put and touching the pad does not pull
-    // in the BUTTON layer. Tune travel with `divisor` on &midi_xy.
+    // On every MIDI layer the trackpad is a MIDI controller instead of a
+    // mouse (the trackpad driver tells the gestures apart):
+    //   one finger              XY pad: left/right CC 16, up/down CC 17
+    //   two fingers up/down     velocity slider for every note key
+    //   pinch                   CC 18 (spread = up)
+    // The processor swallows every trackpad event there, so the cursor stays
+    // put and touching the pad does not pull in the BUTTON layer. Tuning
+    // (travel, direction, pinch CC) is on &midi_xy, see docs/MIDI.md.
     midi {
         layers = <U_MIDI_PIANO U_MIDI_GRID U_MIDI_DRUMS U_MIDI_CHORD U_MIDI_CTRL U_MIDI_MODE>;
         input-processors = <&midi_xy 16 17>;
