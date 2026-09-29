@@ -8,8 +8,14 @@
 // six thumbs, so the stock Miryoku 42-key Corne mapping applies unchanged,
 // including our outer-column Witch / Mouseless / WINDOW keys.
 
+// Bluetooth MIDI: this board builds the zmk-ble-midi module (see
+// docs/MIDI.md), which adds the MIDI layer and the midi_* behaviors.
+#define MIRYOKU_MIDI
+#include <behaviors/midi.dtsi>
+
 #include "../miryoku/custom_config.h"
 #include "../miryoku/mapping/42/corne.h"
+#include "../miryoku/miryoku_midi.h"
 #include "../miryoku/miryoku.dtsi"
 
 // ---------------------------------------------------------------------------
@@ -20,7 +26,7 @@
 // without these overrides the trackpad silently drives the wrong layers:
 //
 //   index:  0 BASE  1 EXTRA  2 TAP  3 BUTTON  4 NAV  5 MOUSE
-//           6 MEDIA  7 NUM   8 SYM  9 FUN    10 WINDOW
+//           6 MEDIA  7 NUM   8 SYM  9 FUN    10 WINDOW  11 MIDI
 //
 // Everything else in the shield is already macOS-correct and left alone:
 // the zoom mapper sends Cmd+- / Cmd+= and the three-finger swipes send
@@ -43,5 +49,14 @@
 &trackpad_listener {
     scroller {
         layers = <U_MOUSE U_NAV>;
+    };
+
+    // On the MIDI layer the trackpad is an XY controller: left/right sends
+    // CC 16, up/down CC 17, each 0-127. The processor swallows every trackpad
+    // event there, so the cursor stays put and touching the pad does not pull
+    // in the BUTTON layer. Tune travel with `divisor` on &midi_xy.
+    midi {
+        layers = <U_MIDI>;
+        input-processors = <&midi_xy 16 17>;
     };
 };

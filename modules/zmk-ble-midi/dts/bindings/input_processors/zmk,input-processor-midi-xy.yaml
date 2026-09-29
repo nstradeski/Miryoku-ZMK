@@ -1,0 +1,11 @@
+description: Turns relative X/Y movement into two MIDI CCs (param1 = X CC, param2 = Y CC)
+
+compatible: "zmk,input-processor-midi-xy"
+
+include: ip_two_param.yaml
+
+properties:
+  divisor:
+    type: int
+    default: 4
+    description: Movement units per CC step. Higher = finer control, more travel for 0-127.

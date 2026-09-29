@@ -6,6 +6,14 @@
 
 #if !defined (MIRYOKU_LAYER_LIST)
 
+// MIDI layer (custom): only on keyboards whose keymap defines MIRYOKU_MIDI
+// and builds the zmk-ble-midi module (see miryoku/miryoku_midi.h).
+#if defined (MIRYOKU_MIDI)
+#define U_MIRYOKU_LAYER_MIDI MIRYOKU_X(MIDI, "MIDI")
+#else
+#define U_MIRYOKU_LAYER_MIDI
+#endif
+
 #define MIRYOKU_LAYER_LIST \
 MIRYOKU_X(BASE,   "Base") \
 MIRYOKU_X(EXTRA,  "Extra") \
@@ -17,7 +25,8 @@ MIRYOKU_X(MEDIA,  "Media") \
 MIRYOKU_X(NUM,    "Num") \
 MIRYOKU_X(SYM,    "Sym") \
 MIRYOKU_X(FUN,    "Fun") \
-MIRYOKU_X(WINDOW, "Window")
+MIRYOKU_X(WINDOW, "Window") \
+U_MIRYOKU_LAYER_MIDI
 
 #define U_BASE   0
 #define U_EXTRA  1
@@ -30,5 +39,6 @@ MIRYOKU_X(WINDOW, "Window")
 #define U_SYM    8
 #define U_FUN    9
 #define U_WINDOW 10
+#define U_MIDI   11
 
 #endif

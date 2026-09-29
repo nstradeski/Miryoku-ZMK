@@ -15,6 +15,7 @@ on:
     paths:
       - 'config/**'
       - 'miryoku/**'
+      - 'modules/**'
       - 'cheatsheet/**'
       - '.github/workflows/build-firmware.yml'
   workflow_dispatch:
@@ -145,7 +146,9 @@ jobs:
           fi
           if [ -n "${{ matrix.toucan }}" ]; then
             M="${GITHUB_WORKSPACE}/modules"
-            args+=(-DZMK_EXTRA_MODULES="$M/toucan2;$M/azoteq;$M/input-zoom;$M/rgbled")
+            # zmk-ble-midi lives in this repo (Bluetooth MIDI, see docs/MIDI.md).
+            MIDI="${GITHUB_WORKSPACE}/miryoku_zmk/modules/zmk-ble-midi"
+            args+=(-DZMK_EXTRA_MODULES="$M/toucan2;$M/azoteq;$M/input-zoom;$M/rgbled;$MIDI")
           fi
           west build "${args[@]}"
 

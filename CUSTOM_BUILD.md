@@ -9,6 +9,9 @@ positional home-row mods.
 
 Both are 6-column 42-key splits and share the same Miryoku 42-key mapping.
 
+The beekeeb **Toucan2** build also adds a Bluetooth MIDI layer, so it can be
+used as a MIDI controller on an iPad. See [docs/MIDI.md](docs/MIDI.md).
+
 ---
 
 ## 1. File locations

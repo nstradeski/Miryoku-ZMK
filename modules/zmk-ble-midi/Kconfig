@@ -1,0 +1,39 @@
+config ZMK_BLE_MIDI
+    bool "Bluetooth LE MIDI service and MIDI key behaviors"
+    default y
+    depends on ZMK_BLE && (!ZMK_SPLIT || ZMK_SPLIT_ROLE_CENTRAL)
+    help
+      Adds the standard BLE-MIDI GATT service next to ZMK's HID service, so a
+      host (iPad, Mac) can use the keyboard as a Bluetooth MIDI controller
+      while it keeps working as a keyboard. Also provides the &midi_note,
+      &midi_cc, &midi_cc_tog and &midi_ctl behaviors and the midi_xy input
+      processor (trackpad -> two CCs).
+
+if ZMK_BLE_MIDI
+
+config ZMK_BLE_MIDI_QUEUE_SIZE
+    int "Outgoing MIDI message queue length"
+    default 32
+
+config ZMK_BLE_MIDI_THREAD_STACK_SIZE
+    int "Stack size of the MIDI send work queue"
+    default 1024
+
+config ZMK_BLE_MIDI_THREAD_PRIORITY
+    int "Priority of the MIDI send work queue"
+    default 5
+
+config ZMK_BLE_MIDI_DEFAULT_VELOCITY
+    int "Note-on velocity at boot (1-127)"
+    range 1 127
+    default 100
+
+config ZMK_BLE_MIDI_PAIR_ADV_SECONDS
+    int "How long MIDI_PAIR advertises the MIDI service, in seconds"
+    default 60
+
+config ZMK_BLE_MIDI_XY_INTERVAL_MS
+    int "Minimum interval between trackpad CC updates, in milliseconds"
+    default 10
+
+endif

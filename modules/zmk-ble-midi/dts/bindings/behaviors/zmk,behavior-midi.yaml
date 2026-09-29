@@ -1,0 +1,15 @@
+description: MIDI key behavior (notes, CCs, performance controls) sent over BLE-MIDI
+
+compatible: "zmk,behavior-midi"
+
+include: one_param.yaml
+
+properties:
+  midi-type:
+    type: string
+    required: true
+    enum:
+      - "note"       # param: MIDI note; note on while held, off on release
+      - "cc"         # param: CC number; 127 while held, 0 on release
+      - "cc-toggle"  # param: CC number; alternates 127 / 0 on each press
+      - "control"    # param: MIDI_* command from dt-bindings/zmk/midi.h

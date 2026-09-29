@@ -1,0 +1,36 @@
+/*
+ * MIDI behaviors. Include from the keymap:
+ *
+ *   #include <behaviors/midi.dtsi>
+ *   #include <dt-bindings/zmk/midi.h>
+ */
+
+/ {
+    behaviors {
+        midi_note: midi_note {
+            compatible = "zmk,behavior-midi";
+            #binding-cells = <1>;
+            midi-type = "note";
+        };
+        midi_cc: midi_cc {
+            compatible = "zmk,behavior-midi";
+            #binding-cells = <1>;
+            midi-type = "cc";
+        };
+        midi_cc_tog: midi_cc_tog {
+            compatible = "zmk,behavior-midi";
+            #binding-cells = <1>;
+            midi-type = "cc-toggle";
+        };
+        midi_ctl: midi_ctl {
+            compatible = "zmk,behavior-midi";
+            #binding-cells = <1>;
+            midi-type = "control";
+        };
+    };
+
+    midi_xy: midi_xy {
+        compatible = "zmk,input-processor-midi-xy";
+        #input-processor-cells = <2>;
+    };
+};
