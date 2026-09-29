@@ -7,6 +7,14 @@ compatible: "zmk,input-processor-midi-xy"
 include: ip_two_param.yaml
 
 properties:
+  channel:
+    type: int
+    default: 0
+    description: MIDI channel 1-16 for everything this sends; 0 = the current channel.
+  wheel-cc:
+    type: int
+    default: -1
+    description: Two-finger up/down sends this CC instead of acting as the velocity slider. -1 = velocity slider.
   divisor:
     type: int
     default: 4
@@ -14,7 +22,7 @@ properties:
   velocity-divisor:
     type: int
     default: 2
-    description: Two-finger scroll units per velocity step (1-127).
+    description: Two-finger scroll units per velocity (or wheel-cc) step.
   velocity-invert:
     type: boolean
     description: Flip the velocity slider if moving fingers up makes notes quieter.

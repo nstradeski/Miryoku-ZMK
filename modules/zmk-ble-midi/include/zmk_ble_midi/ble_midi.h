@@ -29,7 +29,11 @@ void zmk_ble_midi_set_channel(uint8_t channel);
 uint8_t zmk_ble_midi_velocity(void);
 void zmk_ble_midi_set_velocity(int velocity);
 
-static inline int zmk_ble_midi_send_cc(uint8_t cc, uint8_t value) {
-    const uint8_t msg[] = {0xB0 | zmk_ble_midi_channel(), cc & 0x7F, value & 0x7F};
+static inline int zmk_ble_midi_send_cc_on(uint8_t channel, uint8_t cc, uint8_t value) {
+    const uint8_t msg[] = {0xB0 | (channel & 0x0F), cc & 0x7F, value & 0x7F};
     return zmk_ble_midi_send(msg, sizeof(msg));
+}
+
+static inline int zmk_ble_midi_send_cc(uint8_t cc, uint8_t value) {
+    return zmk_ble_midi_send_cc_on(zmk_ble_midi_channel(), cc, value);
 }

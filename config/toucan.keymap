@@ -48,7 +48,7 @@
             timeout-ms = <50>;
             require-prior-idle-ms = <150>;
             key-positions = <U_MIDI_COMBO_KEYS>;
-            layers = <U_MIDI_PIANO U_MIDI_GRID U_MIDI_DRUMS U_MIDI_CHORD U_MIDI_CTRL U_MIDI_MODE>;
+            layers = <U_MIDI_PIANO U_MIDI_GRID U_MIDI_DRUMS U_MIDI_CHORD U_MIDI_CTRL U_MIDI_DJ U_MIDI_MODE>;
             bindings = <&to U_BASE>;
         };
     };
@@ -56,9 +56,18 @@
     // Tells the zmk-ble-midi module (and through it the status screen)
     // which layers are MIDI layers, so the screen shows key / octave /
     // velocity / channel there instead of the typing-speed graph.
+    // Trackpad processor for the DJ mode (see &trackpad_listener below).
+    midi_dj_xy: midi_dj_xy {
+        compatible = "zmk,input-processor-midi-xy";
+        #input-processor-cells = <2>;
+        channel = <16>;
+        wheel-cc = <3>;
+        pinch-cc = <4>;
+    };
+
     midi_layers {
         compatible = "zmk,ble-midi-layers";
-        layers = <U_MIDI_PIANO U_MIDI_GRID U_MIDI_DRUMS U_MIDI_CHORD U_MIDI_CTRL U_MIDI_MODE>;
+        layers = <U_MIDI_PIANO U_MIDI_GRID U_MIDI_DRUMS U_MIDI_CHORD U_MIDI_CTRL U_MIDI_DJ U_MIDI_MODE>;
     };
 };
 
@@ -71,7 +80,7 @@
 //
 //   index:  0 BASE  1 EXTRA  2 TAP  3 BUTTON  4 NAV  5 MOUSE
 //           6 MEDIA  7 NUM   8 SYM  9 FUN    10 WINDOW
-//           11-16 MIDI: PIANO GRID DRUMS CHORD CTRL MODE
+//           11-17 MIDI: PIANO GRID DRUMS CHORD CTRL DJ MODE
 //
 // Everything else in the shield is already macOS-correct and left alone:
 // the zoom mapper sends Cmd+- / Cmd+= and the three-finger swipes send
@@ -104,6 +113,15 @@
     // The processor swallows every trackpad event there, so the cursor stays
     // put and touching the pad does not pull in the BUTTON layer. Tuning
     // (travel, direction, pinch CC) is on &midi_xy, see docs/MIDI.md.
+    // DJ mode: same gestures, but every one is a knob on MIDI channel 16 so
+    // djay's MIDI Learn can take them (no velocity slider, there are no notes
+    // to play): one finger X = CC 1 (crossfader), Y = CC 2, two fingers up/
+    // down = CC 3, pinch = CC 4. Listed first so it wins on the DJ layer.
+    midi_dj {
+        layers = <U_MIDI_DJ>;
+        input-processors = <&midi_dj_xy 1 2>;
+    };
+
     midi {
         layers = <U_MIDI_PIANO U_MIDI_GRID U_MIDI_DRUMS U_MIDI_CHORD U_MIDI_CTRL U_MIDI_MODE>;
         input-processors = <&midi_xy 16 17>;

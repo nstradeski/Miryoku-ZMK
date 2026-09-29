@@ -5,7 +5,8 @@
 //
 //   Enter / leave:  press both bottom outer pinky keys together (a combo in
 //                   config/toucan.keymap). Entering always lands on Piano.
-//   Switch mode:    hold the right outer thumb (MODE) and tap a top-row key.
+//   Switch mode:    hold the right outer thumb (MODE) and tap a top-row key
+//                   (Q Piano, W Grid, E Drums, R Chord, T Ctrl, Y DJ).
 //
 // The MIDI layers cover all 42 keys, including the outer pinky columns, so
 // they bypass the Corne mapping macro (which pins those columns to the Witch
@@ -133,16 +134,70 @@ U_MIDI_PLAY_THUMBS
 &midi_ctl MIDI_REC  &midi_ctl MIDI_PLAY  &midi_ctl MIDI_STOP     U_NU  U_NU  U_MIDI_MODE_MO
 
 // ---------------------------------------------------------------------------
+// DJ -- two decks for Algoriddim djay (or any DJ app with MIDI Learn).
+//
+// Left hand = deck 1, right hand = deck 2, as mirror images: every function
+// is under the same finger on both hands (Play under the index finger, hot
+// cue 1 under the pinky). Each key sends its own note on MIDI channel 16, so
+// djay's MIDI Learn can map it and the other modes (channel 1) never trigger
+// djay by accident. Hold-to-act keys (Cue, Nudge) send note off on release.
+//
+//   per hand, pinky -> index:
+//   top     Load   HC1    HC2    HC3    HC4    FX1
+//   home    PFL    Loop/2 Loop*2 Loop   Play   Cue
+//   bottom  Sync   LoopIn LoopOut Nudge- Nudge+ FX2
+//   thumbs  Browse up  Browse down  Spare1 | Spare2  Spare3  MODE
+//
+//   PFL = headphone cue. Loop = auto loop on/off. HC = hot cue.
+//   Trackpad: X = crossfader (CC 1), Y = CC 2, two fingers = CC 3,
+//   pinch = CC 4, all on channel 16 (see config/toucan.keymap).
+//
+// Note numbers (channel 16): deck 1 = 0 + function, deck 2 = 32 + function,
+// thumbs 64-68. Nothing depends on them; djay learns whatever it receives.
+#define U_DJ_LOAD 0
+#define U_DJ_HC1 1
+#define U_DJ_HC2 2
+#define U_DJ_HC3 3
+#define U_DJ_HC4 4
+#define U_DJ_FX1 5
+#define U_DJ_PFL 6
+#define U_DJ_LOOP_HALF 7
+#define U_DJ_LOOP_DOUBLE 8
+#define U_DJ_LOOP 9
+#define U_DJ_PLAY 10
+#define U_DJ_CUE 11
+#define U_DJ_SYNC 12
+#define U_DJ_LOOP_IN 13
+#define U_DJ_LOOP_OUT 14
+#define U_DJ_NUDGE_DN 15
+#define U_DJ_NUDGE_UP 16
+#define U_DJ_FX2 17
+#define U_DJ_CH 16
+#define U_DJ(deck, fn) &midi_drum MIDI_ON_CH(U_DJ_CH, ((deck) - 1) * 32 + U_DJ_##fn)
+#define U_DJ_THUMB(n) &midi_drum MIDI_ON_CH(U_DJ_CH, 64 + (n))
+// One row per hand: a..f from pinky to index. Deck 1 reads left to right,
+// deck 2 is the mirror image, so it is listed index-first.
+#define U_DJ_ROW(a, b, c, d, e, f) \
+U_DJ(1, a) U_DJ(1, b) U_DJ(1, c) U_DJ(1, d) U_DJ(1, e) U_DJ(1, f) \
+U_DJ(2, f) U_DJ(2, e) U_DJ(2, d) U_DJ(2, c) U_DJ(2, b) U_DJ(2, a)
+#define MIRYOKU_LAYERMAPPING_MIDI_DJ(...) __VA_ARGS__
+#define MIRYOKU_LAYER_MIDI_DJ \
+U_DJ_ROW(LOAD, HC1, HC2, HC3, HC4, FX1) \
+U_DJ_ROW(PFL, LOOP_HALF, LOOP_DOUBLE, LOOP, PLAY, CUE) \
+U_DJ_ROW(SYNC, LOOP_IN, LOOP_OUT, NUDGE_DN, NUDGE_UP, FX2) \
+U_DJ_THUMB(0)  U_DJ_THUMB(1)  U_DJ_THUMB(2)      U_DJ_THUMB(3)  U_DJ_THUMB(4)  U_MIDI_MODE_MO
+
+// ---------------------------------------------------------------------------
 // MODE -- held with the right outer thumb from any MIDI layer.
 //
 //        outer  Q/A    W/S    E/D    R/F    T/G   |  Y/H    U/J   I/K   O/L   P/'  outer
-//   top   --    Piano  Grid   Drums  Chord  Ctrl  |  --     --    --    --    --    --
+//   top   --    Piano  Grid   Drums  Chord  Ctrl  |  DJ     --    --    --    --    --
 //   home  --    Vel-   Vel+   Ch-    Ch+    OctR  |  KeyR   --    --    --    --    --
 //   bot   Panic --     --     --     --     --    |  --     --    --    --    --    Pair
 //   thumbs             Exit   --     --           |  --     --    (held)
 #define MIRYOKU_LAYERMAPPING_MIDI_MODE(...) __VA_ARGS__
 #define MIRYOKU_LAYER_MIDI_MODE \
-U_NU  &to U_MIDI_PIANO  &to U_MIDI_GRID  &to U_MIDI_DRUMS  &to U_MIDI_CHORD  &to U_MIDI_CTRL      U_NU  U_NU  U_NU  U_NU  U_NU  U_NU \
+U_NU  &to U_MIDI_PIANO  &to U_MIDI_GRID  &to U_MIDI_DRUMS  &to U_MIDI_CHORD  &to U_MIDI_CTRL      &to U_MIDI_DJ  U_NU  U_NU  U_NU  U_NU  U_NU \
 U_NU  &midi_ctl MIDI_VEL_DN  &midi_ctl MIDI_VEL_UP  &midi_ctl MIDI_CH_DN  &midi_ctl MIDI_CH_UP  &midi_ctl MIDI_OCT_RST \
       &midi_ctl MIDI_KEY_RST  U_NU  U_NU  U_NU  U_NU  U_NU \
 &midi_ctl MIDI_PANIC  U_NU  U_NU  U_NU  U_NU  U_NU      U_NU  U_NU  U_NU  U_NU  U_NU  &midi_ctl MIDI_PAIR \

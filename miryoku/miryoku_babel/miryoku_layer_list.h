@@ -16,6 +16,7 @@ MIRYOKU_X(MIDI_GRID,  "Grid") \
 MIRYOKU_X(MIDI_DRUMS, "Drums") \
 MIRYOKU_X(MIDI_CHORD, "Chord") \
 MIRYOKU_X(MIDI_CTRL,  "Ctrl") \
+MIRYOKU_X(MIDI_DJ,    "DJ") \
 MIRYOKU_X(MIDI_MODE,  "Mode")
 #else
 #define U_MIRYOKU_LAYER_MIDI
@@ -51,6 +52,7 @@ U_MIRYOKU_LAYER_MIDI
 #define U_MIDI_DRUMS 13
 #define U_MIDI_CHORD 14
 #define U_MIDI_CTRL  15
-#define U_MIDI_MODE  16
+#define U_MIDI_DJ    16
+#define U_MIDI_MODE  17
 
 #endif

@@ -29,6 +29,11 @@
  * (GarageBand, Logic) call the same note C3. */
 #define MIDI_N(note, octave) (((octave) + 1) * 12 + (note))
 
+/* &midi_drum MIDI_ON_CH(16, 5): a fixed note on a fixed MIDI channel (1-16)
+ * instead of the current one. Used by the DJ mode so its buttons never
+ * collide with notes from the other modes. */
+#define MIDI_ON_CH(channel, note) (((channel) << 8) | (note))
+
 /* &midi_ctl commands */
 #define MIDI_OCT_DN 0   /* octave down (held notes still release correctly) */
 #define MIDI_OCT_UP 1

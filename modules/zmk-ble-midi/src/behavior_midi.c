@@ -86,14 +86,13 @@ static void send_mmc(uint8_t command) {
     zmk_ble_midi_send(msg, sizeof(msg));
 }
 
-static void start_note(uint32_t position, int note) {
+static void start_note_on(uint32_t position, int note, uint8_t ch) {
     if (note < 0 || note > 127) {
         return;
     }
 
     for (int i = 0; i < MAX_HELD_NOTES; i++) {
         if (!held[i].used) {
-            uint8_t ch = zmk_ble_midi_channel();
             held[i] = (struct held_note){
                 .used = true, .position = position, .channel = ch, .note = note};
             send3(0x90 | ch, note, velocity);
@@ -101,6 +100,10 @@ static void start_note(uint32_t position, int note) {
         }
     }
     LOG_WRN("Too many held notes, ignoring note %d", note);
+}
+
+static void start_note(uint32_t position, int note) {
+    start_note_on(position, note, zmk_ble_midi_channel());
 }
 
 static void stop_notes(uint32_t position) {
@@ -266,9 +269,13 @@ static int on_midi_pressed(struct zmk_behavior_binding *binding,
     case MIDI_TYPE_NOTE:
         start_note(event.position, (int)param + 12 * octave + transpose);
         break;
-    case MIDI_TYPE_FIXED_NOTE:
-        start_note(event.position, param);
+    case MIDI_TYPE_FIXED_NOTE: {
+        /* MIDI_ON_CH(ch, note) puts a fixed channel (1-16) above the note. */
+        uint32_t fixed_ch = (param >> 8) & 0x1F;
+        start_note_on(event.position, param & 0x7F,
+                      fixed_ch ? (fixed_ch - 1) & 0x0F : zmk_ble_midi_channel());
         break;
+    }
     case MIDI_TYPE_CHORD:
         start_chord(event.position, param);
         break;

@@ -1,7 +1,7 @@
 # Toucan2 as a Bluetooth MIDI controller (iPad)
 
-The Toucan2 firmware has five **MIDI modes**: Piano, Grid, Drums, Chord and
-Control. In them the keys send MIDI over Bluetooth instead of keystrokes, and
+The Toucan2 firmware has six **MIDI modes**: Piano, Grid, Drums, Chord,
+Control and DJ. In them the keys send MIDI over Bluetooth instead of keystrokes, and
 the trackpad works as an XY pad and velocity slider. The keyboard connects to the iPad over the
 same Bluetooth link it already uses for typing. You don't need a cable, a
 dongle, or a second pairing.
@@ -19,7 +19,7 @@ Only the Toucan2 has this. The Corne and Corne-ish Zen builds are unchanged.
 | To... | Do this |
 |---|---|
 | Turn MIDI on / off | Press **both bottom outer pinky keys together**. MIDI always starts in Piano. |
-| Switch mode | Hold the **right outer thumb** (MODE) and tap **Q** Piano, **W** Grid, **E** Drums, **R** Chord or **T** Control |
+| Switch mode | Hold the **right outer thumb** (MODE) and tap **Q** Piano, **W** Grid, **E** Drums, **R** Chord, **T** Control or **Y** DJ |
 | Make the iPad find it | Hold MODE and tap **Pair** (bottom-right outer key) |
 | Silence stuck notes | Hold MODE and tap **Panic** (bottom-left outer key) |
 | Leave MIDI | The pinky combo again, or hold MODE and tap the left outer thumb |
@@ -228,13 +228,53 @@ thumbs                Rec   Play  Stop       │  --    --    MODE
   send MIDI Start / Stop. Whether they work depends on the app; if one
   ignores them, map a toggle key with MIDI Learn instead.
 
+## DJ: two decks for djay
+
+For Algoriddim **djay** on iPad, or any DJ app with MIDI Learn. Your left
+hand is deck 1 and your right hand is deck 2.
+
+```
+per hand, pinky → index (the right hand is the mirror image)
+top      Load   HC1     HC2     HC3     HC4     FX1
+home     PFL    Loop÷2  Loop×2  Loop    Play    Cue
+bottom   Sync   LoopIn  LoopOut Nudge−  Nudge+  FX2
+thumbs   Browse↑  Browse↓  Spare1  │  Spare2  Spare3  MODE
+```
+
+- **The decks are mirror images.** Each function is under the same finger on
+  both hands: Play is under each index finger, hot cue 1 under each pinky.
+- **HC1–HC4** are hot cues. **PFL** is headphone cue. **Loop** turns an auto
+  loop on or off; **Loop÷2 / Loop×2** halve or double it.
+- **Cue and Nudge act while held,** like the real buttons.
+- **Spare1–3** (thumbs) are free for anything, e.g. Record, Undo or Automix.
+- **The trackpad:**
+  - one finger left/right is the **crossfader** (CC 1)
+  - one finger up/down is **CC 2**, e.g. a filter or FX amount
+  - two fingers up/down is **CC 3**, e.g. the other deck's filter
+  - pinch is **CC 4**
+
+  There's no velocity slider here; a DJ app doesn't use velocity.
+- **Everything is on MIDI channel 16.** The other modes use channel 1, so
+  playing Piano or Drums with djay still open can't trigger your DJ mappings.
+- **The screen** shows the MIDI connection as in other modes. Its key and
+  scale line doesn't mean anything here.
+
+**Setting it up in djay.** MIDI Learn is part of djay PRO.
+
+1. Connect the keyboard: in djay, **MIDI → Connect Bluetooth Controller**,
+   then hold MODE and tap **Pair** on the keyboard.
+2. Switch to DJ mode (MODE + Y).
+3. Open djay's **MIDI Learn**. For each control, tap the djay function, then
+   press the key or move the trackpad.
+4. Save the mapping. It stays saved, so you only do this once.
+
 ## The MODE layer
 
 Hold the right outer thumb:
 
 ```
          outer  Q/A    W/S    E/D    R/F    T/G   │  Y/H    U/J   ...
-top       --    Piano  Grid   Drums  Chord  Ctrl  │  --
+top       --    Piano  Grid   Drums  Chord  Ctrl  │  DJ
 home      --    Vel−   Vel+   Ch−    Ch+    OctR  │  KeyR
 bottom    Panic --     --     --     --     --    │  ...                Pair
 thumbs    Exit (left outer)

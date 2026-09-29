@@ -8,6 +8,9 @@
  *                    every note key (shown on the status screen)
  *   pinch            a third CC (pinch-cc), 0-127
  *
+ * With wheel-cc set, two fingers drive a fourth CC instead of velocity, and
+ * with channel set everything goes out on that MIDI channel (the DJ mode).
+ *
  * The trackpad driver already tells these apart: one finger arrives as
  * REL_X/REL_Y, a two-finger scroll as REL_WHEEL/REL_HWHEEL and a pinch as
  * REL_MISC. So the three can never disturb each other.
@@ -37,6 +40,8 @@
 LOG_MODULE_DECLARE(zmk_ble_midi, CONFIG_ZMK_LOG_LEVEL);
 
 struct midi_xy_config {
+    int32_t channel; /* 1-16, or 0 for the current MIDI channel */
+    int32_t wheel_cc; /* two-finger CC instead of the velocity slider, or -1 */
     int32_t divisor;
     int32_t velocity_divisor;
     bool velocity_invert;
@@ -52,7 +57,8 @@ struct midi_xy_axis {
 };
 
 struct midi_xy_data {
-    struct midi_xy_axis x, y, pinch;
+    const struct midi_xy_config *cfg;
+    struct midi_xy_axis x, y, pinch, wheel;
     int32_t velocity_remainder;
     uint8_t swallowed_buttons;
     struct k_work_delayable send_work;
@@ -64,12 +70,13 @@ static void midi_xy_send(struct k_work *work) {
     struct k_work_delayable *dwork = k_work_delayable_from_work(work);
     struct midi_xy_data *data = CONTAINER_OF(dwork, struct midi_xy_data, send_work);
 
-    struct midi_xy_axis *axes[] = {&data->x, &data->y, &data->pinch};
+    struct midi_xy_axis *axes[] = {&data->x, &data->y, &data->pinch, &data->wheel};
+    uint8_t ch = data->cfg->channel > 0 ? (data->cfg->channel - 1) & 0x0F : zmk_ble_midi_channel();
     for (int i = 0; i < ARRAY_SIZE(axes); i++) {
         struct midi_xy_axis *a = axes[i];
         if (a->value != a->sent && a->cc <= 127) {
             a->sent = a->value;
-            zmk_ble_midi_send_cc(a->cc, a->value);
+            zmk_ble_midi_send_cc_on(ch, a->cc, a->value);
         }
     }
 }
@@ -103,6 +110,13 @@ static int midi_xy_handle_event(const struct device *dev, struct input_event *ev
             /* Screen Y grows downwards; a knob should go up when you swipe up. */
             move_axis(&data->y, -event->value, cfg->divisor);
         }
+        k_work_schedule(&data->send_work, K_MSEC(CONFIG_ZMK_BLE_MIDI_XY_INTERVAL_MS));
+    } else if (event->type == INPUT_EV_REL && event->code == INPUT_REL_WHEEL &&
+               cfg->wheel_cc >= 0) {
+        /* A fourth knob instead of the velocity slider (e.g. the DJ mode). */
+        data->wheel.cc = cfg->wheel_cc & 0x7F;
+        int32_t delta = cfg->velocity_invert ? -event->value : event->value;
+        move_axis(&data->wheel, delta, cfg->velocity_divisor);
         k_work_schedule(&data->send_work, K_MSEC(CONFIG_ZMK_BLE_MIDI_XY_INTERVAL_MS));
     } else if (event->type == INPUT_EV_REL && event->code == INPUT_REL_WHEEL) {
         /* Positive wheel = fingers moving up (the Toucan sets invert-scroll-y
@@ -141,6 +155,9 @@ static int midi_xy_init(const struct device *dev) {
     data->y.value = data->y.sent = 64;
     data->pinch.value = data->pinch.sent = 64;
     data->pinch.cc = 0xFF; /* set on first pinch */
+    data->wheel.value = data->wheel.sent = 64;
+    data->wheel.cc = 0xFF;
+    data->cfg = dev->config;
     k_work_init_delayable(&data->send_work, midi_xy_send);
     return 0;
 }
@@ -152,6 +169,8 @@ static const struct zmk_input_processor_driver_api midi_xy_driver_api = {
 #define MIDI_XY_INST(n)                                                                            \
     static struct midi_xy_data midi_xy_data_##n;                                                   \
     static const struct midi_xy_config midi_xy_config_##n = {                                      \
+        .channel = DT_INST_PROP(n, channel),                                                       \
+        .wheel_cc = DT_INST_PROP(n, wheel_cc),                                                     \
         .divisor = MAX(DT_INST_PROP(n, divisor), 1),                                               \
         .velocity_divisor = MAX(DT_INST_PROP(n, velocity_divisor), 1),                             \
         .velocity_invert = DT_INST_PROP(n, velocity_invert),                                       \
