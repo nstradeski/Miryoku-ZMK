@@ -48,7 +48,7 @@ build() {  # name  board  shield(optional)
     -DBOARD_ROOT=$ZMK_DIR/app/module
     -DSHIELD_ROOT=$ZMK_DIR/app
     -DDTS_ROOT=$ZMK_DIR/app/module
-    -DEXTRA_CONF_FILE=$CFG/pointing.conf)
+    "-DEXTRA_CONF_FILE=$CFG/pointing.conf;$CFG/no_deep_sleep.conf")
   [[ -n $shield ]] && args+=(-DSHIELD="$shield")
   $WEST build "${args[@]}"
   [[ -f build/$name/zephyr/zmk.uf2 ]] || { echo "missing zmk.uf2 for $name"; return 1; }

@@ -282,6 +282,14 @@ every capital.
    into `build-all.sh` via `-DEXTRA_CONF_FILE` for all four images. Mouse is
    processed on the central (left) half.
 
+   **Deep sleep is off on every keyboard** (`config/no_deep_sleep.conf`,
+   passed alongside `pointing.conf`). Waking from deep sleep is a reboot plus
+   a Bluetooth reconnect, which swallowed the first keypresses after a break,
+   mostly on the Zen, whose board defaults enable it after 15 minutes. The
+   trade is charging more often. It has to be an extra conf file because
+   those merge last; the Zen's board defaults and the Toucan shield's conf
+   would otherwise turn it back on.
+
 9. **Clipboard cluster fixed for macOS** — undo/cut/copy/paste/redo on the
    NAV/MOUSE/BUTTON layers defaulted to `K_UNDO`/`LS(INS)`/`LC(INS)`/
    `LS(DEL)`/`K_AGAIN`, which macOS ignores. Set `#define MIRYOKU_CLIPBOARD_MAC`

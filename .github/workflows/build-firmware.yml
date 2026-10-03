@@ -4,8 +4,9 @@
 #
 # This mirrors local-build/build-all.sh exactly: same HWMv2 board names, the
 # same nice_view shields for the Corne, and -DEXTRA_CONF_FILE=pointing.conf so
-# the Miryoku MOUSE layer (ZMK pointing) is enabled. Only the left/central half
-# drives behaviour, but all four halves are built for parity.
+# the Miryoku MOUSE layer (ZMK pointing) is enabled, plus no_deep_sleep.conf
+# (deep sleep off everywhere). Only the left/central half drives behaviour,
+# but all four halves are built for parity.
 
 name: 'Build Firmware'
 
@@ -148,7 +149,7 @@ jobs:
             # settings_reset must NOT get our keymap or pointing conf; it ships
             # its own minimal keymap and exists only to wipe stored settings.
             args+=(-DZMK_CONFIG="${GITHUB_WORKSPACE}/miryoku_zmk/config"
-                   -DEXTRA_CONF_FILE="${GITHUB_WORKSPACE}/miryoku_zmk/config/pointing.conf")
+                   -DEXTRA_CONF_FILE="${GITHUB_WORKSPACE}/miryoku_zmk/config/pointing.conf;${GITHUB_WORKSPACE}/miryoku_zmk/config/no_deep_sleep.conf")
           fi
           if [ -n "${{ matrix.shield }}" ]; then
             args+=(-DSHIELD="${{ matrix.shield }}")
