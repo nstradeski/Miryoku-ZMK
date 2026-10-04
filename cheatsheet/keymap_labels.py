@@ -152,7 +152,7 @@ LAYERS = {
     "BUTTON": {"name": "Button", "hold": "hold left-pinky Z or right-pinky /",
                "blurb": "Clipboard + mouse buttons, reachable from any hand position."},
     "NAV":    {"name": "Nav",    "hold": "hold LEFT-middle thumb (Space)",
-               "blurb": "Arrows, Home/End/PgUp/PgDn and the clipboard cluster."},
+               "blurb": "Arrows, Home/End/PgUp/PgDn and the clipboard cluster, plus Esc / Tab / Space on the left hand for Full Keyboard Access."},
     "MOUSE":  {"name": "Mouse",  "hold": "hold LEFT-inner thumb (Tab)",
                "blurb": "Cursor movement, scroll wheel and mouse buttons."},
     "MEDIA":  {"name": "Media",  "hold": "hold LEFT-outer thumb (Esc)",

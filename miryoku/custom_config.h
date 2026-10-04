@@ -199,3 +199,23 @@
 &kp U_HYPER(Z),    &kp U_HYPER(X),    &kp U_HYPER(C),    &kp U_HYPER(V),    &kp U_HYPER(B),    &kp U_HYPER(N),    &kp U_HYPER(M),    &kp U_HYPER(F14),  &kp U_HYPER(F15),  &kp U_HYPER(SLASH),\
 U_NP,              U_NP,              U_WIN_CLOSE,       U_WIN_MIN,         U_WIN_FULL,        U_WIN_FULL,        U_WIN_MIN,         U_WIN_CLOSE,       U_NP,              U_NP
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Full Keyboard Access on NAV (custom)
+//
+// iPadOS / macOS Full Keyboard Access drives the UI with Tab, the arrows,
+// Space (activate) and Esc. NAV (hold the Space thumb) already has the arrows
+// under the right hand; these fill the three empty inner-column keys on the
+// left hand so everything is on one layer:
+//
+//   T  Esc     back / dismiss
+//   G  Tab     next item  (hold F = Shift on NAV for Shift+Tab, previous item)
+//   B  Space   activate, without letting go of the NAV thumb
+//
+// Why not the base-layer keys: the Tab and Space thumbs are layer-taps, so
+// holding Tab gives the MOUSE layer and a brief Space tap when you meant NAV
+// activates whatever is focused. These are plain keys.
+#define U_NAV_ESC &kp ESC
+#define U_NAV_TAB &kp TAB
+#define U_NAV_SPC &kp SPACE
+// ---------------------------------------------------------------------------
