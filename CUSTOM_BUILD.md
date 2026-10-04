@@ -138,6 +138,11 @@ separately with its own image.**
 > fine — if you have access to one, that's the easy path.)
 >
 > The two keyboards need **opposite** `dd` methods (different bootloader ages).
+>
+> **iPad / iPhone: doesn't work.** Copying a `.uf2` onto the bootloader drive
+> in the Files app was tried (Toucan2, October 2026) and the firmware did not
+> change. Flash from a computer: a Mac with the `dd` steps below, or any
+> Windows / Linux machine with plain drag-and-drop.
 
 ### Which half must be flashed
 
