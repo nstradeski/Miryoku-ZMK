@@ -48,7 +48,7 @@
             timeout-ms = <50>;
             require-prior-idle-ms = <150>;
             key-positions = <U_MIDI_COMBO_KEYS>;
-            layers = <U_MIDI_PIANO U_MIDI_GRID U_MIDI_DRUMS U_MIDI_CHORD U_MIDI_CTRL U_MIDI_DJ U_MIDI_MODE>;
+            layers = <U_MIDI_PIANO U_MIDI_GRID U_MIDI_DRUMS U_MIDI_CHORD U_MIDI_CTRL U_MIDI_DJ U_MIDI_SCRATCH U_MIDI_MODE>;
             bindings = <&to U_BASE>;
         };
     };
@@ -67,7 +67,8 @@
 
     midi_layers {
         compatible = "zmk,ble-midi-layers";
-        layers = <U_MIDI_PIANO U_MIDI_GRID U_MIDI_DRUMS U_MIDI_CHORD U_MIDI_CTRL U_MIDI_DJ U_MIDI_MODE>;
+        layers = <U_MIDI_PIANO U_MIDI_GRID U_MIDI_DRUMS U_MIDI_CHORD U_MIDI_CTRL U_MIDI_DJ U_MIDI_SCRATCH U_MIDI_MODE>;
+        scratch-layers = <U_MIDI_SCRATCH>;
     };
 };
 
@@ -80,7 +81,7 @@
 //
 //   index:  0 BASE  1 EXTRA  2 TAP  3 BUTTON  4 NAV  5 MOUSE
 //           6 MEDIA  7 NUM   8 SYM  9 FUN    10 WINDOW
-//           11-17 MIDI: PIANO GRID DRUMS CHORD CTRL DJ MODE
+//           11-18 MIDI: PIANO GRID DRUMS CHORD CTRL DJ SCRATCH MODE
 //
 // Everything else in the shield is already macOS-correct and left alone:
 // the zoom mapper sends Cmd+- / Cmd+= and the three-finger swipes send
@@ -117,6 +118,15 @@
     // djay's MIDI Learn can take them (no velocity slider, there are no notes
     // to play): one finger X = CC 1 (crossfader), Y = CC 2, two fingers up/
     // down = CC 3, pinch = CC 4. Listed first so it wins on the DJ layer.
+    // Scratch mode: the trackpad is the scratch deck's jog wheel. Finger down
+    // = platter touch (grab the record), slide left/right = jog, lift = let
+    // go. All on channel 16 like the DJ layer. See &midi_jog for tuning
+    // (divisor, invert, encoding).
+    midi_scratch {
+        layers = <U_MIDI_SCRATCH>;
+        input-processors = <&midi_jog>;
+    };
+
     midi_dj {
         layers = <U_MIDI_DJ>;
         input-processors = <&midi_dj_xy 1 2>;

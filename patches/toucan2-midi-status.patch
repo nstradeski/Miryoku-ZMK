@@ -1,8 +1,8 @@
 diff --git a/boards/shields/nice_view_gem/widgets/screen.c b/boards/shields/nice_view_gem/widgets/screen.c
-index e6e93cf..9a03318 100644
+index e6e93cf..aa4ca05 100644
 --- a/boards/shields/nice_view_gem/widgets/screen.c
 +++ b/boards/shields/nice_view_gem/widgets/screen.c
-@@ -45,12 +45,52 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
+@@ -45,12 +45,63 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
  #include "screen.h"
  #include "sleep.h"
  
@@ -26,6 +26,9 @@ index e6e93cf..9a03318 100644
 + *   G MAJ            key + scale, or NO MIDI when no app is connected
 + *   OCT+1 V100 C1    octave, velocity, MIDI channel
 + *
++ * On a scratch layer: "DECK 1" / "DECK 2" (the deck being scratched) and
++ * "JOG + XF CUT".
++ *
 + * Both lines start at x=6 and may use the full width: at this height nothing
 + * else is drawn to their right (the profile squares start lower, at y=105),
 + * so the longest line, "OCT-4 V127 C16", fits without wrapping.
@@ -38,14 +41,22 @@ index e6e93cf..9a03318 100644
 +    init_label_dsc(&big, LVGL_FOREGROUND, &quinquefive_12, LV_TEXT_ALIGN_LEFT);
 +    init_label_dsc(&small, LVGL_FOREGROUND, &quinquefive_8, LV_TEXT_ALIGN_LEFT);
 +
-+    if (m->connected) {
++    bool scratch = zmk_ble_midi_layer_is_scratch(state->layer_index);
++
++    if (!m->connected) {
++        snprintf(line1, sizeof(line1), "NO MIDI");
++    } else if (scratch) {
++        snprintf(line1, sizeof(line1), "DECK %d", m->scratch_deck);
++    } else {
 +        snprintf(line1, sizeof(line1), "%s %s", zmk_ble_midi_key_name(m->transpose),
 +                 m->scale == ZMK_MIDI_SCALE_MINOR ? "MIN" : "MAJ");
-+    } else {
-+        snprintf(line1, sizeof(line1), "NO MIDI");
 +    }
-+    snprintf(line2, sizeof(line2), "OCT%c%d V%d C%d", m->octave < 0 ? '-' : '+',
-+             m->octave < 0 ? -m->octave : m->octave, m->velocity, m->channel + 1);
++    if (scratch) {
++        snprintf(line2, sizeof(line2), "JOG + XF CUT");
++    } else {
++        snprintf(line2, sizeof(line2), "OCT%c%d V%d C%d", m->octave < 0 ? '-' : '+',
++                 m->octave < 0 ? -m->octave : m->octave, m->velocity, m->channel + 1);
++    }
 +
 +    lv_canvas_draw_text(canvas, 6, 74, SCREEN_WIDTH - 6, &big, line1);
 +    lv_canvas_draw_text(canvas, 6, 92, SCREEN_WIDTH - 6, &small, line2);
@@ -55,7 +66,7 @@ index e6e93cf..9a03318 100644
  /**
   * Draw buffers
   **/
-@@ -67,6 +107,11 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
+@@ -67,6 +118,11 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
      // Draw widgets
      draw_output_status(canvas, state);
      #if defined(CONFIG_TOUCAN_STATUS_SCREEN) && CONFIG_TOUCAN_STATUS_SCREEN == 2
@@ -67,7 +78,7 @@ index e6e93cf..9a03318 100644
      draw_chart_status(canvas, state);
      #endif
      draw_layer_status(canvas, state);
-@@ -283,6 +328,31 @@ ZMK_DISPLAY_WIDGET_LISTENER(widget_chart_status, struct chart_status_state,
+@@ -283,6 +339,31 @@ ZMK_DISPLAY_WIDGET_LISTENER(widget_chart_status, struct chart_status_state,
  ZMK_SUBSCRIPTION(widget_chart_status, zmk_wpm_state_changed);
  #endif
  
@@ -99,7 +110,7 @@ index e6e93cf..9a03318 100644
  /**
   * Initialization
   **/
-@@ -300,6 +370,9 @@ int zmk_widget_screen_init(struct zmk_widget_screen *widget, lv_obj_t *parent) {
+@@ -300,6 +381,9 @@ int zmk_widget_screen_init(struct zmk_widget_screen *widget, lv_obj_t *parent) {
      widget_battery_peripheral_status_init();
      widget_layer_status_init();
      widget_output_status_init();

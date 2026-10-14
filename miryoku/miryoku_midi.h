@@ -6,7 +6,8 @@
 //   Enter / leave:  press both bottom outer pinky keys together (a combo in
 //                   config/toucan.keymap). Entering always lands on Piano.
 //   Switch mode:    hold the right outer thumb (MODE) and tap a top-row key
-//                   (Q Piano, W Grid, E Drums, R Chord, T Ctrl, Y DJ).
+//                   (Q Piano, W Grid, E Drums, R Chord, T Ctrl, Y DJ,
+//                   U Scratch).
 //
 // The MIDI layers cover all 42 keys, including the outer pinky columns, so
 // they bypass the Corne mapping macro (which pins those columns to the Witch
@@ -188,16 +189,51 @@ U_DJ_ROW(SYNC, LOOP_IN, LOOP_OUT, NUDGE_DN, NUDGE_UP, FX2) \
 U_DJ_THUMB(0)  U_DJ_THUMB(1)  U_DJ_THUMB(2)      U_DJ_THUMB(3)  U_DJ_THUMB(4)  U_MIDI_MODE_MO
 
 // ---------------------------------------------------------------------------
+// SCRATCH -- turntablism: right hand scratches on the trackpad, left hand
+// cuts the crossfader.
+//
+//   Trackpad (right hand): the jog wheel of the scratch deck. Finger down
+//   grabs the record, sliding left/right drags it back/forward, lifting lets
+//   it play on (platter-touch note + relative jog CC, see &midi_jog).
+//
+//   Left home row, all four fingers (A S D F): crossfader CUT. Any of them
+//   held = scratch deck silent; the sound returns when the last one is
+//   released, so cuts can be rolled across fingers for fast transforms.
+//
+//        outer  Q/A    W/S    E/D    R/F    T/G   |  Y/H     U/J     I/K     O/L    P/'   outer
+//   top   --    Deck1  Deck2  --     --     --    |  1:HC1   1:HC2   1:HC3   1:HC4  --    --
+//   home  --    CUT    CUT    CUT    CUT    --    |  2:HC1   2:HC2   2:HC3   2:HC4  --    --
+//   bot   --    --     --     --     --     --    |  1:Play  1:Cue   2:Play  2:Cue  --    --
+//   thumbs             --     --     --           |  --      --      MODE
+//
+//   Deck1 / Deck2 pick the scratch deck (the screen shows it) and set the
+//   crossfader open for it. Hot cues / Play / Cue send the same notes as the
+//   DJ layer, so mappings learned there work here too.
+//
+// djay MIDI Learn: map the trackpad touch + slide to the deck's jog wheel
+// (touch and turn), and any CUT key to the crossfader.
+#define U_XF_CUT &midi_xf_cut 0
+#define MIRYOKU_LAYERMAPPING_MIDI_SCRATCH(...) __VA_ARGS__
+#define MIRYOKU_LAYER_MIDI_SCRATCH \
+U_NU  &midi_ctl MIDI_SCRATCH_D1  &midi_ctl MIDI_SCRATCH_D2  U_NU  U_NU  U_NU \
+      U_DJ(1, HC1)  U_DJ(1, HC2)  U_DJ(1, HC3)  U_DJ(1, HC4)  U_NU  U_NU \
+U_NU  U_XF_CUT  U_XF_CUT  U_XF_CUT  U_XF_CUT  U_NU \
+      U_DJ(2, HC1)  U_DJ(2, HC2)  U_DJ(2, HC3)  U_DJ(2, HC4)  U_NU  U_NU \
+U_NU  U_NU  U_NU  U_NU  U_NU  U_NU \
+      U_DJ(1, PLAY)  U_DJ(1, CUE)  U_DJ(2, PLAY)  U_DJ(2, CUE)  U_NU  U_NU \
+U_NU  U_NU  U_NU      U_NU  U_NU  U_MIDI_MODE_MO
+
+// ---------------------------------------------------------------------------
 // MODE -- held with the right outer thumb from any MIDI layer.
 //
 //        outer  Q/A    W/S    E/D    R/F    T/G   |  Y/H    U/J   I/K   O/L   P/'  outer
-//   top   --    Piano  Grid   Drums  Chord  Ctrl  |  DJ     --    --    --    --    --
+//   top   --    Piano  Grid   Drums  Chord  Ctrl  |  DJ     Scrch --    --    --    --
 //   home  --    Vel-   Vel+   Ch-    Ch+    OctR  |  KeyR   --    --    --    --    --
 //   bot   Panic --     --     --     --     --    |  --     --    --    --    --    Pair
 //   thumbs             Exit   --     --           |  --     --    (held)
 #define MIRYOKU_LAYERMAPPING_MIDI_MODE(...) __VA_ARGS__
 #define MIRYOKU_LAYER_MIDI_MODE \
-U_NU  &to U_MIDI_PIANO  &to U_MIDI_GRID  &to U_MIDI_DRUMS  &to U_MIDI_CHORD  &to U_MIDI_CTRL      &to U_MIDI_DJ  U_NU  U_NU  U_NU  U_NU  U_NU \
+U_NU  &to U_MIDI_PIANO  &to U_MIDI_GRID  &to U_MIDI_DRUMS  &to U_MIDI_CHORD  &to U_MIDI_CTRL      &to U_MIDI_DJ  &to U_MIDI_SCRATCH  U_NU  U_NU  U_NU  U_NU \
 U_NU  &midi_ctl MIDI_VEL_DN  &midi_ctl MIDI_VEL_UP  &midi_ctl MIDI_CH_DN  &midi_ctl MIDI_CH_UP  &midi_ctl MIDI_OCT_RST \
       &midi_ctl MIDI_KEY_RST  U_NU  U_NU  U_NU  U_NU  U_NU \
 &midi_ctl MIDI_PANIC  U_NU  U_NU  U_NU  U_NU  U_NU      U_NU  U_NU  U_NU  U_NU  U_NU  &midi_ctl MIDI_PAIR \

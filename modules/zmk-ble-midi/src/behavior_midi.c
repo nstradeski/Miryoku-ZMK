@@ -26,6 +26,7 @@ enum midi_type {
     MIDI_TYPE_CONTROL,
     MIDI_TYPE_FIXED_NOTE,
     MIDI_TYPE_CHORD,
+    MIDI_TYPE_XF_CUT,
 };
 
 struct behavior_midi_config {
@@ -51,6 +52,8 @@ static uint8_t velocity = CONFIG_ZMK_BLE_MIDI_DEFAULT_VELOCITY;
 static uint8_t program;
 static uint8_t scale = ZMK_MIDI_SCALE_MAJOR;
 static uint8_t inversion;
+static uint8_t scratch_deck = 1;
+static uint8_t xf_cut_held; /* how many cut keys are down */
 static uint32_t cc_toggled[128 / 32];
 
 static const uint8_t scale_steps[][7] = {
@@ -169,6 +172,18 @@ void zmk_ble_midi_set_velocity(int value) {
     }
 }
 
+/* Crossfader for scratching. The scratch deck is "open" with the fader on its
+ * side (deck 1 = 0, deck 2 = 127) and "cut" with the fader on the other side.
+ * Any number of cut keys can be held; the sound only comes back when the
+ * last one is released, so cuts can be rolled across fingers. */
+uint8_t zmk_ble_midi_scratch_deck(void) { return scratch_deck; }
+
+static void send_xf(bool cut) {
+    bool deck1 = scratch_deck == 1;
+    uint8_t value = (deck1 != cut) ? 0 : 127; /* open on own side, cut on the other */
+    zmk_ble_midi_send_cc_on(CONFIG_ZMK_BLE_MIDI_XF_CHANNEL - 1, CONFIG_ZMK_BLE_MIDI_XF_CC, value);
+}
+
 struct zmk_midi_state_changed zmk_ble_midi_state(void) {
     return (struct zmk_midi_state_changed){
         .octave = octave,
@@ -177,6 +192,7 @@ struct zmk_midi_state_changed zmk_ble_midi_state(void) {
         .channel = zmk_ble_midi_channel(),
         .scale = scale,
         .inversion = inversion,
+        .scratch_deck = scratch_deck,
         .connected = zmk_ble_midi_is_connected(),
     };
 }
@@ -209,6 +225,12 @@ static void run_control(uint32_t command) {
         break;
     case MIDI_INV:
         inversion = (inversion + 1) % 3;
+        break;
+    case MIDI_SCRATCH_D1:
+    case MIDI_SCRATCH_D2:
+        scratch_deck = command == MIDI_SCRATCH_D1 ? 1 : 2;
+        /* Put the fader where the new deck needs it. */
+        send_xf(xf_cut_held > 0);
         break;
     case MIDI_VEL_DN:
         velocity = MAX(velocity - VELOCITY_STEP, VELOCITY_MIN);
@@ -291,6 +313,11 @@ static int on_midi_pressed(struct zmk_behavior_binding *binding,
     case MIDI_TYPE_CONTROL:
         run_control(param);
         break;
+    case MIDI_TYPE_XF_CUT:
+        if (xf_cut_held++ == 0) {
+            send_xf(true);
+        }
+        break;
     }
     return ZMK_BEHAVIOR_OPAQUE;
 }
@@ -308,6 +335,11 @@ static int on_midi_released(struct zmk_behavior_binding *binding,
         break;
     case MIDI_TYPE_CC:
         zmk_ble_midi_send_cc(binding->param1, 0);
+        break;
+    case MIDI_TYPE_XF_CUT:
+        if (xf_cut_held > 0 && --xf_cut_held == 0) {
+            send_xf(false);
+        }
         break;
     default:
         break;

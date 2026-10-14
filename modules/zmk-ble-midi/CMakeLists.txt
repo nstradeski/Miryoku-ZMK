@@ -11,6 +11,7 @@ if(CONFIG_ZMK_BLE_MIDI)
     src/ble_midi.c
     src/behavior_midi.c
     src/input_processor_midi_xy.c
+    src/input_processor_midi_jog.c
     src/midi_state.c
   )
 endif()

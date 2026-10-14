@@ -24,6 +24,7 @@ struct zmk_midi_state_changed {
     uint8_t channel;   /* 0..15 (shown as 1..16) */
     uint8_t scale;     /* enum zmk_midi_scale */
     uint8_t inversion; /* 0 root, 1 first, 2 second */
+    uint8_t scratch_deck; /* 1 or 2: the deck the jog and crossfader cut act on */
     bool connected;    /* a MIDI app is subscribed */
 };
 
@@ -39,6 +40,10 @@ void zmk_ble_midi_state_notify(void);
 /* True if the keymap marked this layer as a MIDI layer (the zmk,ble-midi-layers
  * node). A display uses this to decide when to show the MIDI status. */
 bool zmk_ble_midi_layer_is_midi(uint8_t layer);
+
+/* True if the keymap marked this layer as a scratch layer (scratch-layers on
+ * the zmk,ble-midi-layers node): the display shows the scratch deck there. */
+bool zmk_ble_midi_layer_is_scratch(uint8_t layer);
 
 /* "C", "C#", ... "B" for a pitch class 0-11. */
 const char *zmk_ble_midi_key_name(int transpose);

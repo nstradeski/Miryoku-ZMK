@@ -34,6 +34,18 @@ bool zmk_ble_midi_layer_is_midi(uint8_t layer) {
     return false;
 }
 
+bool zmk_ble_midi_layer_is_scratch(uint8_t layer) {
+#if DT_NODE_EXISTS(MIDI_LAYERS_NODE) && DT_NODE_HAS_PROP(MIDI_LAYERS_NODE, scratch_layers)
+    static const uint8_t scratch_layers[] = DT_PROP(MIDI_LAYERS_NODE, scratch_layers);
+    for (int i = 0; i < ARRAY_SIZE(scratch_layers); i++) {
+        if (scratch_layers[i] == layer) {
+            return true;
+        }
+    }
+#endif
+    return false;
+}
+
 const char *zmk_ble_midi_key_name(int transpose) {
     static const char *const names[] = {"C",  "C#", "D",  "D#", "E",  "F",
                                         "F#", "G",  "G#", "A",  "A#", "B"};

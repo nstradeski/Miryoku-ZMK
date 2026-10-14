@@ -22,6 +22,11 @@
             #binding-cells = <1>;
             midi-type = "chord";
         };
+        midi_xf_cut: midi_xf_cut {
+            compatible = "zmk,behavior-midi";
+            #binding-cells = <1>;
+            midi-type = "xf-cut";
+        };
         midi_cc: midi_cc {
             compatible = "zmk,behavior-midi";
             #binding-cells = <1>;
@@ -42,5 +47,12 @@
     midi_xy: midi_xy {
         compatible = "zmk,input-processor-midi-xy";
         #input-processor-cells = <2>;
+    };
+};
+
+/ {
+    midi_jog: midi_jog {
+        compatible = "zmk,input-processor-midi-jog";
+        #input-processor-cells = <0>;
     };
 };

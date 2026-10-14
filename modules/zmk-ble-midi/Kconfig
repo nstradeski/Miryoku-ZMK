@@ -32,6 +32,16 @@ config ZMK_BLE_MIDI_PAIR_ADV_SECONDS
     int "How long MIDI_PAIR advertises the MIDI service, in seconds"
     default 60
 
+config ZMK_BLE_MIDI_XF_CHANNEL
+    int "MIDI channel (1-16) of the crossfader that &midi_xf_cut moves"
+    range 1 16
+    default 16
+
+config ZMK_BLE_MIDI_XF_CC
+    int "CC number of the crossfader that &midi_xf_cut moves"
+    range 0 127
+    default 1
+
 config ZMK_BLE_MIDI_XY_INTERVAL_MS
     int "Minimum interval between trackpad CC updates, in milliseconds"
     default 10

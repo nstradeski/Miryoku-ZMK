@@ -1,0 +1,35 @@
+description: |
+  Trackpad as a DJ jog wheel for scratching: touch = platter touch note,
+  left/right = relative jog CC, both for the scratch deck (MIDI_SCRATCH_D1/D2).
+
+compatible: "zmk,input-processor-midi-jog"
+
+include: ip_zero_param.yaml
+
+properties:
+  channel:
+    type: int
+    default: 16
+    description: MIDI channel 1-16.
+  jog-cc:
+    type: array
+    default: [20, 21]
+    description: Jog CC for deck 1 and deck 2.
+  touch-note:
+    type: array
+    default: [20, 52]
+    description: Platter-touch note for deck 1 and deck 2.
+  divisor:
+    type: int
+    default: 1
+    description: Trackpad movement units per jog step. Higher = slower, finer scratching.
+  invert:
+    type: boolean
+    description: Flip direction if sliding right moves the record backward.
+  encoding:
+    type: string
+    default: "offset64"
+    enum:
+      - "offset64"
+      - "twos-complement"
+    description: Relative CC encoding the DJ app expects for the jog wheel.

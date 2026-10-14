@@ -1,7 +1,7 @@
 # Toucan2 as a Bluetooth MIDI controller (iPad)
 
-The Toucan2 firmware has six **MIDI modes**: Piano, Grid, Drums, Chord,
-Control and DJ. In them the keys send MIDI over Bluetooth instead of keystrokes, and
+The Toucan2 firmware has seven **MIDI modes**: Piano, Grid, Drums, Chord,
+Control, DJ and Scratch. In them the keys send MIDI over Bluetooth instead of keystrokes, and
 the trackpad works as an XY pad and velocity slider. The keyboard connects to the iPad over the
 same Bluetooth link it already uses for typing. You don't need a cable, a
 dongle, or a second pairing.
@@ -19,7 +19,7 @@ Only the Toucan2 has this. The Corne and Corne-ish Zen builds are unchanged.
 | To... | Do this |
 |---|---|
 | Turn MIDI on / off | Press **both bottom outer pinky keys together**. MIDI always starts in Piano. |
-| Switch mode | Hold the **right outer thumb** (MODE) and tap **Q** Piano, **W** Grid, **E** Drums, **R** Chord, **T** Control or **Y** DJ |
+| Switch mode | Hold the **right outer thumb** (MODE) and tap **Q** Piano, **W** Grid, **E** Drums, **R** Chord, **T** Control, **Y** DJ or **U** Scratch |
 | Make the iPad find it | Hold MODE and tap **Pair** (bottom-right outer key) |
 | Silence stuck notes | Hold MODE and tap **Panic** (bottom-left outer key) |
 | Leave MIDI | The pinky combo again, or hold MODE and tap the left outer thumb |
@@ -268,13 +268,87 @@ thumbs   Browse↑  Browse↓  Spare1  │  Spare2  Spare3  MODE
    press the key or move the trackpad.
 4. Save the mapping. It stays saved, so you only do this once.
 
+## Scratch: turntablism with the trackpad
+
+For scratching in djay. Your right hand works the record on the trackpad,
+and your left hand cuts the crossfader.
+
+```
+         outer  Q/A    W/S    E/D    R/F    T/G  │  Y/H     U/J     I/K     O/L
+top       --    Deck1  Deck2  --     --     --   │  1:HC1   1:HC2   1:HC3   1:HC4
+home      --    CUT    CUT    CUT    CUT    --   │  2:HC1   2:HC2   2:HC3   2:HC4
+bottom    --    --     --     --     --     --   │  1:Play  1:Cue   2:Play  2:Cue
+thumbs                                           │                  MODE
+```
+
+**Right hand: the trackpad is the record.**
+
+| You do | Like on a turntable |
+|---|---|
+| Put a finger down | Hand on the record: it stops under your finger |
+| Slide left / right | Drag the record back / forward |
+| Lift the finger | Let go: the record plays on |
+
+**Left hand: the crossfader.**
+
+- **A, S, D and F all cut the sound.** While any of them is held, the
+  crossfader is on the far side and the scratched deck is silent. Release
+  them all and the sound comes back.
+- **Cuts can roll across fingers.** The sound only returns when the last key
+  is released, so alternating fingers gives fast cuts.
+- **Deck1 / Deck2** (Q / W) choose which deck you're scratching. The screen
+  shows `DECK 1` or `DECK 2`, and choosing a deck also opens the crossfader
+  for it. Tap one when you enter Scratch mode so the fader starts in the
+  right place.
+
+**Hot cues, Play and Cue for both decks** are on the right hand, for jumping
+back to the sample between scratches. They send the same notes as in DJ
+mode, so mappings you've already learned there work here too.
+
+**Setting it up in djay** (MIDI Learn, djay PRO), with the keyboard in
+Scratch mode:
+
+1. **The jog wheel:** in MIDI Learn, pick deck 1's jog wheel (touch and
+   turn), then touch the pad and slide. Tap **Deck2** (W) and do the same for
+   deck 2.
+2. **The crossfader:** pick the crossfader, then press any CUT key. If
+   you've already mapped the crossfader to the trackpad in DJ mode, it's
+   already done: both modes use the same control (CC 1, channel 16).
+3. **Vinyl mode:** turn on djay's vinyl / scratch mode for the deck.
+   Touching the record then stops it and sliding scratches; with it off,
+   the jog wheel only nudges the speed.
+
+**Tuning:** the settings live on `&midi_jog` in `config/toucan.keymap` (add a
+`&midi_jog { ... };` block).
+
+| Setting | Default | Controls |
+|---|---|---|
+| `divisor` | 1 | Trackpad movement per jog step. Raise it if scratches feel too fast. |
+| `invert` | off | Set this if sliding right drags the record backward |
+| `encoding` | `"offset64"` | How the movement is encoded. Try `"twos-complement"` if djay's jog wheel moves erratically or only in one direction. |
+
+**What to expect.** Bluetooth adds about 10–20 ms of delay, with some
+jitter, so the sound trails your finger slightly.
+
+- **Works well:** baby scratches, drags and backspins.
+- **Feels mushy:** very fast techniques, like flares and crabs.
+
+The cut keys are the tightest part: a key press is quicker than any slider.
+
+**Messages sent** (all on MIDI channel 16):
+
+- **Jog:** CC 20 for deck 1, CC 21 for deck 2, relative.
+- **Platter touch:** note 20 for deck 1, note 52 for deck 2.
+- **Crossfader:** CC 1. When cutting deck 1 it goes to 127; when cutting
+  deck 2 it goes to 0. Each deck's open position is the opposite end.
+
 ## The MODE layer
 
 Hold the right outer thumb:
 
 ```
          outer  Q/A    W/S    E/D    R/F    T/G   │  Y/H    U/J   ...
-top       --    Piano  Grid   Drums  Chord  Ctrl  │  DJ
+top       --    Piano  Grid   Drums  Chord  Ctrl  │  DJ     Scrch
 home      --    Vel−   Vel+   Ch−    Ch+    OctR  │  KeyR
 bottom    Panic --     --     --     --     --    │  ...                Pair
 thumbs    Exit (left outer)

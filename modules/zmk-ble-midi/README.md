@@ -9,6 +9,10 @@ plus key behaviors and a pointer-to-CC input processor. Written for ZMK v0.3.
 - `src/behavior_midi.c`: `&midi_note`, `&midi_drum`, `&midi_chord`
   (diatonic chords in the current key and scale), `&midi_cc`, `&midi_cc_tog`
   and `&midi_ctl` (compatible `zmk,behavior-midi`, selected by `midi-type`).
+- `src/input_processor_midi_jog.c`: `&midi_jog`, the trackpad as a DJ jog
+  wheel for scratching (touch = platter-touch note, slide = relative jog CC)
+  for the scratch deck chosen with `MIDI_SCRATCH_D1/D2`. `&midi_xf_cut` is
+  the matching hold-to-cut crossfader key.
 - `src/midi_state.c`: the `zmk_midi_state_changed` event (octave, key,
   scale, velocity, channel, connection) for status displays, and the
   `zmk,ble-midi-layers` node that tells a display which layers are MIDI

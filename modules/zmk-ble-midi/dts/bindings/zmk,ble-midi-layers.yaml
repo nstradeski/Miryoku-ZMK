@@ -6,3 +6,6 @@ properties:
   layers:
     type: array
     required: true
+  scratch-layers:
+    type: array
+    description: Layers (also listed in layers) where the display shows the scratch deck.

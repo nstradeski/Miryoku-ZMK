@@ -7,6 +7,7 @@
  *   &midi_cc 64                  CC 127 while held, 0 on release (e.g. sustain)
  *   &midi_cc_tog 20              CC toggles 127 / 0 on each press
  *   &midi_ctl MIDI_OCT_UP        one of the commands below
+ *   &midi_xf_cut 0               crossfader cut while held (scratching)
  */
 
 #pragma once
@@ -55,6 +56,8 @@
 #define MIDI_KEY_RST 17 /* key back to C major, root position, octave 0 */
 #define MIDI_SCALE 18   /* toggle major / minor (chords) */
 #define MIDI_INV 19     /* cycle chord inversion: root, 1st, 2nd */
+#define MIDI_SCRATCH_D1 20 /* scratch deck 1: jog + crossfader cut work on deck 1 */
+#define MIDI_SCRATCH_D2 21 /* scratch deck 2 */
 
 /* Older names for the key commands. */
 #define MIDI_SEMI_DN MIDI_KEY_DN
