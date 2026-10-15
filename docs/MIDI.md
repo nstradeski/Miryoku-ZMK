@@ -98,6 +98,8 @@ left:  L-Oct−   Sustain   L-Oct+        right:  R-Oct−   R-Oct+   MODE
   so you never lose your place. Each hand reaches the whole piano, just not
   all at once.
 - **The screen** shows both octaves when they differ (`L-2 R+1`).
+- **Accordion only:** hold an octave thumb instead of tapping it to shift
+  half an octave (see Accordion below).
 - **Reset both** with MODE + G (OctR).
 - **Sustain** (left middle thumb, the Space position) is the sustain pedal,
   CC 64.
@@ -211,7 +213,21 @@ from anywhere:
 | **Major triad** | Root + (1 right, 1 up) + (2 right, 1 up) |
 
 Each hand covers about 1½ octaves: the left half B2–E4 and the right half
-F4–A#5, each with its own octave on the thumbs. It doesn't look like a
+F4–A#5, each with its own octave on the thumbs.
+
+**Half-octave shifts (Accordion only).** On the Accordion layer the four
+octave thumbs do two things:
+
+- **Tap** = shift that hand a whole octave, as in the other modes.
+- **Hold** (about a quarter second) = shift it **half an octave**. In this
+  layout that's exactly 2 keys sideways, so the whole pattern stays intact:
+  every C is still on the home row, just two keys along.
+
+Half steps let you place each hand where a piece sits on the staff, e.g. hold
+R-Oct− so the right hand covers B3–E5 and middle C is under both hands. The
+screen shows it as `L+0 R-0.5`. MODE + G resets both hands. Piano, Grid and
+Chord ignore the half part, so a piano layout is never left half an octave
+off. It doesn't look like a
 piano, so for Melodics lessons Piano is still the better choice. It suits
 sheet-music-based apps such as Playground Sessions better, where you read
 notes off the staff rather than off an on-screen piano. Accordion

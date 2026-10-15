@@ -18,8 +18,8 @@ enum zmk_midi_scale {
 };
 
 struct zmk_midi_state_changed {
-    int8_t octave;     /* left hand's octave, -4..+4 */
-    int8_t octave_r;   /* right hand's octave, -4..+4 */
+    int8_t shift;      /* left hand's shift in half octaves, -8..+8 (2 = one octave) */
+    int8_t shift_r;    /* right hand's shift in half octaves */
     int8_t transpose;  /* key, in semitones from C: -11..+11 */
     uint8_t velocity;  /* 1..127 */
     uint8_t channel;   /* 0..15 (shown as 1..16) */
@@ -45,6 +45,11 @@ bool zmk_ble_midi_layer_is_midi(uint8_t layer);
 /* True if the keymap marked this layer as a scratch layer (scratch-layers on
  * the zmk,ble-midi-layers node): the display shows the scratch deck there. */
 bool zmk_ble_midi_layer_is_scratch(uint8_t layer);
+
+/* True if the keymap marked this layer as using half-octave shifts
+ * (half-layers on the zmk,ble-midi-layers node); elsewhere the display shows
+ * whole octaves only, matching what the keys play there. */
+bool zmk_ble_midi_layer_uses_half(uint8_t layer);
 
 /* "C", "C#", ... "B" for a pitch class 0-11. */
 const char *zmk_ble_midi_key_name(int transpose);

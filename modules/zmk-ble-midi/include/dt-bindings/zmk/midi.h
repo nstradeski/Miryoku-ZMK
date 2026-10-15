@@ -62,12 +62,21 @@
 #define MIDI_OCT_L_UP 23
 #define MIDI_OCT_R_DN 24 /* right hand's octave only */
 #define MIDI_OCT_R_UP 25
+#define MIDI_HALF_L_DN 26 /* left hand half an octave (6 semitones) down; */
+#define MIDI_HALF_L_UP 27 /* only keys flagged MIDI_HALF follow half steps */
+#define MIDI_HALF_R_DN 28
+#define MIDI_HALF_R_UP 29
 
 /* Per-hand octaves: every &midi_note / &midi_chord key belongs to a hand and
  * follows that hand's octave. Keys are left-hand unless OR-ed with MIDI_RH:
  *   &midi_note (MIDI_N(MN_C, 5) | MIDI_RH)
  *   &midi_chord (MC_VI | MIDI_RH) */
 #define MIDI_RH 0x100
+
+/* Notes that follow half-octave shifts exactly (the accordion layout, where
+ * 6 semitones = 2 keys sideways). Other notes use only the whole-octave part
+ * of a hand's shift, so a piano layout never ends up half an octave off. */
+#define MIDI_HALF 0x200
 
 /* Older names for the key commands. */
 #define MIDI_SEMI_DN MIDI_KEY_DN

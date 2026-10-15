@@ -6,6 +6,9 @@ properties:
   layers:
     type: array
     required: true
+  half-layers:
+    type: array
+    description: Layers whose notes follow half-octave shifts (MIDI_HALF keys).
   scratch-layers:
     type: array
     description: Layers (also listed in layers) where the display shows the scratch deck.

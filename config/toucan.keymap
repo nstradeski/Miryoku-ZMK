@@ -69,6 +69,7 @@
         compatible = "zmk,ble-midi-layers";
         layers = <U_MIDI_PIANO U_MIDI_GRID U_MIDI_DRUMS U_MIDI_CHORD U_MIDI_CTRL U_MIDI_DJ U_MIDI_SCRATCH U_MIDI_ACCORD U_MIDI_MODE>;
         scratch-layers = <U_MIDI_SCRATCH>;
+        half-layers = <U_MIDI_ACCORD>;
     };
 };
 

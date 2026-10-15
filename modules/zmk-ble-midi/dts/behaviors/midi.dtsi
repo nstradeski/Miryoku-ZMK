@@ -56,3 +56,18 @@
         #input-processor-cells = <0>;
     };
 };
+
+/ {
+    behaviors {
+        // Octave key with a half-octave hold: params are <hold> <tap>, e.g.
+        //   &midi_oct_ht MIDI_HALF_L_DN MIDI_OCT_L_DN
+        // tap = whole octave, hold past 250 ms = half octave.
+        midi_oct_ht: midi_oct_ht {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <250>;
+            bindings = <&midi_ctl>, <&midi_ctl>;
+        };
+    };
+};

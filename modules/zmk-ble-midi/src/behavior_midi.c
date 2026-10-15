@@ -46,8 +46,18 @@ struct behavior_midi_config {
 #define BASS_BASE_NOTE 48
 
 /* State shared by every MIDI key. */
-/* Octave per hand: [0] left, [1] right. Keys flagged MIDI_RH use [1]. */
-static int8_t octave[2];
+/* Shift per hand in half octaves: [0] left, [1] right (keys flagged MIDI_RH
+ * use [1]). A whole-octave step is 2; a half-octave step is 1. MIDI_HALF keys
+ * (accordion) use the exact shift, other keys only its whole-octave part
+ * (C division truncates toward 0, so -1/2 = 0: "half down" leaves a piano
+ * where it was). */
+#define SHIFT_MAX (2 * OCTAVE_MAX)
+static int8_t shift[2];
+
+static int semitones(uint32_t param) {
+    int h = (param & MIDI_RH) ? 1 : 0;
+    return (param & MIDI_HALF) ? 6 * shift[h] : 12 * (shift[h] / 2);
+}
 static int8_t transpose;
 static uint8_t velocity = CONFIG_ZMK_BLE_MIDI_DEFAULT_VELOCITY;
 static uint8_t program;
@@ -124,15 +134,14 @@ static int scale_offset(int step) { return scale_steps[scale][step % 7] + 12 * (
 
 static void start_chord(uint32_t position, uint32_t param) {
     int degree = param & 0x07;
-    int hand = (param & MIDI_RH) ? 1 : 0;
-    int shift = 12 * octave[hand] + transpose + ((param & MC_8VA) ? 12 : 0);
+    int offset = semitones(param) + transpose + ((param & MC_8VA) ? 12 : 0);
 
     if (degree > 6) {
         return;
     }
 
     if (param & MC_BASS) {
-        start_note(position, BASS_BASE_NOTE + shift + scale_offset(degree));
+        start_note(position, BASS_BASE_NOTE + offset + scale_offset(degree));
         return;
     }
 
@@ -140,7 +149,7 @@ static void start_chord(uint32_t position, uint32_t param) {
     int count = (param & MC_7TH) ? 4 : 3;
     int notes[4];
     for (int i = 0; i < count; i++) {
-        notes[i] = CHORD_BASE_NOTE + shift + scale_offset(degree + 2 * i);
+        notes[i] = CHORD_BASE_NOTE + offset + scale_offset(degree + 2 * i);
     }
     /* Inversions lift the lowest notes an octave, keeping chord changes
      * closer together on the keyboard. */
@@ -188,8 +197,8 @@ static void send_xf(bool cut) {
 
 struct zmk_midi_state_changed zmk_ble_midi_state(void) {
     return (struct zmk_midi_state_changed){
-        .octave = octave[0],
-        .octave_r = octave[1],
+        .shift = shift[0],
+        .shift_r = shift[1],
         .transpose = transpose,
         .velocity = velocity,
         .channel = zmk_ble_midi_channel(),
@@ -207,19 +216,29 @@ static void run_control(uint32_t command) {
     case MIDI_OCT_R_DN:
     case MIDI_OCT_UP:
     case MIDI_OCT_L_UP:
-    case MIDI_OCT_R_UP: {
-        bool up = command == MIDI_OCT_UP || command == MIDI_OCT_L_UP || command == MIDI_OCT_R_UP;
-        bool left = command != MIDI_OCT_R_DN && command != MIDI_OCT_R_UP;
-        bool right = command != MIDI_OCT_L_DN && command != MIDI_OCT_L_UP;
+    case MIDI_OCT_R_UP:
+    case MIDI_HALF_L_DN:
+    case MIDI_HALF_L_UP:
+    case MIDI_HALF_R_DN:
+    case MIDI_HALF_R_UP: {
+        bool half = command >= MIDI_HALF_L_DN && command <= MIDI_HALF_R_UP;
+        bool up = command == MIDI_OCT_UP || command == MIDI_OCT_L_UP ||
+                  command == MIDI_OCT_R_UP || command == MIDI_HALF_L_UP ||
+                  command == MIDI_HALF_R_UP;
+        bool left = command != MIDI_OCT_R_DN && command != MIDI_OCT_R_UP &&
+                    command != MIDI_HALF_R_DN && command != MIDI_HALF_R_UP;
+        bool right = command != MIDI_OCT_L_DN && command != MIDI_OCT_L_UP &&
+                     command != MIDI_HALF_L_DN && command != MIDI_HALF_L_UP;
+        int step = (half ? 1 : 2) * (up ? 1 : -1);
         for (int h = 0; h < 2; h++) {
             if ((h == 0 && left) || (h == 1 && right)) {
-                octave[h] = CLAMP(octave[h] + (up ? 1 : -1), OCTAVE_MIN, OCTAVE_MAX);
+                shift[h] = CLAMP(shift[h] + step, -SHIFT_MAX, SHIFT_MAX);
             }
         }
         break;
     }
     case MIDI_OCT_RST:
-        octave[0] = octave[1] = 0;
+        shift[0] = shift[1] = 0;
         break;
     case MIDI_KEY_DN:
         transpose = MAX(transpose - 1, -TRANSPOSE_MAX);
@@ -229,7 +248,7 @@ static void run_control(uint32_t command) {
         break;
     case MIDI_KEY_RST:
         transpose = 0;
-        octave[0] = octave[1] = 0;
+        shift[0] = shift[1] = 0;
         scale = ZMK_MIDI_SCALE_MAJOR;
         inversion = 0;
         break;
@@ -288,8 +307,8 @@ static void run_control(uint32_t command) {
     default:
         return;
     }
-    LOG_INF("MIDI ch %d octave L%d R%d key %s %s inv %d velocity %d program %d",
-            zmk_ble_midi_channel() + 1, octave[0], octave[1], zmk_ble_midi_key_name(transpose),
+    LOG_INF("MIDI ch %d shift (half octaves) L%d R%d key %s %s inv %d velocity %d program %d",
+            zmk_ble_midi_channel() + 1, shift[0], shift[1], zmk_ble_midi_key_name(transpose),
             scale == ZMK_MIDI_SCALE_MAJOR ? "maj" : "min", inversion, velocity, program);
     zmk_ble_midi_state_notify();
 }
@@ -302,8 +321,7 @@ static int on_midi_pressed(struct zmk_behavior_binding *binding,
 
     switch (cfg->type) {
     case MIDI_TYPE_NOTE:
-        start_note(event.position,
-                   (int)(param & 0x7F) + 12 * octave[(param & MIDI_RH) ? 1 : 0] + transpose);
+        start_note(event.position, (int)(param & 0x7F) + semitones(param) + transpose);
         break;
     case MIDI_TYPE_FIXED_NOTE: {
         /* MIDI_ON_CH(ch, note) puts a fixed channel (1-16) above the note. */

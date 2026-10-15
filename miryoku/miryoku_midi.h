@@ -99,10 +99,19 @@ U_MIDI_PLAY_THUMBS
 //   fifth (+7)       = two keys right, one row up
 //   octave (+12)     = four keys right, same row
 // so a major triad is root + (1 right, 1 up) + (2 right, 1 up) in any key.
-// Left half B2..E4, right half F4..A#5, each following its own octave
-// (L-Oct / R-Oct on the thumbs).
-#define U_AC(c, r) &midi_note (47 + 3 * (c) + (r))
-#define U_ACR(c, r) &midi_note ((47 + 3 * (c) + (r)) | MIDI_RH)
+// Left half B2..E4, right half F4..A#5, each following its own shift:
+// tap an octave thumb = whole octave, HOLD it = half an octave (2 keys
+// sideways; every C stays on the home row). Half shifts only affect this
+// layout -- Piano / Grid / Chord use the whole-octave part.
+// Accordion keys follow half-octave shifts exactly (MIDI_HALF): 6 semitones
+// is 2 keys sideways here, so the pattern survives a half shift intact.
+#define U_AC(c, r) &midi_note ((47 + 3 * (c) + (r)) | MIDI_HALF)
+#define U_ACR(c, r) &midi_note ((47 + 3 * (c) + (r)) | MIDI_HALF | MIDI_RH)
+// Accordion thumbs: same keys as the other modes, but each octave key is
+// tap = whole octave, hold (250 ms) = half octave.
+#define U_MIDI_ACC_THUMBS \
+&midi_oct_ht MIDI_HALF_L_DN MIDI_OCT_L_DN  &midi_cc 64  &midi_oct_ht MIDI_HALF_L_UP MIDI_OCT_L_UP \
+&midi_oct_ht MIDI_HALF_R_DN MIDI_OCT_R_DN  &midi_oct_ht MIDI_HALF_R_UP MIDI_OCT_R_UP  U_MIDI_MODE_MO
 #define U_MIDI_ACC_ROW(r) \
 U_AC(0, r)  U_AC(1, r)  U_AC(2, r)  U_AC(3, r)  U_AC(4, r)  U_AC(5, r) \
 U_ACR(6, r) U_ACR(7, r) U_ACR(8, r) U_ACR(9, r) U_ACR(10, r) U_ACR(11, r)
@@ -111,7 +120,7 @@ U_ACR(6, r) U_ACR(7, r) U_ACR(8, r) U_ACR(9, r) U_ACR(10, r) U_ACR(11, r)
 U_MIDI_ACC_ROW(2) \
 U_MIDI_ACC_ROW(1) \
 U_MIDI_ACC_ROW(0) \
-U_MIDI_PLAY_THUMBS
+U_MIDI_ACC_THUMBS
 
 // ---------------------------------------------------------------------------
 // DRUMS -- General MIDI drum kit. Fixed notes: octave and key don't move them.
