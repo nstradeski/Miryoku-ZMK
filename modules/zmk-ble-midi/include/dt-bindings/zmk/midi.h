@@ -36,9 +36,9 @@
 #define MIDI_ON_CH(channel, note) (((channel) << 8) | (note))
 
 /* &midi_ctl commands */
-#define MIDI_OCT_DN 0   /* octave down (held notes still release correctly) */
+#define MIDI_OCT_DN 0   /* octave down, both hands (held notes still release correctly) */
 #define MIDI_OCT_UP 1
-#define MIDI_OCT_RST 2  /* octave back to 0 */
+#define MIDI_OCT_RST 2  /* both hands' octaves back to 0 */
 #define MIDI_KEY_DN 3   /* key (transpose) down one semitone: notes and chords */
 #define MIDI_KEY_UP 4
 #define MIDI_VEL_DN 5   /* velocity -16 */
@@ -58,6 +58,16 @@
 #define MIDI_INV 19     /* cycle chord inversion: root, 1st, 2nd */
 #define MIDI_SCRATCH_D1 20 /* scratch deck 1: jog + crossfader cut work on deck 1 */
 #define MIDI_SCRATCH_D2 21 /* scratch deck 2 */
+#define MIDI_OCT_L_DN 22 /* left hand's octave only */
+#define MIDI_OCT_L_UP 23
+#define MIDI_OCT_R_DN 24 /* right hand's octave only */
+#define MIDI_OCT_R_UP 25
+
+/* Per-hand octaves: every &midi_note / &midi_chord key belongs to a hand and
+ * follows that hand's octave. Keys are left-hand unless OR-ed with MIDI_RH:
+ *   &midi_note (MIDI_N(MN_C, 5) | MIDI_RH)
+ *   &midi_chord (MC_VI | MIDI_RH) */
+#define MIDI_RH 0x100
 
 /* Older names for the key commands. */
 #define MIDI_SEMI_DN MIDI_KEY_DN

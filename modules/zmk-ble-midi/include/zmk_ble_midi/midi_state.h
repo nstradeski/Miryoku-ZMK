@@ -18,7 +18,8 @@ enum zmk_midi_scale {
 };
 
 struct zmk_midi_state_changed {
-    int8_t octave;     /* -4..+4 */
+    int8_t octave;     /* left hand's octave, -4..+4 */
+    int8_t octave_r;   /* right hand's octave, -4..+4 */
     int8_t transpose;  /* key, in semitones from C: -11..+11 */
     uint8_t velocity;  /* 1..127 */
     uint8_t channel;   /* 0..15 (shown as 1..16) */

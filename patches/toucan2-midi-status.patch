@@ -1,8 +1,8 @@
 diff --git a/boards/shields/nice_view_gem/widgets/screen.c b/boards/shields/nice_view_gem/widgets/screen.c
-index e6e93cf..aa4ca05 100644
+index e6e93cf..d371132 100644
 --- a/boards/shields/nice_view_gem/widgets/screen.c
 +++ b/boards/shields/nice_view_gem/widgets/screen.c
-@@ -45,12 +45,63 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
+@@ -45,12 +45,68 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
  #include "screen.h"
  #include "sleep.h"
  
@@ -25,6 +25,7 @@ index e6e93cf..aa4ca05 100644
 + *
 + *   G MAJ            key + scale, or NO MIDI when no app is connected
 + *   OCT+1 V100 C1    octave, velocity, MIDI channel
++ *   L-2 R+1 V100     ...or each hand's octave when they differ
 + *
 + * On a scratch layer: "DECK 1" / "DECK 2" (the deck being scratched) and
 + * "JOG + XF CUT".
@@ -53,9 +54,13 @@ index e6e93cf..aa4ca05 100644
 +    }
 +    if (scratch) {
 +        snprintf(line2, sizeof(line2), "JOG + XF CUT");
++    } else if (m->octave != m->octave_r) {
++        /* Hands at different octaves: show both (channel drops off to fit). */
++        snprintf(line2, sizeof(line2), "L%c%d R%c%d V%d", m->octave < 0 ? '-' : '+',
++                 (m->octave < 0 ? -m->octave : m->octave), m->octave_r < 0 ? '-' : '+', (m->octave_r < 0 ? -m->octave_r : m->octave_r), m->velocity);
 +    } else {
 +        snprintf(line2, sizeof(line2), "OCT%c%d V%d C%d", m->octave < 0 ? '-' : '+',
-+                 m->octave < 0 ? -m->octave : m->octave, m->velocity, m->channel + 1);
++                 (m->octave < 0 ? -m->octave : m->octave), m->velocity, m->channel + 1);
 +    }
 +
 +    lv_canvas_draw_text(canvas, 6, 74, SCREEN_WIDTH - 6, &big, line1);
@@ -66,7 +71,7 @@ index e6e93cf..aa4ca05 100644
  /**
   * Draw buffers
   **/
-@@ -67,6 +118,11 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
+@@ -67,6 +123,11 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
      // Draw widgets
      draw_output_status(canvas, state);
      #if defined(CONFIG_TOUCAN_STATUS_SCREEN) && CONFIG_TOUCAN_STATUS_SCREEN == 2
@@ -78,7 +83,7 @@ index e6e93cf..aa4ca05 100644
      draw_chart_status(canvas, state);
      #endif
      draw_layer_status(canvas, state);
-@@ -283,6 +339,31 @@ ZMK_DISPLAY_WIDGET_LISTENER(widget_chart_status, struct chart_status_state,
+@@ -283,6 +344,31 @@ ZMK_DISPLAY_WIDGET_LISTENER(widget_chart_status, struct chart_status_state,
  ZMK_SUBSCRIPTION(widget_chart_status, zmk_wpm_state_changed);
  #endif
  
@@ -110,7 +115,7 @@ index e6e93cf..aa4ca05 100644
  /**
   * Initialization
   **/
-@@ -300,6 +381,9 @@ int zmk_widget_screen_init(struct zmk_widget_screen *widget, lv_obj_t *parent) {
+@@ -300,6 +386,9 @@ int zmk_widget_screen_init(struct zmk_widget_screen *widget, lv_obj_t *parent) {
      widget_battery_peripheral_status_init();
      widget_layer_status_init();
      widget_output_status_init();

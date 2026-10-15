@@ -79,19 +79,30 @@ graph with the MIDI state. The big text at the bottom is the mode.
 
 - **Line 1** is the key and scale, e.g. `G MAJ`. It reads **`NO MIDI`**
   until an app is connected, which makes it a quick connection check.
-- **Line 2** is octave, velocity and MIDI channel: `OCT+1 V100 C1`.
+- **Line 2** is octave, velocity and MIDI channel: `OCT+1 V100 C1`. When
+  your hands are at different octaves it shows both instead, e.g.
+  `L-2 R+1 V100`.
 
-## Shared thumbs
+## Shared thumbs: an octave per hand
 
-In Piano, Grid and Chord, the thumbs are:
+In Piano, Grid and Chord, **each half of the keyboard has its own octave**,
+so your hands can play far apart:
 
 ```
-left:  Oct−   Sustain   Oct+        right:  Mod   Hold   MODE
+left:  L-Oct−   Sustain   L-Oct+        right:  R-Oct−   R-Oct+   MODE
 ```
 
-- **Sustain** (Space position): sustain pedal, CC 64, while held.
-- **Mod**: mod wheel at full (CC 1) while held.
-- **Hold**: CC 85 at 127 while held, for MIDI Learn.
+- **Each hand's octave keys are under its own thumb.** L-Oct moves only the
+  left half's notes; R-Oct moves only the right half's.
+- **Octave steps never move a note's position.** C stays under the same key,
+  so you never lose your place. Each hand reaches the whole piano, just not
+  all at once.
+- **The screen** shows both octaves when they differ (`L-2 R+1`).
+- **Reset both** with MODE + G (OctR).
+- **Sustain** (left middle thumb, the Space position) is the sustain pedal,
+  CC 64.
+- **Mod wheel and Hold** are on the MODE layer: hold MODE and press **J**
+  for the mod wheel (CC 1), **K** for Hold (CC 85).
 - Drums and Control use their own thumbs (see below). **MODE** is always the
   right outer thumb.
 
@@ -142,22 +153,49 @@ home      B3    C4    D4    E4    F4    G4   │  A4    B4    C5    D5    E5    
 bottom    B2    C3    D3    E3    F3    G3   │  A3    B3    C4    D4    E4    F4
 ```
 
-C4 is middle C, MIDI note 60. GarageBand labels it **C3**. This is the mode
-to use for Melodics piano lessons, because it matches the piano Melodics
-shows on screen.
+C4 is middle C, MIDI note 60. GarageBand labels it **C3**. The layout above
+is with both hands at octave 0: the left half (B3–G4 on the home row) follows
+L-Oct, the right half (A4–F5) follows R-Oct. This is the mode to use for
+Melodics piano lessons, because it matches the piano Melodics shows on
+screen.
 
-## Grid: 36 notes, one octave per row
+## Grid: the accordion layout, 36 notes
 
-Every semitone from C3 to B5 appears exactly once. Each row runs chromatically
-from left to right, and the key above is an octave higher. It covers more
-range than Piano, but it doesn't look like a piano.
+Grid uses the layout of the **chromatic button accordion** (C-system style).
+Accordions have used this arrangement for over a century to fit many notes
+on three rows of buttons, which is exactly what the Toucan has. Every
+semitone from **B2 to A#5** appears exactly once, three full octaves.
 
 ```
-         col:  1     2     3     4     5     6   │  7     8     9     10    11    12
-top            C5    C#5   D5    D#5   E5    F5  │  F#5   G5    G#5   A5    A#5   B5
-home           C4    C#4   D4    D#4   E4    F4  │  F#4   G4    G#4   A4    A#4   B4
-bottom         C3    C#3   D3    D#3   E3    F3  │  F#3   G3    G#3   A3    A#3   B3
+         outer  Q/A   W/S   E/D   R/F   T/G  │  Y/H   U/J   I/K   O/L   P/'  outer
+top       C#3   E3    G3    A#3   C#4   E4   │  G4    A#4   C#5   E5    G5    A#5
+home      C3    D#3   F#3   A3    C4    D#4  │  F#4   A4    C5    D#5   F#5   A5
+bottom    B2    D3    F3    G#3   B3    D4   │  F4    G#4   B4    D5    F5    G#5
 ```
+
+The whole layout follows three rules:
+
+- **One key right = 3 semitones** (a minor third), so **4 keys right = an
+  octave**.
+- **One row up = 1 semitone.** Each column is three neighbouring notes.
+- **Every C is on the home row,** 4 keys apart: the outer-left key (C3),
+  **F** (C4, middle C, under your left index finger) and **K** (C5, under
+  your right middle finger).
+
+Shapes are the same in every key, so you learn a chord once and can play it
+from anywhere:
+
+| Interval | Shape |
+|---|---|
+| Major third (+4) | One key right, one row up |
+| Fifth (+7) | Two keys right, one row up |
+| Octave (+12) | Four keys right, same row |
+| **Major triad** | Root + (1 right, 1 up) + (2 right, 1 up) |
+
+Each hand covers about 1½ octaves: the left half B2–E4 and the right half
+F4–A#5, each with its own octave on the thumbs. It doesn't look like a
+piano, so for Melodics lessons Piano is still the better choice. Accordion
+fingering guides (search "C-system chromatic accordion") apply directly.
 
 ## Drums: a General MIDI kit
 
@@ -349,7 +387,7 @@ Hold the right outer thumb:
 ```
          outer  Q/A    W/S    E/D    R/F    T/G   │  Y/H    U/J   ...
 top       --    Piano  Grid   Drums  Chord  Ctrl  │  DJ     Scrch
-home      --    Vel−   Vel+   Ch−    Ch+    OctR  │  KeyR
+home      --    Vel−   Vel+   Ch−    Ch+    OctR  │  KeyR   Mod   Hold
 bottom    Panic --     --     --     --     --    │  ...                Pair
 thumbs    Exit (left outer)
 ```

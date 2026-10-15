@@ -14,9 +14,12 @@
 // / Mouseless / WINDOW keys) and list positions directly, row by row:
 // 12 top, 12 home, 12 bottom, 6 thumbs.
 //
-// Every playing mode shares the same thumbs:
-//   Oct-  Sustain  Oct+  |  Mod  Hold  MODE      (Drums: drum sounds instead)
-//   Mod  = mod wheel (CC 1) while held; Hold = CC 85 while held (MIDI Learn)
+// Piano, Grid and Chord share the same thumbs, an octave pair per hand:
+//   L-Oct-  Sustain  L-Oct+  |  R-Oct-  R-Oct+  MODE
+// Each half of the keyboard has its own octave, so the hands can play far
+// apart; octave steps never move a note's position (C stays under the same
+// key). The screen shows both when they differ ("L-2 R+1"). Mod wheel (CC 1)
+// and Hold (CC 85) are on the MODE layer.
 //
 // The trackpad is an XY pad on every MIDI layer (CC 16 / CC 17).
 
@@ -24,11 +27,13 @@
 
 #include <dt-bindings/zmk/midi.h>
 
+// U_MN = a left-hand note (follows the left octave), U_MNR = right-hand.
 #define U_MN(note, octave) &midi_note MIDI_N(note, octave)
+#define U_MNR(note, octave) &midi_note (MIDI_N(note, octave) | MIDI_RH)
 #define U_MIDI_MODE_MO &mo U_MIDI_MODE
 
 #define U_MIDI_PLAY_THUMBS \
-&midi_ctl MIDI_OCT_DN  &midi_cc 64  &midi_ctl MIDI_OCT_UP      &midi_cc 1  &midi_cc 85  U_MIDI_MODE_MO
+&midi_ctl MIDI_OCT_L_DN  &midi_cc 64  &midi_ctl MIDI_OCT_L_UP      &midi_ctl MIDI_OCT_R_DN  &midi_ctl MIDI_OCT_R_UP  U_MIDI_MODE_MO
 
 // ---------------------------------------------------------------------------
 // PIANO -- GarageBand Musical Typing, plus a lower octave of white keys.
@@ -43,29 +48,48 @@
 //   home  B3    C4    D4    E4    F4    G4   |  A4    B4    C5    D5    E5    F5
 //   bot   B2    C3    D3    E3    F3    G3   |  A3    B3    C4    D4    E4    F4
 //
-// C4 is middle C (MIDI 60); GarageBand calls it C3.
+// C4 is middle C (MIDI 60); GarageBand calls it C3. Notes shown at octave 0
+// for both hands; L-Oct / R-Oct move each half independently.
 #define MIRYOKU_LAYERMAPPING_MIDI_PIANO(...) __VA_ARGS__
 #define MIRYOKU_LAYER_MIDI_PIANO \
-U_NU            U_MN(MN_CS, 4)  U_MN(MN_DS, 4)  U_NU            U_MN(MN_FS, 4)  U_MN(MN_GS, 4)      U_MN(MN_AS, 4)  U_NU            U_MN(MN_CS, 5)  U_MN(MN_DS, 5)  U_NU            U_MN(MN_FS, 5) \
-U_MN(MN_B, 3)   U_MN(MN_C, 4)   U_MN(MN_D, 4)   U_MN(MN_E, 4)   U_MN(MN_F, 4)   U_MN(MN_G, 4)       U_MN(MN_A, 4)   U_MN(MN_B, 4)   U_MN(MN_C, 5)   U_MN(MN_D, 5)   U_MN(MN_E, 5)   U_MN(MN_F, 5)  \
-U_MN(MN_B, 2)   U_MN(MN_C, 3)   U_MN(MN_D, 3)   U_MN(MN_E, 3)   U_MN(MN_F, 3)   U_MN(MN_G, 3)       U_MN(MN_A, 3)   U_MN(MN_B, 3)   U_MN(MN_C, 4)   U_MN(MN_D, 4)   U_MN(MN_E, 4)   U_MN(MN_F, 4)  \
+U_NU            U_MN(MN_CS, 4)  U_MN(MN_DS, 4)  U_NU            U_MN(MN_FS, 4)  U_MN(MN_GS, 4)      U_MNR(MN_AS, 4) U_NU            U_MNR(MN_CS, 5) U_MNR(MN_DS, 5) U_NU            U_MNR(MN_FS, 5) \
+U_MN(MN_B, 3)   U_MN(MN_C, 4)   U_MN(MN_D, 4)   U_MN(MN_E, 4)   U_MN(MN_F, 4)   U_MN(MN_G, 4)       U_MNR(MN_A, 4)  U_MNR(MN_B, 4)  U_MNR(MN_C, 5)  U_MNR(MN_D, 5)  U_MNR(MN_E, 5)  U_MNR(MN_F, 5) \
+U_MN(MN_B, 2)   U_MN(MN_C, 3)   U_MN(MN_D, 3)   U_MN(MN_E, 3)   U_MN(MN_F, 3)   U_MN(MN_G, 3)       U_MNR(MN_A, 3)  U_MNR(MN_B, 3)  U_MNR(MN_C, 4)  U_MNR(MN_D, 4)  U_MNR(MN_E, 4)  U_MNR(MN_F, 4) \
 U_MIDI_PLAY_THUMBS
 
 // ---------------------------------------------------------------------------
-// GRID -- one octave per row, chromatic left to right. 36 notes, C3..B5,
-// every semitone exactly once. Key above = octave up.
+// GRID -- chromatic button accordion layout (C-system style). 36 notes,
+// B2..A#5, every semitone exactly once, in the 3-row arrangement accordions
+// have used for a century.
 //
-//        col:   1     2     3     4     5     6   |  7     8     9     10    11    12
-//   top         C5    C#5   D5    D#5   E5    F5  |  F#5   G5    G#5   A5    A#5   B5
-//   home        C4    C#4   D4    D#4   E4    F4  |  F#4   G4    G#4   A4    A#4   B4
-//   bot         C3    C#3   D3    D#3   E3    F3  |  F#3   G3    G#3   A3    A#3   B3
-#define U_MIDI_GRID_ROW(o) \
-U_MN(MN_C, o)   U_MN(MN_CS, o)  U_MN(MN_D, o)   U_MN(MN_DS, o)  U_MN(MN_E, o)   U_MN(MN_F, o)       U_MN(MN_FS, o)  U_MN(MN_G, o)   U_MN(MN_GS, o)  U_MN(MN_A, o)   U_MN(MN_AS, o)  U_MN(MN_B, o)
+//   one key right = +3 semitones (a minor third), so 4 keys right = an octave
+//   one row up    = +1 semitone
+//   every C is on the HOME row, 4 keys apart: outer-left (C3), F (C4 =
+//   middle C, left index) and K (C5, right middle)
+//
+//        outer  Q/A   W/S   E/D   R/F   T/G  |  Y/H   U/J   I/K   O/L   P/'  outer
+//   top   C#3   E3    G3    A#3   C#4   E4   |  G4    A#4   C#5   E5    G5    A#5
+//   home  C3    D#3   F#3   A3    C4    D#4  |  F#4   A4    C5    D#5   F#5   A5
+//   bot   B2    D3    F3    G#3   B3    D4   |  F4    G#4   B4    D5    F5    G#5
+//
+// Each column is three neighbouring semitones (bottom to top), and every
+// shape works the same from any starting key (wherever the row allows):
+//   major third (+4) = one key right, one row up
+//   fifth (+7)       = two keys right, one row up
+//   octave (+12)     = four keys right, same row
+// so a major triad is root + (1 right, 1 up) + (2 right, 1 up) in any key.
+// Left half B2..E4, right half F4..A#5, each following its own octave
+// (L-Oct / R-Oct on the thumbs).
+#define U_AC(c, r) &midi_note (47 + 3 * (c) + (r))
+#define U_ACR(c, r) &midi_note ((47 + 3 * (c) + (r)) | MIDI_RH)
+#define U_MIDI_ACC_ROW(r) \
+U_AC(0, r)  U_AC(1, r)  U_AC(2, r)  U_AC(3, r)  U_AC(4, r)  U_AC(5, r) \
+U_ACR(6, r) U_ACR(7, r) U_ACR(8, r) U_ACR(9, r) U_ACR(10, r) U_ACR(11, r)
 #define MIRYOKU_LAYERMAPPING_MIDI_GRID(...) __VA_ARGS__
 #define MIRYOKU_LAYER_MIDI_GRID \
-U_MIDI_GRID_ROW(5) \
-U_MIDI_GRID_ROW(4) \
-U_MIDI_GRID_ROW(3) \
+U_MIDI_ACC_ROW(2) \
+U_MIDI_ACC_ROW(1) \
+U_MIDI_ACC_ROW(0) \
 U_MIDI_PLAY_THUMBS
 
 // ---------------------------------------------------------------------------
@@ -103,8 +127,10 @@ U_MD(HIHAT_CLOSED)  U_MD(KICK)  U_MD(HIHAT_PEDAL)     U_MD(SNARE)  U_MD(CLAP)  U
 //   Inv        cycle root position -> 1st -> 2nd inversion
 //   Reset      back to C major, root position, octave 0
 #define U_MC(flags) &midi_chord (flags)
+// I..V under the left hand (left octave), vi..iii' under the right.
 #define U_MIDI_CHORD_ROW(f) \
-U_MC(MC_I | f)  U_MC(MC_II | f) U_MC(MC_III | f) U_MC(MC_IV | f) U_MC(MC_V | f)     U_MC(MC_VI | f) U_MC(MC_VII | f) U_MC(MC_I | MC_8VA | f) U_MC(MC_II | MC_8VA | f) U_MC(MC_III | MC_8VA | f)
+U_MC(MC_I | f)  U_MC(MC_II | f) U_MC(MC_III | f) U_MC(MC_IV | f) U_MC(MC_V | f) \
+U_MC(MC_VI | MIDI_RH | f) U_MC(MC_VII | MIDI_RH | f) U_MC(MC_I | MC_8VA | MIDI_RH | f) U_MC(MC_II | MC_8VA | MIDI_RH | f) U_MC(MC_III | MC_8VA | MIDI_RH | f)
 #define MIRYOKU_LAYERMAPPING_MIDI_CHORD(...) __VA_ARGS__
 #define MIRYOKU_LAYER_MIDI_CHORD \
 &midi_ctl MIDI_KEY_DN   U_MIDI_CHORD_ROW(MC_7TH)   &midi_ctl MIDI_KEY_UP \
@@ -228,13 +254,13 @@ U_NU  U_NU  U_NU      U_NU  U_NU  U_MIDI_MODE_MO
 //
 //        outer  Q/A    W/S    E/D    R/F    T/G   |  Y/H    U/J   I/K   O/L   P/'  outer
 //   top   --    Piano  Grid   Drums  Chord  Ctrl  |  DJ     Scrch --    --    --    --
-//   home  --    Vel-   Vel+   Ch-    Ch+    OctR  |  KeyR   --    --    --    --    --
+//   home  --    Vel-   Vel+   Ch-    Ch+    OctR  |  KeyR   Mod   Hold  --    --    --
 //   bot   Panic --     --     --     --     --    |  --     --    --    --    --    Pair
 //   thumbs             Exit   --     --           |  --     --    (held)
 #define MIRYOKU_LAYERMAPPING_MIDI_MODE(...) __VA_ARGS__
 #define MIRYOKU_LAYER_MIDI_MODE \
 U_NU  &to U_MIDI_PIANO  &to U_MIDI_GRID  &to U_MIDI_DRUMS  &to U_MIDI_CHORD  &to U_MIDI_CTRL      &to U_MIDI_DJ  &to U_MIDI_SCRATCH  U_NU  U_NU  U_NU  U_NU \
 U_NU  &midi_ctl MIDI_VEL_DN  &midi_ctl MIDI_VEL_UP  &midi_ctl MIDI_CH_DN  &midi_ctl MIDI_CH_UP  &midi_ctl MIDI_OCT_RST \
-      &midi_ctl MIDI_KEY_RST  U_NU  U_NU  U_NU  U_NU  U_NU \
+      &midi_ctl MIDI_KEY_RST  &midi_cc 1  &midi_cc 85  U_NU  U_NU  U_NU \
 &midi_ctl MIDI_PANIC  U_NU  U_NU  U_NU  U_NU  U_NU      U_NU  U_NU  U_NU  U_NU  U_NU  &midi_ctl MIDI_PAIR \
 &to U_BASE  U_NU  U_NU      U_NU  U_NU  U_NU
