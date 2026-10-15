@@ -48,7 +48,7 @@
             timeout-ms = <50>;
             require-prior-idle-ms = <150>;
             key-positions = <U_MIDI_COMBO_KEYS>;
-            layers = <U_MIDI_PIANO U_MIDI_GRID U_MIDI_DRUMS U_MIDI_CHORD U_MIDI_CTRL U_MIDI_DJ U_MIDI_SCRATCH U_MIDI_MODE>;
+            layers = <U_MIDI_PIANO U_MIDI_GRID U_MIDI_DRUMS U_MIDI_CHORD U_MIDI_CTRL U_MIDI_DJ U_MIDI_SCRATCH U_MIDI_ACCORD U_MIDI_MODE>;
             bindings = <&to U_BASE>;
         };
     };
@@ -67,7 +67,7 @@
 
     midi_layers {
         compatible = "zmk,ble-midi-layers";
-        layers = <U_MIDI_PIANO U_MIDI_GRID U_MIDI_DRUMS U_MIDI_CHORD U_MIDI_CTRL U_MIDI_DJ U_MIDI_SCRATCH U_MIDI_MODE>;
+        layers = <U_MIDI_PIANO U_MIDI_GRID U_MIDI_DRUMS U_MIDI_CHORD U_MIDI_CTRL U_MIDI_DJ U_MIDI_SCRATCH U_MIDI_ACCORD U_MIDI_MODE>;
         scratch-layers = <U_MIDI_SCRATCH>;
     };
 };
@@ -81,7 +81,7 @@
 //
 //   index:  0 BASE  1 EXTRA  2 TAP  3 BUTTON  4 NAV  5 MOUSE
 //           6 MEDIA  7 NUM   8 SYM  9 FUN    10 WINDOW
-//           11-18 MIDI: PIANO GRID DRUMS CHORD CTRL DJ SCRATCH MODE
+//           11-19 MIDI: PIANO GRID DRUMS CHORD CTRL DJ SCRATCH ACCORD MODE
 //
 // Everything else in the shield is already macOS-correct and left alone:
 // the zoom mapper sends Cmd+- / Cmd+= and the three-finger swipes send
@@ -133,7 +133,7 @@
     };
 
     midi {
-        layers = <U_MIDI_PIANO U_MIDI_GRID U_MIDI_DRUMS U_MIDI_CHORD U_MIDI_CTRL U_MIDI_MODE>;
+        layers = <U_MIDI_PIANO U_MIDI_GRID U_MIDI_DRUMS U_MIDI_CHORD U_MIDI_CTRL U_MIDI_ACCORD U_MIDI_MODE>;
         input-processors = <&midi_xy 16 17>;
     };
 };

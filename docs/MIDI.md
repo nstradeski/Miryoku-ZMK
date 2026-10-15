@@ -1,7 +1,7 @@
 # Toucan2 as a Bluetooth MIDI controller (iPad)
 
-The Toucan2 firmware has seven **MIDI modes**: Piano, Grid, Drums, Chord,
-Control, DJ and Scratch. In them the keys send MIDI over Bluetooth instead of keystrokes, and
+The Toucan2 firmware has eight **MIDI modes**: Piano, Grid, Accordion,
+Drums, Chord, Control, DJ and Scratch. In them the keys send MIDI over Bluetooth instead of keystrokes, and
 the trackpad works as an XY pad and velocity slider. The keyboard connects to the iPad over the
 same Bluetooth link it already uses for typing. You don't need a cable, a
 dongle, or a second pairing.
@@ -19,7 +19,7 @@ Only the Toucan2 has this. The Corne and Corne-ish Zen builds are unchanged.
 | To... | Do this |
 |---|---|
 | Turn MIDI on / off | Press **both bottom outer pinky keys together**. MIDI always starts in Piano. |
-| Switch mode | Hold the **right outer thumb** (MODE) and tap **Q** Piano, **W** Grid, **E** Drums, **R** Chord, **T** Control, **Y** DJ or **U** Scratch |
+| Switch mode | Hold the **right outer thumb** (MODE) and tap **Q** Piano, **W** Grid, **E** Drums, **R** Chord, **T** Control, **Y** DJ, **U** Scratch or **I** Accordion |
 | Make the iPad find it | Hold MODE and tap **Pair** (bottom-right outer key) |
 | Silence stuck notes | Hold MODE and tap **Panic** (bottom-left outer key) |
 | Leave MIDI | The pinky combo again, or hold MODE and tap the left outer thumb |
@@ -85,7 +85,7 @@ graph with the MIDI state. The big text at the bottom is the mode.
 
 ## Shared thumbs: an octave per hand
 
-In Piano, Grid and Chord, **each half of the keyboard has its own octave**,
+In Piano, Grid, Accordion and Chord, **each half of the keyboard has its own octave**,
 so your hands can play far apart:
 
 ```
@@ -159,11 +159,29 @@ L-Oct, the right half (A4–F5) follows R-Oct. This is the mode to use for
 Melodics piano lessons, because it matches the piano Melodics shows on
 screen.
 
-## Grid: the accordion layout, 36 notes
+## Grid: 36 notes, one octave per row
 
-Grid uses the layout of the **chromatic button accordion** (C-system style).
+Every semitone from C3 to B5 appears exactly once. Each row runs chromatically
+from left to right, and the key above is an octave higher. Every C is in the
+outer-left column. It's the simplest layout to reason about, but it doesn't
+look like a piano.
+
+```
+         col:  1     2     3     4     5     6   │  7     8     9     10    11    12
+top            C5    C#5   D5    D#5   E5    F5  │  F#5   G5    G#5   A5    A#5   B5
+home           C4    C#4   D4    D#4   E4    F4  │  F#4   G4    G#4   A4    A#4   B4
+bottom         C3    C#3   D3    D#3   E3    F3  │  F#3   G3    G#3   A3    A#3   B3
+```
+
+Columns 1–6 follow the left hand's octave, columns 7–12 the right's.
+
+## Accordion: 36 notes, the button accordion layout (MODE + I)
+
+Accordion uses the layout of the **chromatic button accordion** (C-system style).
 Accordions have used this arrangement for over a century to fit many notes
-on three rows of buttons, which is exactly what the Toucan has. Every
+on three rows of buttons, which is exactly what the Toucan has. Compared to
+Grid it's more compact (an octave fits in 4 keys instead of 12) and chord
+shapes are the same in every key, but it takes longer to learn. Every
 semitone from **B2 to A#5** appears exactly once, three full octaves.
 
 ```
@@ -194,7 +212,9 @@ from anywhere:
 
 Each hand covers about 1½ octaves: the left half B2–E4 and the right half
 F4–A#5, each with its own octave on the thumbs. It doesn't look like a
-piano, so for Melodics lessons Piano is still the better choice. Accordion
+piano, so for Melodics lessons Piano is still the better choice. It suits
+sheet-music-based apps such as Playground Sessions better, where you read
+notes off the staff rather than off an on-screen piano. Accordion
 fingering guides (search "C-system chromatic accordion") apply directly.
 
 ## Drums: a General MIDI kit
@@ -386,7 +406,7 @@ Hold the right outer thumb:
 
 ```
          outer  Q/A    W/S    E/D    R/F    T/G   │  Y/H    U/J   ...
-top       --    Piano  Grid   Drums  Chord  Ctrl  │  DJ     Scrch
+top       --    Piano  Grid   Drums  Chord  Ctrl  │  DJ     Scrch  Accrd
 home      --    Vel−   Vel+   Ch−    Ch+    OctR  │  KeyR   Mod   Hold
 bottom    Panic --     --     --     --     --    │  ...                Pair
 thumbs    Exit (left outer)

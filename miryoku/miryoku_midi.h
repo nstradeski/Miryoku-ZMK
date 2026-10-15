@@ -7,14 +7,14 @@
 //                   config/toucan.keymap). Entering always lands on Piano.
 //   Switch mode:    hold the right outer thumb (MODE) and tap a top-row key
 //                   (Q Piano, W Grid, E Drums, R Chord, T Ctrl, Y DJ,
-//                   U Scratch).
+//                   U Scratch, I Accordion).
 //
 // The MIDI layers cover all 42 keys, including the outer pinky columns, so
 // they bypass the Corne mapping macro (which pins those columns to the Witch
 // / Mouseless / WINDOW keys) and list positions directly, row by row:
 // 12 top, 12 home, 12 bottom, 6 thumbs.
 //
-// Piano, Grid and Chord share the same thumbs, an octave pair per hand:
+// Piano, Grid, Accordion and Chord share the same thumbs, an octave pair per hand:
 //   L-Oct-  Sustain  L-Oct+  |  R-Oct-  R-Oct+  MODE
 // Each half of the keyboard has its own octave, so the hands can play far
 // apart; octave steps never move a note's position (C stays under the same
@@ -58,7 +58,28 @@ U_MN(MN_B, 2)   U_MN(MN_C, 3)   U_MN(MN_D, 3)   U_MN(MN_E, 3)   U_MN(MN_F, 3)   
 U_MIDI_PLAY_THUMBS
 
 // ---------------------------------------------------------------------------
-// GRID -- chromatic button accordion layout (C-system style). 36 notes,
+// GRID -- one octave per row, chromatic left to right. 36 notes, C3..B5,
+// every semitone exactly once. Key above = octave up; every C is in the
+// outer-left column.
+//
+//        col:   1     2     3     4     5     6   |  7     8     9     10    11    12
+//   top         C5    C#5   D5    D#5   E5    F5  |  F#5   G5    G#5   A5    A#5   B5
+//   home        C4    C#4   D4    D#4   E4    F4  |  F#4   G4    G#4   A4    A#4   B4
+//   bot         C3    C#3   D3    D#3   E3    F3  |  F#3   G3    G#3   A3    A#3   B3
+//
+// Columns 1-6 follow the left octave, 7-12 the right (L-Oct / R-Oct).
+#define U_MIDI_GRID_ROW(o) \
+U_MN(MN_C, o)   U_MN(MN_CS, o)  U_MN(MN_D, o)   U_MN(MN_DS, o)  U_MN(MN_E, o)   U_MN(MN_F, o) \
+U_MNR(MN_FS, o) U_MNR(MN_G, o)  U_MNR(MN_GS, o) U_MNR(MN_A, o)  U_MNR(MN_AS, o) U_MNR(MN_B, o)
+#define MIRYOKU_LAYERMAPPING_MIDI_GRID(...) __VA_ARGS__
+#define MIRYOKU_LAYER_MIDI_GRID \
+U_MIDI_GRID_ROW(5) \
+U_MIDI_GRID_ROW(4) \
+U_MIDI_GRID_ROW(3) \
+U_MIDI_PLAY_THUMBS
+
+// ---------------------------------------------------------------------------
+// ACCORD -- chromatic button accordion layout (C-system style). 36 notes,
 // B2..A#5, every semitone exactly once, in the 3-row arrangement accordions
 // have used for a century.
 //
@@ -85,8 +106,8 @@ U_MIDI_PLAY_THUMBS
 #define U_MIDI_ACC_ROW(r) \
 U_AC(0, r)  U_AC(1, r)  U_AC(2, r)  U_AC(3, r)  U_AC(4, r)  U_AC(5, r) \
 U_ACR(6, r) U_ACR(7, r) U_ACR(8, r) U_ACR(9, r) U_ACR(10, r) U_ACR(11, r)
-#define MIRYOKU_LAYERMAPPING_MIDI_GRID(...) __VA_ARGS__
-#define MIRYOKU_LAYER_MIDI_GRID \
+#define MIRYOKU_LAYERMAPPING_MIDI_ACCORD(...) __VA_ARGS__
+#define MIRYOKU_LAYER_MIDI_ACCORD \
 U_MIDI_ACC_ROW(2) \
 U_MIDI_ACC_ROW(1) \
 U_MIDI_ACC_ROW(0) \
@@ -253,13 +274,13 @@ U_NU  U_NU  U_NU      U_NU  U_NU  U_MIDI_MODE_MO
 // MODE -- held with the right outer thumb from any MIDI layer.
 //
 //        outer  Q/A    W/S    E/D    R/F    T/G   |  Y/H    U/J   I/K   O/L   P/'  outer
-//   top   --    Piano  Grid   Drums  Chord  Ctrl  |  DJ     Scrch --    --    --    --
+//   top   --    Piano  Grid   Drums  Chord  Ctrl  |  DJ     Scrch Accrd --    --    --
 //   home  --    Vel-   Vel+   Ch-    Ch+    OctR  |  KeyR   Mod   Hold  --    --    --
 //   bot   Panic --     --     --     --     --    |  --     --    --    --    --    Pair
 //   thumbs             Exit   --     --           |  --     --    (held)
 #define MIRYOKU_LAYERMAPPING_MIDI_MODE(...) __VA_ARGS__
 #define MIRYOKU_LAYER_MIDI_MODE \
-U_NU  &to U_MIDI_PIANO  &to U_MIDI_GRID  &to U_MIDI_DRUMS  &to U_MIDI_CHORD  &to U_MIDI_CTRL      &to U_MIDI_DJ  &to U_MIDI_SCRATCH  U_NU  U_NU  U_NU  U_NU \
+U_NU  &to U_MIDI_PIANO  &to U_MIDI_GRID  &to U_MIDI_DRUMS  &to U_MIDI_CHORD  &to U_MIDI_CTRL      &to U_MIDI_DJ  &to U_MIDI_SCRATCH  &to U_MIDI_ACCORD  U_NU  U_NU  U_NU \
 U_NU  &midi_ctl MIDI_VEL_DN  &midi_ctl MIDI_VEL_UP  &midi_ctl MIDI_CH_DN  &midi_ctl MIDI_CH_UP  &midi_ctl MIDI_OCT_RST \
       &midi_ctl MIDI_KEY_RST  &midi_cc 1  &midi_cc 85  U_NU  U_NU  U_NU \
 &midi_ctl MIDI_PANIC  U_NU  U_NU  U_NU  U_NU  U_NU      U_NU  U_NU  U_NU  U_NU  U_NU  &midi_ctl MIDI_PAIR \

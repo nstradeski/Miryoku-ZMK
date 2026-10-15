@@ -18,6 +18,7 @@ MIRYOKU_X(MIDI_CHORD, "Chord") \
 MIRYOKU_X(MIDI_CTRL,  "Ctrl") \
 MIRYOKU_X(MIDI_DJ,    "DJ") \
 MIRYOKU_X(MIDI_SCRATCH, "Scrch") \
+MIRYOKU_X(MIDI_ACCORD, "Accrd") \
 MIRYOKU_X(MIDI_MODE,  "Mode")
 #else
 #define U_MIRYOKU_LAYER_MIDI
@@ -55,6 +56,7 @@ U_MIRYOKU_LAYER_MIDI
 #define U_MIDI_CTRL  15
 #define U_MIDI_DJ    16
 #define U_MIDI_SCRATCH 17
-#define U_MIDI_MODE  18
+#define U_MIDI_ACCORD 18
+#define U_MIDI_MODE  19
 
 #endif
