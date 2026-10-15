@@ -19,7 +19,7 @@ Only the Toucan2 has this. The Corne and Corne-ish Zen builds are unchanged.
 | To... | Do this |
 |---|---|
 | Turn MIDI on / off | Press **both bottom outer pinky keys together**. MIDI always starts in Piano. |
-| Switch mode | Hold the **right outer thumb** (MODE) and tap **Q** Piano, **W** Grid, **E** Drums, **R** Chord, **T** Control, **Y** DJ, **U** Scratch or **I** Accordion |
+| Switch mode | Hold the **right middle thumb** (MODE) and tap **Q** Piano, **W** Grid, **E** Drums, **R** Chord, **T** Control, **Y** DJ, **U** Scratch or **I** Accordion |
 | Make the iPad find it | Hold MODE and tap **Pair** (bottom-right outer key) |
 | Silence stuck notes | Hold MODE and tap **Panic** (bottom-left outer key) |
 | Leave MIDI | The pinky combo again, or hold MODE and tap the left outer thumb |
@@ -89,8 +89,11 @@ In Piano, Grid, Accordion and Chord, **each half of the keyboard has its own oct
 so your hands can play far apart:
 
 ```
-left:  L-Oct−   Sustain   L-Oct+        right:  R-Oct−   R-Oct+   MODE
+left:  L-Oct−   Sustain   L-Oct+        right:  R-Oct−   MODE   R-Oct+
 ```
+
+The two hands mirror each other: octave keys on the outside thumbs (down on
+the left, up on the right) and the special key in the middle.
 
 - **Each hand's octave keys are under its own thumb.** L-Oct moves only the
   left half's notes; R-Oct moves only the right half's.
@@ -106,7 +109,7 @@ left:  L-Oct−   Sustain   L-Oct+        right:  R-Oct−   R-Oct+   MODE
 - **Mod wheel and Hold** are on the MODE layer: hold MODE and press **J**
   for the mod wheel (CC 1), **K** for Hold (CC 85).
 - Drums and Control use their own thumbs (see below). **MODE** is always the
-  right outer thumb.
+  right middle thumb, in every MIDI mode.
 
 ## The trackpad
 
@@ -245,7 +248,7 @@ your index fingers **and** on the thumbs, like pedals.
 top      Crash2 Splash OpenHH Crash  HiTom  HMTom  │  LMTom  LoTom  Ride   Bell   China  Ride2
 home     Tamb   Stick  HiHat  Snare  Kick   Clap   │  Kick   Snare  FlrHi  FlrLo  Cowbl  Maraca
 bottom   Claves PedHH  Snare2 BongoH BongoL CongaO │  CongaM CongaL TimbH  TimbL  Tri    Cabasa
-thumbs                 HiHat  Kick   PedHH         │  Snare  Clap   MODE
+thumbs                 HiHat  Kick   PedHH         │  Snare  MODE   Clap
 ```
 
 ## Chord: one key, one chord, in any key
@@ -289,7 +292,7 @@ MIDI Learn.
 top       PC−   T20   T21   T22   T23   T24  │  T25   T26   T27   T28   T29   PC+
 home      Ch−   M102  M103  M104  M105  M106 │  M107  M108  M109  M110  M111  Ch+
 bottom    Panic Rec   Play  Stop  Cont  Vel− │  Vel+  Oct−  Oct+  Key−  Key+  Pair
-thumbs                Rec   Play  Stop       │  --    --    MODE
+thumbs                Rec   Play  Stop       │  --    MODE  --
 ```
 
 - **T20–T29** are CC toggles: each press alternates 127 / 0. Use them for
@@ -312,7 +315,7 @@ per hand, pinky → index (the right hand is the mirror image)
 top      Load   HC1     HC2     HC3     HC4     FX1
 home     PFL    Loop÷2  Loop×2  Loop    Play    Cue
 bottom   Sync   LoopIn  LoopOut Nudge−  Nudge+  FX2
-thumbs   Browse↑  Browse↓  Spare1  │  Spare2  Spare3  MODE
+thumbs   Browse↑  Browse↓  Spare1  │  Spare2  MODE  Spare3
 ```
 
 - **The decks are mirror images.** Each function is under the same finger on
@@ -352,7 +355,7 @@ and your left hand cuts the crossfader.
 top       --    Deck1  Deck2  --     --     --   │  1:HC1   1:HC2   1:HC3   1:HC4
 home      --    CUT    CUT    CUT    CUT    --   │  2:HC1   2:HC2   2:HC3   2:HC4
 bottom    --    --     --     --     --     --   │  1:Play  1:Cue   2:Play  2:Cue
-thumbs                                           │                  MODE
+thumbs                                           │          MODE
 ```
 
 **Right hand: the trackpad is the record.**
@@ -418,7 +421,7 @@ The cut keys are the tightest part: a key press is quicker than any slider.
 
 ## The MODE layer
 
-Hold the right outer thumb:
+Hold the right middle thumb:
 
 ```
          outer  Q/A    W/S    E/D    R/F    T/G   │  Y/H    U/J   ...

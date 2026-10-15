@@ -5,7 +5,7 @@
 //
 //   Enter / leave:  press both bottom outer pinky keys together (a combo in
 //                   config/toucan.keymap). Entering always lands on Piano.
-//   Switch mode:    hold the right outer thumb (MODE) and tap a top-row key
+//   Switch mode:    hold the right middle thumb (MODE) and tap a top-row key
 //                   (Q Piano, W Grid, E Drums, R Chord, T Ctrl, Y DJ,
 //                   U Scratch, I Accordion).
 //
@@ -15,7 +15,9 @@
 // 12 top, 12 home, 12 bottom, 6 thumbs.
 //
 // Piano, Grid, Accordion and Chord share the same thumbs, an octave pair per hand:
-//   L-Oct-  Sustain  L-Oct+  |  R-Oct-  R-Oct+  MODE
+//   L-Oct-  Sustain  L-Oct+  |  R-Oct-  MODE  R-Oct+
+// (mirror images: octave keys on the outside thumbs, down on the left and
+// up on the right; the special key in the middle)
 // Each half of the keyboard has its own octave, so the hands can play far
 // apart; octave steps never move a note's position (C stays under the same
 // key). The screen shows both when they differ ("L-2 R+1"). Mod wheel (CC 1)
@@ -33,7 +35,7 @@
 #define U_MIDI_MODE_MO &mo U_MIDI_MODE
 
 #define U_MIDI_PLAY_THUMBS \
-&midi_ctl MIDI_OCT_L_DN  &midi_cc 64  &midi_ctl MIDI_OCT_L_UP      &midi_ctl MIDI_OCT_R_DN  &midi_ctl MIDI_OCT_R_UP  U_MIDI_MODE_MO
+&midi_ctl MIDI_OCT_L_DN  &midi_cc 64  &midi_ctl MIDI_OCT_L_UP      &midi_ctl MIDI_OCT_R_DN  U_MIDI_MODE_MO  &midi_ctl MIDI_OCT_R_UP
 
 // ---------------------------------------------------------------------------
 // PIANO -- GarageBand Musical Typing, plus a lower octave of white keys.
@@ -111,7 +113,7 @@ U_MIDI_PLAY_THUMBS
 // tap = whole octave, hold (250 ms) = half octave.
 #define U_MIDI_ACC_THUMBS \
 &midi_oct_ht MIDI_HALF_L_DN MIDI_OCT_L_DN  &midi_cc 64  &midi_oct_ht MIDI_HALF_L_UP MIDI_OCT_L_UP \
-&midi_oct_ht MIDI_HALF_R_DN MIDI_OCT_R_DN  &midi_oct_ht MIDI_HALF_R_UP MIDI_OCT_R_UP  U_MIDI_MODE_MO
+&midi_oct_ht MIDI_HALF_R_DN MIDI_OCT_R_DN  U_MIDI_MODE_MO  &midi_oct_ht MIDI_HALF_R_UP MIDI_OCT_R_UP
 #define U_MIDI_ACC_ROW(r) \
 U_AC(0, r)  U_AC(1, r)  U_AC(2, r)  U_AC(3, r)  U_AC(4, r)  U_AC(5, r) \
 U_ACR(6, r) U_ACR(7, r) U_ACR(8, r) U_ACR(9, r) U_ACR(10, r) U_ACR(11, r)
@@ -130,14 +132,14 @@ U_MIDI_ACC_THUMBS
 //   top  Crash2 Splash OpenHH Crash  HiTom  HMTom  |  LMTom  LoTom  Ride   Bell   China  Ride2
 //   home Tamb   Stick  HiHat  Snare  Kick   Clap   |  Kick   Snare  FlrHi  FlrLo  Cowbl  Maraca
 //   bot  Claves PedHH  Snare2 BongoH BongoL CongaO |  CongaM CongaL TimbH  TimbL  Tri    Cabasa
-//   thumbs            HiHat  Kick   PedHH          |  Snare  Clap   MODE
+//   thumbs            HiHat  Kick   PedHH          |  Snare  MODE   Clap
 #define U_MD(n) &midi_drum GM_##n
 #define MIRYOKU_LAYERMAPPING_MIDI_DRUMS(...) __VA_ARGS__
 #define MIRYOKU_LAYER_MIDI_DRUMS \
 U_MD(CRASH2)    U_MD(SPLASH)    U_MD(HIHAT_OPEN)  U_MD(CRASH)     U_MD(TOM_HI)    U_MD(TOM_HIMID)       U_MD(TOM_LOMID)       U_MD(TOM_LO)      U_MD(RIDE)          U_MD(RIDE_BELL)     U_MD(CHINA)       U_MD(RIDE2)   \
 U_MD(TAMBOURINE) U_MD(SIDESTICK) U_MD(HIHAT_CLOSED) U_MD(SNARE)   U_MD(KICK)      U_MD(CLAP)            U_MD(KICK)            U_MD(SNARE)       U_MD(FLOOR_TOM_HI)  U_MD(FLOOR_TOM_LO)  U_MD(COWBELL)     U_MD(MARACAS) \
 U_MD(CLAVES)    U_MD(HIHAT_PEDAL) U_MD(SNARE2)    U_MD(BONGO_HI)  U_MD(BONGO_LO)  U_MD(CONGA_HI_OPEN)   U_MD(CONGA_HI_MUTE)   U_MD(CONGA_LO)    U_MD(TIMBALE_HI)    U_MD(TIMBALE_LO)    U_MD(TRIANGLE_OPEN) U_MD(CABASA) \
-U_MD(HIHAT_CLOSED)  U_MD(KICK)  U_MD(HIHAT_PEDAL)     U_MD(SNARE)  U_MD(CLAP)  U_MIDI_MODE_MO
+U_MD(HIHAT_CLOSED)  U_MD(KICK)  U_MD(HIHAT_PEDAL)     U_MD(SNARE)  U_MIDI_MODE_MO  U_MD(CLAP)
 
 // ---------------------------------------------------------------------------
 // CHORD -- one key, one chord, always in the current key and scale.
@@ -175,7 +177,7 @@ U_MIDI_PLAY_THUMBS
 //   top   PC-   T20   T21   T22   T23   T24  |  T25   T26   T27   T28   T29   PC+
 //   home  Ch-   M102  M103  M104  M105  M106 |  M107  M108  M109  M110  M111  Ch+
 //   bot   Panic Rec   Play  Stop  Cont  Vel- |  Vel+  Oct-  Oct+  Key-  Key+  Pair
-//   thumbs            Rec   Play  Stop       |  --    --    MODE
+//   thumbs            Rec   Play  Stop       |  --    MODE  --
 //
 //   T = CC toggle (127 / 0 per press): mutes, FX on/off, loop tracks
 //   M = CC 127 while held: clip / scene launch, momentary actions
@@ -188,7 +190,7 @@ U_MIDI_PLAY_THUMBS
 &midi_ctl MIDI_CH_DN  U_MCM(102) U_MCM(103) U_MCM(104) U_MCM(105) U_MCM(106)     U_MCM(107) U_MCM(108) U_MCM(109) U_MCM(110) U_MCM(111) &midi_ctl MIDI_CH_UP \
 &midi_ctl MIDI_PANIC  &midi_ctl MIDI_REC  &midi_ctl MIDI_PLAY  &midi_ctl MIDI_STOP  &midi_ctl MIDI_CONT  &midi_ctl MIDI_VEL_DN \
     &midi_ctl MIDI_VEL_UP  &midi_ctl MIDI_OCT_DN  &midi_ctl MIDI_OCT_UP  &midi_ctl MIDI_KEY_DN  &midi_ctl MIDI_KEY_UP  &midi_ctl MIDI_PAIR \
-&midi_ctl MIDI_REC  &midi_ctl MIDI_PLAY  &midi_ctl MIDI_STOP     U_NU  U_NU  U_MIDI_MODE_MO
+&midi_ctl MIDI_REC  &midi_ctl MIDI_PLAY  &midi_ctl MIDI_STOP     U_NU  U_MIDI_MODE_MO  U_NU
 
 // ---------------------------------------------------------------------------
 // DJ -- two decks for Algoriddim djay (or any DJ app with MIDI Learn).
@@ -203,7 +205,7 @@ U_MIDI_PLAY_THUMBS
 //   top     Load   HC1    HC2    HC3    HC4    FX1
 //   home    PFL    Loop/2 Loop*2 Loop   Play   Cue
 //   bottom  Sync   LoopIn LoopOut Nudge- Nudge+ FX2
-//   thumbs  Browse up  Browse down  Spare1 | Spare2  Spare3  MODE
+//   thumbs  Browse up  Browse down  Spare1 | Spare2  MODE  Spare3
 //
 //   PFL = headphone cue. Loop = auto loop on/off. HC = hot cue.
 //   Trackpad: X = crossfader (CC 1), Y = CC 2, two fingers = CC 3,
@@ -242,7 +244,7 @@ U_DJ(2, f) U_DJ(2, e) U_DJ(2, d) U_DJ(2, c) U_DJ(2, b) U_DJ(2, a)
 U_DJ_ROW(LOAD, HC1, HC2, HC3, HC4, FX1) \
 U_DJ_ROW(PFL, LOOP_HALF, LOOP_DOUBLE, LOOP, PLAY, CUE) \
 U_DJ_ROW(SYNC, LOOP_IN, LOOP_OUT, NUDGE_DN, NUDGE_UP, FX2) \
-U_DJ_THUMB(0)  U_DJ_THUMB(1)  U_DJ_THUMB(2)      U_DJ_THUMB(3)  U_DJ_THUMB(4)  U_MIDI_MODE_MO
+U_DJ_THUMB(0)  U_DJ_THUMB(1)  U_DJ_THUMB(2)      U_DJ_THUMB(3)  U_MIDI_MODE_MO  U_DJ_THUMB(4)
 
 // ---------------------------------------------------------------------------
 // SCRATCH -- turntablism: right hand scratches on the trackpad, left hand
@@ -260,7 +262,7 @@ U_DJ_THUMB(0)  U_DJ_THUMB(1)  U_DJ_THUMB(2)      U_DJ_THUMB(3)  U_DJ_THUMB(4)  U
 //   top   --    Deck1  Deck2  --     --     --    |  1:HC1   1:HC2   1:HC3   1:HC4  --    --
 //   home  --    CUT    CUT    CUT    CUT    --    |  2:HC1   2:HC2   2:HC3   2:HC4  --    --
 //   bot   --    --     --     --     --     --    |  1:Play  1:Cue   2:Play  2:Cue  --    --
-//   thumbs             --     --     --           |  --      --      MODE
+//   thumbs             --     --     --           |  --      MODE    --
 //
 //   Deck1 / Deck2 pick the scratch deck (the screen shows it) and set the
 //   crossfader open for it. Hot cues / Play / Cue send the same notes as the
@@ -277,16 +279,16 @@ U_NU  U_XF_CUT  U_XF_CUT  U_XF_CUT  U_XF_CUT  U_NU \
       U_DJ(2, HC1)  U_DJ(2, HC2)  U_DJ(2, HC3)  U_DJ(2, HC4)  U_NU  U_NU \
 U_NU  U_NU  U_NU  U_NU  U_NU  U_NU \
       U_DJ(1, PLAY)  U_DJ(1, CUE)  U_DJ(2, PLAY)  U_DJ(2, CUE)  U_NU  U_NU \
-U_NU  U_NU  U_NU      U_NU  U_NU  U_MIDI_MODE_MO
+U_NU  U_NU  U_NU      U_NU  U_MIDI_MODE_MO  U_NU
 
 // ---------------------------------------------------------------------------
-// MODE -- held with the right outer thumb from any MIDI layer.
+// MODE -- held with the right middle thumb from any MIDI layer.
 //
 //        outer  Q/A    W/S    E/D    R/F    T/G   |  Y/H    U/J   I/K   O/L   P/'  outer
 //   top   --    Piano  Grid   Drums  Chord  Ctrl  |  DJ     Scrch Accrd --    --    --
 //   home  --    Vel-   Vel+   Ch-    Ch+    OctR  |  KeyR   Mod   Hold  --    --    --
 //   bot   Panic --     --     --     --     --    |  --     --    --    --    --    Pair
-//   thumbs             Exit   --     --           |  --     --    (held)
+//   thumbs             Exit   --     --           |  --     (held) --
 #define MIRYOKU_LAYERMAPPING_MIDI_MODE(...) __VA_ARGS__
 #define MIRYOKU_LAYER_MIDI_MODE \
 U_NU  &to U_MIDI_PIANO  &to U_MIDI_GRID  &to U_MIDI_DRUMS  &to U_MIDI_CHORD  &to U_MIDI_CTRL      &to U_MIDI_DJ  &to U_MIDI_SCRATCH  &to U_MIDI_ACCORD  U_NU  U_NU  U_NU \
