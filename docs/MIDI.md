@@ -230,11 +230,91 @@ Half steps let you place each hand where a piece sits on the staff, e.g. hold
 R-Oct− so the right hand covers B3–E5 and middle C is under both hands. The
 screen shows it as `L+0 R-0.5`. MODE + G resets both hands. Piano, Grid and
 Chord ignore the half part, so a piano layout is never left half an octave
-off. It doesn't look like a
-piano, so for Melodics lessons Piano is still the better choice. It suits
-sheet-music-based apps such as Playground Sessions better, where you read
-notes off the staff rather than off an on-screen piano. Accordion
-fingering guides (search "C-system chromatic accordion") apply directly.
+off.
+
+**Which apps it suits.** It doesn't look like a piano, so for Melodics
+lessons (which show an on-screen piano) Piano mode is the better choice. It
+suits sheet-music-based apps such as Playground Sessions, where you read
+notes off the staff rather than off a picture of a keyboard.
+
+### Accordion cheat sheet
+
+**Three ideas cover everything:**
+
+1. **Each column is a tiny vertical piano.** The home-row key is the
+   column's *anchor*. The key **above is one semitone up**, and the key
+   **below is one semitone down**.
+2. **The home row is a ladder of four anchors:** **C, E♭, F♯, A**, then C
+   again, each 3 semitones apart. **Four keys right is an octave.**
+3. **Every note is an anchor, or ±1 from one.**
+
+| Note | Where | | Note | Where |
+|---|---|---|---|---|
+| C | **C** anchor | | F♯ | **F♯** anchor |
+| C♯ | above C | | G | above F♯ |
+| D | below E♭ | | G♯ | below A |
+| E♭ | **E♭** anchor | | A | **A** anchor |
+| E | above E♭ | | A♯ | above A |
+| F | below F♯ | | B | below the next C |
+
+**Landmarks:**
+- **Middle C = F key** (left index finger). C3 is the left outer key and C5
+  is **K** (right middle finger).
+- **A sits just left of each C:** D key (A3) and J key (A4).
+- Every C is on the home row, four keys apart.
+
+**The white keys zigzag.** Going up from C: home → down-right (D) → up
+(E) → down-right (F) → up (G) → home-right (A) → down-right (B) → up (C).
+
+**Chord shapes**, the same from any starting note:
+
+| Chord / interval | Shape from the root |
+|---|---|
+| Minor third (+3) | 1 key right, same row |
+| Major third (+4) | 1 key right, 1 row up |
+| Fifth (+7) | 2 keys right, 1 row up |
+| Octave (+12) | 4 keys right, same row |
+| **Major triad** | root, 1 right & up, 2 right & up |
+| **Minor triad** | root, 1 right, 2 right & up |
+
+C major from middle C: **F** (C4), the key **above G** (E4), the key
+**above H** (G4).
+
+**Reading sheet music:**
+1. Find the note's anchor (C, E♭, F♯ or A).
+2. Decide whether it's the anchor itself, the key above (+1) or the key
+   below (−1).
+3. Count octaves from middle C on the F key: four keys right or left per
+   octave.
+
+**Practice drill:**
+1. Play the anchors along the home row, saying them out loud: C, E♭, F♯,
+   A, C.
+2. Play the C major scale from the F key: **F (C) · G-bottom (D) · G-top
+   (E) · H-bottom (F) · H-top (G) · J (A) · K-bottom (B) · K (C)**.
+3. Play the major-triad shape from each anchor and listen for the same
+   chord quality each time.
+
+**Accordion fingering material.** On a real chromatic button accordion the
+same three rows are staggered diagonally. The Toucan's rows are straight, so
+"one key right" here is a step along an accordion row, and "one row up" is
+the accordion's diagonal semitone step. Each button has the same neighbours
+as on an accordion. C-system fingering patterns therefore carry over as
+shapes; the button-by-button diagrams won't line up exactly.
+
+**Prior art.** Playing a computer keyboard as a button accordion has been
+done before. Examples:
+- [Keydion](https://github.com/r00tman/Keydion) (macOS, C-system)
+- [Akkeyrdion](https://sourceforge.net/projects/akkeyrdion/) (C and B
+  systems)
+- [Maccordion](https://maccordion.com/) (browser, B-system)
+- A [Bayan mapping for FL Studio](https://summivox.wordpress.com/2016/04/25/bayan-keyboard-mapping-for-fl-studio/)
+
+All of them run as software on an ordinary staggered laptop keyboard. The
+version here differs in a few ways:
+- It runs in the keyboard's own firmware.
+- It uses a split keyboard with straight columns, over Bluetooth MIDI.
+- Each hand has its own octave and half-octave shifts.
 
 ## Drums: a General MIDI kit
 
