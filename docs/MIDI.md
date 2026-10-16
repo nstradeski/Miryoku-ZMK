@@ -18,7 +18,7 @@ Only the Toucan2 has this. The Corne and Corne-ish Zen builds are unchanged.
 
 | To... | Do this |
 |---|---|
-| Turn MIDI on / off | Press **both bottom outer pinky keys together**. MIDI always starts in Piano. |
+| Turn MIDI on / off | Press **both bottom outer pinky keys together**. MIDI always starts in **Accordion**. |
 | Switch mode | Hold the **right middle thumb** (MODE) and tap **Q** Piano, **W** Grid, **E** Drums, **R** Chord, **T** Control, **Y** DJ, **U** Scratch or **I** Accordion |
 | Make the iPad find it | Hold MODE and tap **Pair** (bottom-right outer key) |
 | Silence stuck notes | Hold MODE and tap **Panic** (bottom-left outer key) |
@@ -101,8 +101,6 @@ the left, up on the right) and the special key in the middle.
   so you never lose your place. Each hand reaches the whole piano, just not
   all at once.
 - **The screen** shows both octaves when they differ (`L-2 R+1`).
-- **Accordion only:** hold an octave thumb instead of tapping it to shift
-  half an octave (see Accordion below).
 - **Reset both** with MODE + G (OctR).
 - **Sustain** (left middle thumb, the Space position) is the sustain pedal,
   CC 64.
@@ -218,19 +216,12 @@ from anywhere:
 Each hand covers about 1½ octaves: the left half B2–E4 and the right half
 F4–A#5, each with its own octave on the thumbs.
 
-**Half-octave shifts (Accordion only).** On the Accordion layer the four
-octave thumbs do two things:
-
-- **Tap** = shift that hand a whole octave, as in the other modes.
-- **Hold** (about a quarter second) = shift it **half an octave**. In this
-  layout that's exactly 2 keys sideways, so the whole pattern stays intact:
-  every C is still on the home row, just two keys along.
-
-Half steps let you place each hand where a piece sits on the staff, e.g. hold
-R-Oct− so the right hand covers B3–E5 and middle C is under both hands. The
-screen shows it as `L+0 R-0.5`. MODE + G resets both hands. Piano, Grid and
-Chord ignore the half part, so a piano layout is never left half an octave
-off.
+**Octave shifts keep every C in place.** Tap L-Oct / R-Oct to move a hand
+a whole octave; each note stays on the same key, just higher or lower.
+Half-octave shifts were tried and dropped: a half shift swaps where C and F♯
+sit, which costs orientation for little playing benefit. The firmware
+support is still there if you ever want it back (see the comment in
+`miryoku/miryoku_midi.h`).
 
 **Which apps it suits.** It doesn't look like a piano, so for Melodics
 lessons (which show an on-screen piano) Piano mode is the better choice. It
@@ -314,7 +305,7 @@ All of them run as software on an ordinary staggered laptop keyboard. The
 version here differs in a few ways:
 - It runs in the keyboard's own firmware.
 - It uses a split keyboard with straight columns, over Bluetooth MIDI.
-- Each hand has its own octave and half-octave shifts.
+- Each hand has its own octave.
 
 ## Drums: a General MIDI kit
 

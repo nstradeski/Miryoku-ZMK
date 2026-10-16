@@ -19,7 +19,7 @@
 #include "../miryoku/miryoku.dtsi"
 
 // MIDI on / off: press both bottom outer pinky keys together. The same
-// gesture enters (always on Piano) and leaves (back to BASE) from any MIDI
+// gesture enters (always on Accordion) and leaves (back to BASE) from any MIDI
 // mode. It is the only way in or out.
 //
 // Positions 24 and 35 are the bottom-row outer keys (row by row: 12 top,
@@ -42,7 +42,7 @@
             require-prior-idle-ms = <150>;
             key-positions = <U_MIDI_COMBO_KEYS>;
             layers = <U_BASE U_EXTRA U_TAP U_BUTTON U_NAV U_MOUSE U_MEDIA U_NUM U_SYM U_FUN U_WINDOW>;
-            bindings = <&to U_MIDI_PIANO>;
+            bindings = <&to U_MIDI_ACCORD>;
         };
         combo_midi_off {
             timeout-ms = <50>;
